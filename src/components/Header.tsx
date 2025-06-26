@@ -1,11 +1,12 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Search, ShoppingCart, Heart, Menu, X, User } from 'lucide-react';
+import { Search, ShoppingCart, Heart, Menu, X, User, Crown, LogOut } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 interface HeaderProps {
   onSearch?: (query: string) => void;
@@ -15,6 +16,7 @@ const Header = ({ onSearch }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const { getTotalItems } = useCart();
+  const { user, profile, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
 
   const navItems = [
@@ -40,6 +42,11 @@ const Header = ({ onSearch }: HeaderProps) => {
   const handleNavClick = (href: string) => {
     navigate(href);
     setIsMenuOpen(false);
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
   };
 
   return (
@@ -105,10 +112,54 @@ const Header = ({ onSearch }: HeaderProps) => {
               </button>
             </form>
 
-            {/* Action Buttons */}
-            <Button variant="ghost" size="sm" className="relative hover:bg-blush-50">
-              <User size={20} className="text-blush-600" />
-            </Button>
+            {/* User Account */}
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="relative hover:bg-blush-50">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-8 h-8 bg-gradient-to-br from-rosegold-400 to-blush-400 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                        {profile?.full_name ? profile.full_name.charAt(0).toUpperCase() : user.email?.charAt(0).toUpperCase()}
+                      </div>
+                      {isAdmin && <Crown size={16} className="text-rosegold-500" />}
+                    </div>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <div className="flex items-center justify-start gap-2 p-2">
+                    <div className="flex flex-col space-y-1 leading-none">
+                      <p className="font-medium">{profile?.full_name || 'User'}</p>
+                      <p className="w-[200px] truncate text-sm text-muted-foreground">
+                        {user.email}
+                      </p>
+                    </div>
+                  </div>
+                  <DropdownMenuSeparator />
+                  {isAdmin && (
+                    <>
+                      <DropdownMenuItem onClick={() => navigate('/admin')}>
+                        <Crown className="mr-2 h-4 w-4" />
+                        Admin Dashboard
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                    </>
+                  )}
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="relative hover:bg-blush-50"
+                onClick={() => navigate('/auth')}
+              >
+                <User size={20} className="text-blush-600" />
+              </Button>
+            )}
             
             <Button variant="ghost" size="sm" className="relative hover:bg-blush-50">
               <Heart size={20} className="text-blush-600" />
@@ -181,6 +232,15 @@ const Header = ({ onSearch }: HeaderProps) => {
                   {item.name}
                 </button>
               ))}
+              {user && isAdmin && (
+                <button
+                  onClick={() => navigate('/admin')}
+                  className="font-medium py-2 text-left text-rosegold-600 bg-rosegold-50 px-3 py-2 rounded-lg"
+                >
+                  <Crown className="inline mr-2 w-4 h-4" />
+                  Admin Dashboard
+                </button>
+              )}
             </div>
           </nav>
         </div>

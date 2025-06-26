@@ -1,0 +1,169 @@
+
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { 
+  Package, 
+  Users, 
+  ShoppingCart, 
+  BarChart3, 
+  Settings, 
+  LogOut,
+  Crown,
+  Plus
+} from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import ProductsManager from '@/components/admin/ProductsManager';
+import UsersManager from '@/components/admin/UsersManager';
+import OrdersManager from '@/components/admin/OrdersManager';
+import Analytics from '@/components/admin/Analytics';
+
+const Admin = () => {
+  const [activeTab, setActiveTab] = useState('products');
+  const { signOut, profile } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
+
+  const statsCards = [
+    {
+      title: 'Total Products',
+      value: '156',
+      change: '+12%',
+      icon: Package,
+      color: 'text-blue-600'
+    },
+    {
+      title: 'Active Users',
+      value: '2,847',
+      change: '+23%',
+      icon: Users,
+      color: 'text-green-600'
+    },
+    {
+      title: 'Orders Today',
+      value: '47',
+      change: '+8%',
+      icon: ShoppingCart,
+      color: 'text-purple-600'
+    },
+    {
+      title: 'Revenue',
+      value: '$12,430',
+      change: '+15%',
+      icon: BarChart3,
+      color: 'text-rosegold-600'
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            <div className="flex items-center">
+              <Crown className="w-8 h-8 text-rosegold-500 mr-3" />
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+                <p className="text-sm text-gray-600">Welcome back, {profile?.full_name || 'Admin'}</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              <Button 
+                variant="outline" 
+                onClick={() => navigate('/')}
+                className="border-blush-200 text-blush-600 hover:bg-blush-50"
+              >
+                View Store
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={handleSignOut}
+                className="border-gray-200 text-gray-600 hover:bg-gray-50"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Sign Out
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {statsCards.map((stat, index) => (
+            <Card key={index} className="bg-white shadow-sm border-gray-200">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">{stat.title}</p>
+                    <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                    <p className="text-sm text-green-600 font-medium">{stat.change} from last month</p>
+                  </div>
+                  <div className={`p-3 rounded-full bg-gray-50 ${stat.color}`}>
+                    <stat.icon className="w-6 h-6" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Main Content */}
+        <Card className="bg-white shadow-sm border-gray-200">
+          <CardHeader>
+            <CardTitle>Management Console</CardTitle>
+            <CardDescription>Manage your store's products, users, and orders</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-4 mb-6">
+                <TabsTrigger value="products" className="flex items-center gap-2">
+                  <Package className="w-4 h-4" />
+                  Products
+                </TabsTrigger>
+                <TabsTrigger value="users" className="flex items-center gap-2">
+                  <Users className="w-4 h-4" />
+                  Users
+                </TabsTrigger>
+                <TabsTrigger value="orders" className="flex items-center gap-2">
+                  <ShoppingCart className="w-4 h-4" />
+                  Orders
+                </TabsTrigger>
+                <TabsTrigger value="analytics" className="flex items-center gap-2">
+                  <BarChart3 className="w-4 h-4" />
+                  Analytics
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="products" className="space-y-4">
+                <ProductsManager />
+              </TabsContent>
+
+              <TabsContent value="users" className="space-y-4">
+                <UsersManager />
+              </TabsContent>
+
+              <TabsContent value="orders" className="space-y-4">
+                <OrdersManager />
+              </TabsContent>
+
+              <TabsContent value="analytics" className="space-y-4">
+                <Analytics />
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+export default Admin;
