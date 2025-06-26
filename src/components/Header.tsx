@@ -4,60 +4,51 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Search, ShoppingCart, Heart, Menu, X, User } from 'lucide-react';
-import { Instagram, Facebook, Youtube, Twitter, Linkedin } from 'lucide-react';
+import { useCart } from '@/contexts/CartContext';
+import { useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
-  cartCount?: number;
+  onSearch?: (query: string) => void;
 }
 
-const Header = ({ cartCount = 0 }: HeaderProps) => {
+const Header = ({ onSearch }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const { getTotalItems } = useCart();
+  const navigate = useNavigate();
 
   const navItems = [
-    { name: 'Home', href: '#' },
-    { name: 'Shop All', href: '#shop' },
-    { name: 'Wigs', href: '#wigs' },
-    { name: 'Bundles', href: '#bundles' },
-    { name: 'New Arrivals', href: '#new' },
-    { name: 'Sale', href: '#sale', isSpecial: true },
-    { name: 'About', href: '#about' },
-    { name: 'Contact', href: '#contact' }
+    { name: 'Home', href: '/' },
+    { name: 'Shop All', href: '/shop' },
+    { name: 'Wigs', href: '/shop?category=wigs' },
+    { name: 'Bundles', href: '/shop?category=bundles' },
+    { name: 'New Arrivals', href: '/shop?filter=new' },
+    { name: 'Sale', href: '/shop?filter=sale', isSpecial: true }
   ];
 
-  const socialLinks = [
-    { icon: Instagram, href: '#', label: '@glamcrownbeauty' },
-    { icon: Facebook, href: '#', label: 'GlamCrown Beauty' },
-    { icon: Youtube, href: '#', label: 'GlamCrown Beauty' },
-    { icon: Twitter, href: '#', label: '@glamcrownhair' },
-    { icon: Linkedin, href: '#', label: 'GlamCrown Beauty' }
-  ];
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      if (onSearch) {
+        onSearch(searchQuery);
+      } else {
+        navigate(`/shop?search=${encodeURIComponent(searchQuery)}`);
+      }
+    }
+  };
+
+  const handleNavClick = (href: string) => {
+    navigate(href);
+    setIsMenuOpen(false);
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-blush-100 shadow-sm">
-      {/* Top Bar with Social Links */}
+      {/* Top Bar */}
       <div className="bg-gradient-to-r from-blush-50 to-cream-50 py-2">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center space-x-4">
-              <span className="text-blush-600 font-medium">Follow us for hair tips & glam deals:</span>
-              <div className="flex items-center space-x-2">
-                {socialLinks.map((social, index) => (
-                  <a
-                    key={index}
-                    href={social.href}
-                    className="text-blush-500 hover:text-rosegold-500 transition-colors duration-200"
-                    title={social.label}
-                  >
-                    <social.icon size={16} />
-                  </a>
-                ))}
-              </div>
-            </div>
-            <div className="hidden md:flex items-center space-x-4 text-blush-600">
-              <span>🚚 Free shipping on orders $75+</span>
-              <span>💎 100% Virgin Hair Guarantee</span>
-            </div>
+          <div className="flex items-center justify-center text-sm text-blush-600">
+            <span>🚚 Free shipping on orders $75+ | 💎 100% Virgin Hair Guarantee</span>
           </div>
         </div>
       </div>
@@ -66,7 +57,10 @@ const Header = ({ cartCount = 0 }: HeaderProps) => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center">
+          <div 
+            className="flex items-center cursor-pointer"
+            onClick={() => navigate('/')}
+          >
             <h1 className="text-2xl md:text-3xl font-bold text-gradient">
               GlamCrown Beauty
             </h1>
@@ -78,9 +72,9 @@ const Header = ({ cartCount = 0 }: HeaderProps) => {
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-8">
             {navItems.map((item) => (
-              <a
+              <button
                 key={item.name}
-                href={item.href}
+                onClick={() => handleNavClick(item.href)}
                 className={`font-medium transition-colors duration-200 hover:text-blush-500 ${
                   item.isSpecial 
                     ? 'text-rosegold-500 bg-rosegold-50 px-3 py-1 rounded-full' 
@@ -88,14 +82,14 @@ const Header = ({ cartCount = 0 }: HeaderProps) => {
                 }`}
               >
                 {item.name}
-              </a>
+              </button>
             ))}
           </nav>
 
           {/* Search & Actions */}
           <div className="flex items-center space-x-4">
             {/* Search */}
-            <div className="hidden md:flex relative">
+            <form onSubmit={handleSearch} className="hidden md:flex relative">
               <Input
                 type="text"
                 placeholder="Search wigs, bundles..."
@@ -103,8 +97,13 @@ const Header = ({ cartCount = 0 }: HeaderProps) => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-64 pl-4 pr-10 border-blush-200 focus:border-blush-400"
               />
-              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-blush-400" size={18} />
-            </div>
+              <button 
+                type="submit"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-blush-400 hover:text-blush-600"
+              >
+                <Search size={18} />
+              </button>
+            </form>
 
             {/* Action Buttons */}
             <Button variant="ghost" size="sm" className="relative hover:bg-blush-50">
@@ -118,11 +117,16 @@ const Header = ({ cartCount = 0 }: HeaderProps) => {
               </Badge>
             </Button>
 
-            <Button variant="ghost" size="sm" className="relative hover:bg-blush-50">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="relative hover:bg-blush-50"
+              onClick={() => navigate('/cart')}
+            >
               <ShoppingCart size={20} className="text-blush-600" />
-              {cartCount > 0 && (
+              {getTotalItems() > 0 && (
                 <Badge className="absolute -top-2 -right-2 bg-rosegold-500 text-white text-xs min-w-[20px] h-5 flex items-center justify-center">
-                  {cartCount}
+                  {getTotalItems()}
                 </Badge>
               )}
             </Button>
@@ -140,7 +144,7 @@ const Header = ({ cartCount = 0 }: HeaderProps) => {
         </div>
 
         {/* Mobile Search */}
-        <div className="md:hidden mt-4">
+        <form onSubmit={handleSearch} className="md:hidden mt-4">
           <div className="relative">
             <Input
               type="text"
@@ -149,9 +153,14 @@ const Header = ({ cartCount = 0 }: HeaderProps) => {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-4 pr-10 border-blush-200 focus:border-blush-400"
             />
-            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-blush-400" size={18} />
+            <button 
+              type="submit"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-blush-400"
+            >
+              <Search size={18} />
+            </button>
           </div>
-        </div>
+        </form>
       </div>
 
       {/* Mobile Menu */}
@@ -160,18 +169,17 @@ const Header = ({ cartCount = 0 }: HeaderProps) => {
           <nav className="container mx-auto px-4 py-4">
             <div className="flex flex-col space-y-4">
               {navItems.map((item) => (
-                <a
+                <button
                   key={item.name}
-                  href={item.href}
-                  className={`font-medium py-2 transition-colors duration-200 hover:text-blush-500 ${
+                  onClick={() => handleNavClick(item.href)}
+                  className={`font-medium py-2 transition-colors duration-200 hover:text-blush-500 text-left ${
                     item.isSpecial 
                       ? 'text-rosegold-500 bg-rosegold-50 px-3 py-2 rounded-lg' 
                       : 'text-gray-700'
                   }`}
-                  onClick={() => setIsMenuOpen(false)}
                 >
                   {item.name}
-                </a>
+                </button>
               ))}
             </div>
           </nav>

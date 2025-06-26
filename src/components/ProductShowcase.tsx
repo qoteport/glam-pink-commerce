@@ -4,57 +4,14 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import ProductCard from './ProductCard';
 import { ChevronRight, Sparkles, Crown, Star } from 'lucide-react';
+import { products } from '@/data/products';
+import { useNavigate } from 'react-router-dom';
 
 const ProductShowcase = () => {
-  const featuredProducts = [
-    {
-      id: '1',
-      name: 'Brazilian Curly Lace Front Wig',
-      price: 299,
-      originalPrice: 399,
-      rating: 4.9,
-      reviewCount: 156,
-      image: '/placeholder-wig-1.jpg',
-      isBestSeller: true,
-      colors: ['#8B4513', '#D2B48C', '#000000'],
-      lengths: ['16', '18', '20', '22']
-    },
-    {
-      id: '2',
-      name: 'Straight HD Lace Frontal',
-      price: 249,
-      originalPrice: 329,
-      rating: 4.8,
-      reviewCount: 98,
-      image: '/placeholder-wig-2.jpg',
-      isNew: true,
-      colors: ['#000000', '#8B4513', '#654321'],
-      lengths: ['14', '16', '18', '20']
-    },
-    {
-      id: '3',
-      name: 'Body Wave Hair Bundle Set',
-      price: 199,
-      originalPrice: 279,
-      rating: 4.7,
-      reviewCount: 203,
-      image: '/placeholder-bundle-1.jpg',
-      colors: ['#000000', '#8B4513', '#D2B48C', '#654321'],
-      lengths: ['16', '18', '20']
-    },
-    {
-      id: '4',
-      name: 'Deep Wave 360 Lace Wig',
-      price: 349,
-      originalPrice: 449,
-      rating: 4.9,
-      reviewCount: 87,
-      image: '/placeholder-wig-3.jpg',
-      isBestSeller: true,
-      colors: ['#8B4513', '#000000', '#D2B48C'],
-      lengths: ['18', '20', '22', '24']
-    }
-  ];
+  const navigate = useNavigate();
+  
+  // Get featured products (first 8 products)
+  const featuredProducts = products.slice(0, 8);
 
   const collections = [
     {
@@ -62,21 +19,24 @@ const ProductShowcase = () => {
       description: 'Natural hairline, breathable comfort',
       icon: Crown,
       gradient: 'from-blush-400 to-rosegold-400',
-      itemCount: '120+ styles'
+      itemCount: '120+ styles',
+      category: 'wigs'
     },
     {
       name: 'Hair Bundles',
       description: 'Premium virgin hair collections',
       icon: Sparkles,
       gradient: 'from-rosegold-400 to-cream-400',
-      itemCount: '80+ bundles'
+      itemCount: '80+ bundles',
+      category: 'bundles'
     },
     {
       name: 'Closure & Frontals',
       description: 'Complete your perfect look',
       icon: Star,
       gradient: 'from-cream-400 to-blush-400',
-      itemCount: '45+ options'
+      itemCount: '45+ options',
+      category: 'closures'
     }
   ];
 
@@ -103,9 +63,7 @@ const ProductShowcase = () => {
             <div
               key={index}
               className="group relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br text-white cursor-pointer hover-lift"
-              style={{
-                background: `linear-gradient(135deg, var(--tw-gradient-stops))`,
-              }}
+              onClick={() => navigate(`/shop?category=${collection.category}`)}
             >
               <div className={`absolute inset-0 bg-gradient-to-br ${collection.gradient} opacity-90`}></div>
               <div className="relative z-10 space-y-4">
@@ -146,13 +104,14 @@ const ProductShowcase = () => {
             <Button
               variant="outline"
               className="hidden md:flex border-blush-300 text-blush-600 hover:bg-blush-50"
+              onClick={() => navigate('/shop')}
             >
               View All Products
               <ChevronRight size={16} className="ml-2" />
             </Button>
           </div>
 
-          {/* Product Grid */}
+          {/* Product Grid - Now showing 8 products */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {featuredProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
@@ -164,6 +123,7 @@ const ProductShowcase = () => {
             <Button
               variant="outline"
               className="border-blush-300 text-blush-600 hover:bg-blush-50"
+              onClick={() => navigate('/shop')}
             >
               View All Products
               <ChevronRight size={16} className="ml-2" />

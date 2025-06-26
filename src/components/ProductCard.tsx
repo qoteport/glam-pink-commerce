@@ -1,9 +1,10 @@
-
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Heart, Star, ShoppingCart, Eye } from 'lucide-react';
+import { useCart } from '@/contexts/CartContext';
 
 interface Product {
   id: string;
@@ -24,6 +25,8 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ product }: ProductCardProps) => {
+  const navigate = useNavigate();
+  const { addToCart } = useCart();
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [selectedColor, setSelectedColor] = useState(product.colors?.[0] || '');
   
@@ -31,8 +34,25 @@ const ProductCard = ({ product }: ProductCardProps) => {
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
 
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    addToCart(product, 1, selectedColor, product.lengths?.[0]);
+  };
+
+  const handleQuickView = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate(`/product/${product.id}`);
+  };
+
+  const handleCardClick = () => {
+    navigate(`/product/${product.id}`);
+  };
+
   return (
-    <Card className="group relative overflow-hidden border-0 shadow-md hover:shadow-xl transition-all duration-300 hover-lift bg-white">
+    <Card 
+      className="group relative overflow-hidden border-0 shadow-md hover:shadow-xl transition-all duration-300 hover-lift bg-white cursor-pointer"
+      onClick={handleCardClick}
+    >
       {/* Product Image */}
       <div className="relative aspect-[4/5] overflow-hidden">
         {/* Placeholder Image */}
@@ -56,6 +76,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
               size="sm"
               variant="secondary"
               className="bg-white/90 hover:bg-white text-blush-600 shadow-lg"
+              onClick={handleQuickView}
             >
               <Eye size={16} className="mr-1" />
               Quick View
@@ -63,6 +84,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
             <Button
               size="sm"
               className="bg-blush-500 hover:bg-blush-600 text-white shadow-lg"
+              onClick={handleAddToCart}
             >
               <ShoppingCart size={16} className="mr-1" />
               Add to Cart
@@ -88,7 +110,10 @@ const ProductCard = ({ product }: ProductCardProps) => {
           variant="ghost"
           size="sm"
           className="absolute top-3 right-3 bg-white/80 hover:bg-white w-8 h-8 p-0"
-          onClick={() => setIsWishlisted(!isWishlisted)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsWishlisted(!isWishlisted);
+          }}
         >
           <Heart 
             size={16} 
@@ -139,7 +164,10 @@ const ProductCard = ({ product }: ProductCardProps) => {
                       : 'border-gray-200 hover:border-blush-300'
                   }`}
                   style={{ backgroundColor: color }}
-                  onClick={() => setSelectedColor(color)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedColor(color);
+                  }}
                 />
               ))}
             </div>
@@ -181,6 +209,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
         {/* Add to Cart Button */}
         <Button 
           className="w-full bg-gradient-to-r from-blush-500 to-rosegold-500 hover:from-blush-600 hover:to-rosegold-600 text-white font-semibold py-2 rounded-lg transition-all duration-300"
+          onClick={handleAddToCart}
         >
           Add to Cart
         </Button>
