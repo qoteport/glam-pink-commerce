@@ -1,0 +1,194 @@
+
+import React from 'react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import ProductCard from './ProductCard';
+import { ChevronRight, Sparkles, Crown, Star } from 'lucide-react';
+
+const ProductShowcase = () => {
+  const featuredProducts = [
+    {
+      id: '1',
+      name: 'Brazilian Curly Lace Front Wig',
+      price: 299,
+      originalPrice: 399,
+      rating: 4.9,
+      reviewCount: 156,
+      image: '/placeholder-wig-1.jpg',
+      isBestSeller: true,
+      colors: ['#8B4513', '#D2B48C', '#000000'],
+      lengths: ['16', '18', '20', '22']
+    },
+    {
+      id: '2',
+      name: 'Straight HD Lace Frontal',
+      price: 249,
+      originalPrice: 329,
+      rating: 4.8,
+      reviewCount: 98,
+      image: '/placeholder-wig-2.jpg',
+      isNew: true,
+      colors: ['#000000', '#8B4513', '#654321'],
+      lengths: ['14', '16', '18', '20']
+    },
+    {
+      id: '3',
+      name: 'Body Wave Hair Bundle Set',
+      price: 199,
+      originalPrice: 279,
+      rating: 4.7,
+      reviewCount: 203,
+      image: '/placeholder-bundle-1.jpg',
+      colors: ['#000000', '#8B4513', '#D2B48C', '#654321'],
+      lengths: ['16', '18', '20']
+    },
+    {
+      id: '4',
+      name: 'Deep Wave 360 Lace Wig',
+      price: 349,
+      originalPrice: 449,
+      rating: 4.9,
+      reviewCount: 87,
+      image: '/placeholder-wig-3.jpg',
+      isBestSeller: true,
+      colors: ['#8B4513', '#000000', '#D2B48C'],
+      lengths: ['18', '20', '22', '24']
+    }
+  ];
+
+  const collections = [
+    {
+      name: 'Lace Front Wigs',
+      description: 'Natural hairline, breathable comfort',
+      icon: Crown,
+      gradient: 'from-blush-400 to-rosegold-400',
+      itemCount: '120+ styles'
+    },
+    {
+      name: 'Hair Bundles',
+      description: 'Premium virgin hair collections',
+      icon: Sparkles,
+      gradient: 'from-rosegold-400 to-cream-400',
+      itemCount: '80+ bundles'
+    },
+    {
+      name: 'Closure & Frontals',
+      description: 'Complete your perfect look',
+      icon: Star,
+      gradient: 'from-cream-400 to-blush-400',
+      itemCount: '45+ options'
+    }
+  ];
+
+  return (
+    <section className="py-16 bg-white" id="shop">
+      <div className="container mx-auto px-4">
+        {/* Section Header */}
+        <div className="text-center mb-12 space-y-4">
+          <Badge className="bg-blush-100 text-blush-600 border-blush-200 px-4 py-2">
+            ✨ Featured Collections
+          </Badge>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
+            Shop Our <span className="text-gradient">Premium Collection</span>
+          </h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Discover our carefully curated selection of high-quality wigs and hair bundles, 
+            trusted by thousands of satisfied customers worldwide.
+          </p>
+        </div>
+
+        {/* Collection Categories */}
+        <div className="grid md:grid-cols-3 gap-6 mb-16">
+          {collections.map((collection, index) => (
+            <div
+              key={index}
+              className="group relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br text-white cursor-pointer hover-lift"
+              style={{
+                background: `linear-gradient(135deg, var(--tw-gradient-stops))`,
+              }}
+            >
+              <div className={`absolute inset-0 bg-gradient-to-br ${collection.gradient} opacity-90`}></div>
+              <div className="relative z-10 space-y-4">
+                <div className="flex items-center justify-between">
+                  <collection.icon size={32} className="text-white" />
+                  <Badge className="bg-white/20 text-white border-white/30">
+                    {collection.itemCount}
+                  </Badge>
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold mb-2">{collection.name}</h3>
+                  <p className="text-white/90 text-sm">{collection.description}</p>
+                </div>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="bg-white/20 hover:bg-white/30 text-white border-white/30"
+                >
+                  Explore Collection
+                  <ChevronRight size={16} className="ml-1" />
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Featured Products */}
+        <div className="space-y-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-2xl font-bold text-gray-800 mb-2">
+                Best Sellers & New Arrivals
+              </h3>
+              <p className="text-gray-600">
+                Our most popular pieces, loved by customers worldwide
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              className="hidden md:flex border-blush-300 text-blush-600 hover:bg-blush-50"
+            >
+              View All Products
+              <ChevronRight size={16} className="ml-2" />
+            </Button>
+          </div>
+
+          {/* Product Grid */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {featuredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+
+          {/* Mobile View All Button */}
+          <div className="md:hidden text-center">
+            <Button
+              variant="outline"
+              className="border-blush-300 text-blush-600 hover:bg-blush-50"
+            >
+              View All Products
+              <ChevronRight size={16} className="ml-2" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Trust Indicators */}
+        <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 py-12 border-t border-blush-100">
+          {[
+            { stat: '10K+', label: 'Happy Customers', icon: '💕' },
+            { stat: '4.9/5', label: 'Customer Rating', icon: '⭐' },
+            { stat: '100%', label: 'Virgin Hair', icon: '💎' },
+            { stat: '24/7', label: 'Support Team', icon: '🔧' }
+          ].map((item, index) => (
+            <div key={index} className="text-center space-y-2">
+              <div className="text-2xl">{item.icon}</div>
+              <div className="text-2xl font-bold text-blush-600">{item.stat}</div>
+              <div className="text-sm text-gray-600">{item.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default ProductShowcase;
