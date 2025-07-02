@@ -37,13 +37,13 @@ const Shop = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const { toast } = useToast();
 
-  const categories = [
+  const [categories, setCategories] = useState([
     { value: 'all', label: 'All Categories' },
     { value: 'wigs', label: 'Wigs' },
     { value: 'bundles', label: 'Bundles' },
     { value: 'closures', label: 'Closures' },
     { value: 'frontals', label: 'Frontals' },
-  ];
+  ]);
 
   const textures = [
     { value: 'all', label: 'All Textures' },

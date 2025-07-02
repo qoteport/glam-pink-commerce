@@ -39,7 +39,10 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
     price: '',
     original_price: '',
     category: 'wigs',
+    category_id: '',
     subcategory: '',
+    subcategory_id: '',
+    discount_id: '',
     is_new: false,
     is_best_seller: false,
     image: '',
@@ -52,15 +55,13 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
     colors: '',
     lengths: ''
   });
+  
+  const [categories, setCategories] = useState<Array<{id: string, name: string}>>([]);
+  const [subcategories, setSubcategories] = useState<Array<{id: string, name: string, category_id: string}>>([]);
+  const [discounts, setDiscounts] = useState<Array<{id: string, name: string}>>([]);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  const categories = [
-    { value: 'wigs', label: 'Wigs' },
-    { value: 'bundles', label: 'Bundles' },
-    { value: 'closures', label: 'Closures' },
-    { value: 'frontals', label: 'Frontals' }
-  ];
 
   const textures = [
     'Straight', 'Body Wave', 'Deep Wave', 'Curly', 'Loose Wave', 'Water Wave'
@@ -71,13 +72,20 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
   ];
 
   useEffect(() => {
+    fetchCategoriesAndDiscounts();
+  }, []);
+
+  useEffect(() => {
     if (product) {
       setFormData({
         name: product.name || '',
         price: product.price?.toString() || '',
         original_price: product.original_price?.toString() || '',
         category: product.category || 'wigs',
+        category_id: (product as any).category_id || '',
         subcategory: product.subcategory || '',
+        subcategory_id: (product as any).subcategory_id || '',
+        discount_id: (product as any).discount_id || '',
         is_new: product.is_new || false,
         is_best_seller: product.is_best_seller || false,
         image: product.image || '',
@@ -93,6 +101,26 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
     }
   }, [product]);
 
+  const fetchCategoriesAndDiscounts = async () => {
+    try {
+      const [categoriesResult, subcategoriesResult, discountsResult] = await Promise.all([
+        supabase.from('categories').select('id, name').eq('is_active', true).order('sort_order'),
+        supabase.from('subcategories').select('id, name, category_id').eq('is_active', true).order('sort_order'),
+        supabase.from('discounts').select('id, name').eq('is_active', true)
+      ]);
+      
+      if (categoriesResult.error) throw categoriesResult.error;
+      if (subcategoriesResult.error) throw subcategoriesResult.error;
+      if (discountsResult.error) throw discountsResult.error;
+      
+      setCategories(categoriesResult.data || []);
+      setSubcategories(subcategoriesResult.data || []);
+      setDiscounts(discountsResult.data || []);
+    } catch (error) {
+      console.error('Error fetching categories and discounts:', error);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -103,7 +131,10 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
         price: parseFloat(formData.price),
         original_price: formData.original_price ? parseFloat(formData.original_price) : null,
         category: formData.category,
+        category_id: formData.category_id || null,
         subcategory: formData.subcategory || null,
+        subcategory_id: formData.subcategory_id || null,
+        discount_id: formData.discount_id || null,
         is_new: formData.is_new,
         is_best_seller: formData.is_best_seller,
         image: formData.image,
@@ -216,30 +247,54 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="category">Category *</Label>
+          <Label htmlFor="category_id">Category *</Label>
           <select
-            id="category"
-            name="category"
-            value={formData.category}
-            onChange={handleInputChange}
+            id="category_id"
+            name="category_id"
+            value={formData.category_id}
+            onChange={(e) => {
+              const selectedCategory = categories.find(cat => cat.id === e.target.value);
+              setFormData(prev => ({ 
+                ...prev, 
+                category_id: e.target.value,
+                category: selectedCategory?.name.toLowerCase() || '',
+                subcategory_id: '',
+                subcategory: ''
+              }));
+            }}
             required
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rosegold-500"
           >
+            <option value="">Select a category</option>
             {categories.map(cat => (
-              <option key={cat.value} value={cat.value}>{cat.label}</option>
+              <option key={cat.id} value={cat.id}>{cat.name}</option>
             ))}
           </select>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="subcategory">Subcategory</Label>
-          <Input
-            id="subcategory"
-            name="subcategory"
-            value={formData.subcategory}
-            onChange={handleInputChange}
-            placeholder="e.g., Lace Front, HD Lace"
-          />
+          <Label htmlFor="subcategory_id">Subcategory</Label>
+          <select
+            id="subcategory_id"
+            name="subcategory_id"
+            value={formData.subcategory_id}
+            onChange={(e) => {
+              const selectedSubcategory = subcategories.find(sub => sub.id === e.target.value);
+              setFormData(prev => ({ 
+                ...prev, 
+                subcategory_id: e.target.value,
+                subcategory: selectedSubcategory?.name || ''
+              }));
+            }}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rosegold-500"
+          >
+            <option value="">Select a subcategory</option>
+            {subcategories
+              .filter(sub => sub.category_id === formData.category_id)
+              .map(sub => (
+                <option key={sub.id} value={sub.id}>{sub.name}</option>
+              ))}
+          </select>
         </div>
 
         <div className="space-y-2">

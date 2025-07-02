@@ -115,17 +115,18 @@ const ProductsManager = () => {
           <h2 className="text-2xl font-bold text-gray-900">Products</h2>
           <p className="text-gray-600">Manage your product catalog</p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button 
-              className="bg-rosegold-500 hover:bg-rosegold-600 text-white"
-              onClick={() => setEditingProduct(null)}
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Product
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="flex space-x-2">
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button 
+                className="bg-rosegold-500 hover:bg-rosegold-600 text-white"
+                onClick={() => setEditingProduct(null)}
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add Product
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
                 {editingProduct ? 'Edit Product' : 'Add New Product'}
@@ -141,8 +142,9 @@ const ProductsManager = () => {
               product={editingProduct} 
               onSave={handleProductSaved}
             />
-          </DialogContent>
-        </Dialog>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       {/* Filters */}

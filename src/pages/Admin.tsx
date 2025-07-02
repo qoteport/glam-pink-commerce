@@ -12,10 +12,14 @@ import {
   Settings, 
   LogOut,
   Crown,
-  Plus
+  Plus,
+  Tags,
+  Receipt
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import ProductsManager from '@/components/admin/ProductsManager';
+import CategoriesManager from '@/components/admin/CategoriesManager';
+import DiscountsManager from '@/components/admin/DiscountsManager';
 import UsersManager from '@/components/admin/UsersManager';
 import OrdersManager from '@/components/admin/OrdersManager';
 import Analytics from '@/components/admin/Analytics';
@@ -124,10 +128,18 @@ const Admin = () => {
           </CardHeader>
           <CardContent>
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-4 mb-6">
+              <TabsList className="grid w-full grid-cols-6 mb-6">
                 <TabsTrigger value="products" className="flex items-center gap-2">
                   <Package className="w-4 h-4" />
                   Products
+                </TabsTrigger>
+                <TabsTrigger value="categories" className="flex items-center gap-2">
+                  <Tags className="w-4 h-4" />
+                  Categories
+                </TabsTrigger>
+                <TabsTrigger value="discounts" className="flex items-center gap-2">
+                  <Receipt className="w-4 h-4" />
+                  Discounts
                 </TabsTrigger>
                 <TabsTrigger value="users" className="flex items-center gap-2">
                   <Users className="w-4 h-4" />
@@ -145,6 +157,14 @@ const Admin = () => {
 
               <TabsContent value="products" className="space-y-4">
                 <ProductsManager />
+              </TabsContent>
+
+              <TabsContent value="categories" className="space-y-4">
+                <CategoriesManager />
+              </TabsContent>
+
+              <TabsContent value="discounts" className="space-y-4">
+                <DiscountsManager />
               </TabsContent>
 
               <TabsContent value="users" className="space-y-4">
