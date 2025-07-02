@@ -21,25 +21,7 @@ import Footer from '@/components/Footer';
 import ProductCard from '@/components/ProductCard';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  original_price?: number;
-  rating: number;
-  reviews: number;
-  image: string;
-  category: string;
-  subcategory?: string;
-  is_new: boolean;
-  is_best_seller: boolean;
-  colors?: string[];
-  lengths?: string[];
-  description?: string;
-  hair_type?: string;
-  texture?: string;
-}
+import { Product } from '@/data/products';
 
 const Shop = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -112,18 +94,19 @@ const Shop = () => {
         id: product.id,
         name: product.name,
         price: product.price,
-        original_price: product.original_price,
-        rating: product.rating,
-        reviews: product.review_count,
+        originalPrice: product.original_price,
+        rating: product.rating || 0,
+        reviewCount: product.review_count || 0,
         image: product.image,
-        category: product.category,
+        category: product.category as 'wigs' | 'bundles' | 'closures' | 'frontals',
         subcategory: product.subcategory,
-        is_new: product.is_new,
-        is_best_seller: product.is_best_seller,
+        isNew: product.is_new,
+        isBestSeller: product.is_best_seller,
         colors: product.colors,
         lengths: product.lengths,
         description: product.description,
-        hair_type: product.hair_type,
+        features: product.features || [],
+        hairType: product.hair_type,
         texture: product.texture
       })) || [];
 
@@ -493,8 +476,7 @@ const Shop = () => {
               {filteredAndSortedProducts.map((product) => (
                 <ProductCard 
                   key={product.id} 
-                  product={product} 
-                  viewMode={viewMode}
+                  product={product}
                 />
               ))}
             </div>
