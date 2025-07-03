@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,21 +9,132 @@ import { Star, Heart, ShoppingCart, Share2, ArrowLeft, Plus, Minus } from 'lucid
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ProductCard from '@/components/ProductCard';
-import { getProductById, getSimilarProducts } from '@/data/products';
+import { supabase } from '@/integrations/supabase/client';
 import { useCart } from '@/contexts/CartContext';
+import { useToast } from '@/hooks/use-toast';
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const { toast } = useToast();
   
-  const product = id ? getProductById(id) : null;
-  const similarProducts = id ? getSimilarProducts(id) : [];
-  
-  const [selectedColor, setSelectedColor] = useState(product?.colors?.[0] || '');
-  const [selectedLength, setSelectedLength] = useState(product?.lengths?.[0] || '');
+  const [product, setProduct] = useState<any>(null);
+  const [similarProducts, setSimilarProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedColor, setSelectedColor] = useState('');
+  const [selectedLength, setSelectedLength] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
+
+  useEffect(() => {
+    if (id) {
+      fetchProduct(id);
+    }
+  }, [id]);
+
+  const fetchProduct = async (productId: string) => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('products')
+        .select(`
+          *,
+          categories!category_id (name, slug),
+          subcategories!subcategory_id (name, slug),
+          discounts!discount_id (name, type, value)
+        `)
+        .eq('id', productId)
+        .single();
+
+      if (error) throw error;
+
+      const transformedProduct = {
+        id: data.id,
+        name: data.name,
+        price: data.price,
+        originalPrice: data.original_price,
+        rating: data.rating || 0,
+        reviewCount: data.review_count || 0,
+        image: data.image_gallery?.[0] || data.image,
+        category: data.category,
+        subcategory: data.subcategory,
+        isNew: data.is_new,
+        isBestSeller: data.is_best_seller,
+        colors: data.colors || [],
+        lengths: data.lengths || [],
+        description: data.description,
+        features: data.features || [],
+        hairType: data.hair_type,
+        texture: data.texture,
+        imageGallery: data.image_gallery || [],
+        hairCareInstructions: data.hair_care_instructions,
+        type: data.type,
+        liveVideoUrl: data.live_video_url
+      };
+
+      setProduct(transformedProduct);
+      setSelectedColor(transformedProduct.colors?.[0] || '');
+      setSelectedLength(transformedProduct.lengths?.[0] || '');
+
+      // Fetch similar products
+      fetchSimilarProducts(data.category);
+    } catch (error) {
+      console.error('Error fetching product:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to load product',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchSimilarProducts = async (category: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('category', category)
+        .neq('id', id)
+        .limit(4);
+
+      if (error) throw error;
+
+      const transformedProducts = data?.map(product => ({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        originalPrice: product.original_price,
+        rating: product.rating || 0,
+        reviewCount: product.review_count || 0,
+        image: product.image_gallery?.[0] || product.image,
+        category: product.category,
+        subcategory: product.subcategory,
+        isNew: product.is_new,
+        isBestSeller: product.is_best_seller,
+        colors: product.colors || [],
+        lengths: product.lengths || []
+      })) || [];
+
+      setSimilarProducts(transformedProducts);
+    } catch (error) {
+      console.error('Error fetching similar products:', error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Header />
+        <div className="flex items-center justify-center py-20">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -85,24 +196,41 @@ const ProductDetail = () => {
           {/* Product Images */}
           <div className="space-y-4">
             {/* Main Image */}
-            <div className="aspect-square bg-gradient-to-br from-blush-100 to-cream-100 rounded-2xl flex items-center justify-center">
-              <div className="text-center space-y-4">
-                <div className="w-32 h-32 mx-auto bg-gradient-to-br from-blush-300 to-rosegold-300 rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold text-4xl">
-                    {product.name.charAt(0)}
-                  </span>
+            <div className="aspect-square bg-gradient-to-br from-muted/20 to-muted/40 rounded-2xl overflow-hidden">
+              {product.imageGallery && product.imageGallery.length > 0 ? (
+                <img
+                  src={product.imageGallery[0]}
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <div className="text-center space-y-4">
+                    <div className="w-32 h-32 mx-auto bg-gradient-to-br from-primary/30 to-primary/50 rounded-full flex items-center justify-center">
+                      <span className="text-white font-bold text-4xl">
+                        {product.name.charAt(0)}
+                      </span>
+                    </div>
+                    <p className="text-primary font-medium text-lg">
+                      {product.name}
+                    </p>
+                  </div>
                 </div>
-                <p className="text-blush-600 font-medium text-lg">
-                  {product.name}
-                </p>
-              </div>
+              )}
             </div>
             
             {/* Thumbnail Images */}
             <div className="grid grid-cols-4 gap-2">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="aspect-square bg-gradient-to-br from-blush-50 to-cream-50 rounded-lg"></div>
-              ))}
+              {product.imageGallery && product.imageGallery.length > 1 ? 
+                product.imageGallery.slice(1, 5).map((image, i) => (
+                  <div key={i} className="aspect-square rounded-lg overflow-hidden">
+                    <img src={image} alt={`${product.name} ${i + 2}`} className="w-full h-full object-cover" />
+                  </div>
+                )) :
+                [1, 2, 3, 4].map((i) => (
+                  <div key={i} className="aspect-square bg-gradient-to-br from-muted/10 to-muted/20 rounded-lg"></div>
+                ))
+              }
             </div>
           </div>
 
@@ -147,11 +275,11 @@ const ProductDetail = () => {
 
             {/* Price */}
             <div className="flex items-center space-x-4">
-              <span className="text-3xl font-bold text-blush-600">
+              <span className="text-3xl font-bold text-primary">
                 ${product.price}
               </span>
               {product.originalPrice && (
-                <span className="text-xl text-gray-500 line-through">
+                <span className="text-xl text-muted-foreground line-through">
                   ${product.originalPrice}
                 </span>
               )}
@@ -349,20 +477,40 @@ const ProductDetail = () => {
               <Card>
                 <CardContent className="p-6">
                   <h3 className="font-semibold mb-4">Hair Care Instructions</h3>
-                  <div className="space-y-4 text-sm">
-                    <div>
-                      <h4 className="font-medium text-blush-600">Washing:</h4>
-                      <p className="text-gray-600">Wash with cold water and sulfate-free shampoo. Condition regularly.</p>
+                  {product.hairCareInstructions ? (
+                    <div className="prose prose-sm max-w-none">
+                      <p className="text-muted-foreground whitespace-pre-wrap">{product.hairCareInstructions}</p>
                     </div>
-                    <div>
-                      <h4 className="font-medium text-blush-600">Styling:</h4>
-                      <p className="text-gray-600">Use heat protectant before styling. Keep heat settings below 350°F.</p>
+                  ) : (
+                    <div className="space-y-4 text-sm">
+                      <div>
+                        <h4 className="font-medium text-primary">Washing:</h4>
+                        <p className="text-muted-foreground">Wash with cold water and sulfate-free shampoo. Condition regularly.</p>
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-primary">Styling:</h4>
+                        <p className="text-muted-foreground">Use heat protectant before styling. Keep heat settings below 350°F.</p>
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-primary">Storage:</h4>
+                        <p className="text-muted-foreground">Store on a wig stand or mannequin head when not in use.</p>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="font-medium text-blush-600">Storage:</h4>
-                      <p className="text-gray-600">Store on a wig stand or mannequin head when not in use.</p>
+                  )}
+                  
+                  {product.liveVideoUrl && (
+                    <div className="mt-6">
+                      <h4 className="font-medium mb-2">Live Demonstration</h4>
+                      <a 
+                        href={product.liveVideoUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline"
+                      >
+                        Watch Live Video Tutorial →
+                      </a>
                     </div>
-                  </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>

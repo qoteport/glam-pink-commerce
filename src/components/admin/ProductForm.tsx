@@ -5,8 +5,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import ImageUpload from './ImageUpload';
 
 interface Product {
   id: string;
@@ -26,6 +28,11 @@ interface Product {
   texture?: string;
   colors?: string[];
   lengths?: string[];
+  hair_care_instructions?: string;
+  type?: string;
+  live_video_url?: string;
+  best_seller_threshold?: number;
+  image_gallery?: string[];
 }
 
 interface ProductFormProps {
@@ -53,7 +60,12 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
     hair_type: '',
     texture: '',
     colors: '',
-    lengths: ''
+    lengths: '',
+    hair_care_instructions: '',
+    type: '',
+    live_video_url: '',
+    best_seller_threshold: '50',
+    image_gallery: [] as string[]
   });
   
   const [categories, setCategories] = useState<Array<{id: string, name: string}>>([]);
@@ -96,7 +108,12 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
         hair_type: product.hair_type || '',
         texture: product.texture || '',
         colors: product.colors?.join(', ') || '',
-        lengths: product.lengths?.join(', ') || ''
+        lengths: product.lengths?.join(', ') || '',
+        hair_care_instructions: product.hair_care_instructions || '',
+        type: product.type || '',
+        live_video_url: product.live_video_url || '',
+        best_seller_threshold: product.best_seller_threshold?.toString() || '50',
+        image_gallery: product.image_gallery || []
       });
     }
   }, [product]);
@@ -136,7 +153,7 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
         subcategory_id: formData.subcategory_id || null,
         discount_id: formData.discount_id || null,
         is_new: formData.is_new,
-        is_best_seller: formData.is_best_seller,
+        is_best_seller: formData.is_best_seller || parseInt(formData.review_count) >= parseInt(formData.best_seller_threshold),
         image: formData.image,
         rating: parseFloat(formData.rating),
         review_count: parseInt(formData.review_count),
@@ -146,6 +163,11 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
         texture: formData.texture || null,
         colors: formData.colors ? formData.colors.split(',').map(c => c.trim()) : [],
         lengths: formData.lengths ? formData.lengths.split(',').map(l => l.trim()) : [],
+        hair_care_instructions: formData.hair_care_instructions || null,
+        type: formData.type || null,
+        live_video_url: formData.live_video_url || null,
+        best_seller_threshold: parseInt(formData.best_seller_threshold),
+        image_gallery: formData.image_gallery,
         updated_at: new Date().toISOString()
       };
 
@@ -194,7 +216,13 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Basic Information */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Basic Information</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="name">Product Name *</Label>
           <Input
@@ -356,78 +384,207 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
             placeholder="0"
           />
         </div>
-      </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="description">Description</Label>
-        <Textarea
-          id="description"
-          name="description"
-          value={formData.description}
-          onChange={handleInputChange}
-          placeholder="Enter product description"
-          rows={3}
-        />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="colors">Colors (comma separated)</Label>
+          <Label htmlFor="best_seller_threshold">Best Seller Threshold</Label>
           <Input
-            id="colors"
-            name="colors"
-            value={formData.colors}
+            id="best_seller_threshold"
+            name="best_seller_threshold"
+            type="number"
+            min="1"
+            value={formData.best_seller_threshold}
             onChange={handleInputChange}
-            placeholder="Black, Brown, Blonde"
+            placeholder="50"
           />
+          <p className="text-sm text-muted-foreground">
+            Products with review count above this threshold become best sellers automatically
+          </p>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="lengths">Lengths (comma separated)</Label>
+          <Label htmlFor="type">Type</Label>
           <Input
-            id="lengths"
-            name="lengths"
-            value={formData.lengths}
+            id="type"
+            name="type"
+            value={formData.type}
             onChange={handleInputChange}
-            placeholder="16, 18, 20, 22"
+            placeholder="e.g., 360 Lace, HD Lace, etc."
           />
         </div>
       </div>
+        </CardContent>
+      </Card>
 
-      <div className="space-y-2">
-        <Label htmlFor="features">Features (comma separated)</Label>
-        <Textarea
-          id="features"
-          name="features"
-          value={formData.features}
-          onChange={handleInputChange}
-          placeholder="100% Virgin Hair, Pre-plucked Hairline, Bleached Knots"
-          rows={2}
-        />
-      </div>
+      {/* Product Details */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Product Details</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="description">Description</Label>
+            <Textarea
+              id="description"
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              placeholder="Enter product description"
+              rows={3}
+            />
+          </div>
 
-      <div className="flex flex-col space-y-4">
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="is_new"
-            checked={formData.is_new}
-            onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_new: checked }))}
+          <div className="space-y-2">
+            <Label htmlFor="hair_care_instructions">Hair Care Instructions</Label>
+            <Textarea
+              id="hair_care_instructions"
+              name="hair_care_instructions"
+              value={formData.hair_care_instructions}
+              onChange={handleInputChange}
+              placeholder="Enter detailed hair care instructions"
+              rows={4}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="live_video_url">Live Video URL</Label>
+            <Input
+              id="live_video_url"
+              name="live_video_url"
+              type="url"
+              value={formData.live_video_url}
+              onChange={handleInputChange}
+              placeholder="https://youtube.com/watch?v=..."
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Product Variations */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Product Variations</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="colors">Colors (comma separated)</Label>
+              <Input
+                id="colors"
+                name="colors"
+                value={formData.colors}
+                onChange={handleInputChange}
+                placeholder="Black, Brown, Blonde"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="lengths">Lengths (comma separated)</Label>
+              <Input
+                id="lengths"
+                name="lengths"
+                value={formData.lengths}
+                onChange={handleInputChange}
+                placeholder="16, 18, 20, 22"
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Features */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Features</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            <Label htmlFor="features">Features (comma separated)</Label>
+            <Textarea
+              id="features"
+              name="features"
+              value={formData.features}
+              onChange={handleInputChange}
+              placeholder="100% Virgin Hair, Pre-plucked Hairline, Bleached Knots"
+              rows={2}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Product Images */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Product Images</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ImageUpload
+            images={formData.image_gallery}
+            onImagesChange={(images) => {
+              setFormData(prev => ({ 
+                ...prev, 
+                image_gallery: images,
+                image: images[0] || '' // Set first image as main image
+              }));
+            }}
+            maxImages={10}
           />
-          <Label htmlFor="is_new">Mark as New Product</Label>
-        </div>
+        </CardContent>
+      </Card>
 
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="is_best_seller"
-            checked={formData.is_best_seller}
-            onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_best_seller: checked }))}
-          />
-          <Label htmlFor="is_best_seller">Mark as Best Seller</Label>
-        </div>
-      </div>
+      {/* Product Status */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Product Status</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col space-y-4">
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="is_new"
+                checked={formData.is_new}
+                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_new: checked }))}
+              />
+              <Label htmlFor="is_new">Mark as New Product</Label>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="is_best_seller"
+                checked={formData.is_best_seller}
+                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_best_seller: checked }))}
+              />
+              <Label htmlFor="is_best_seller">Mark as Best Seller (Manual Override)</Label>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Discount Assignment */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Discount Assignment</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            <Label htmlFor="discount_id">Apply Discount</Label>
+            <select
+              id="discount_id"
+              name="discount_id"
+              value={formData.discount_id}
+              onChange={handleInputChange}
+              className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+            >
+              <option value="">No discount</option>
+              {discounts.map(discount => (
+                <option key={discount.id} value={discount.id}>{discount.name}</option>
+              ))}
+            </select>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="flex justify-end space-x-2">
-        <Button type="submit" disabled={loading} className="bg-rosegold-500 hover:bg-rosegold-600">
+        <Button type="submit" disabled={loading} className="bg-primary hover:bg-primary/90">
           {loading ? 'Saving...' : (product ? 'Update Product' : 'Create Product')}
         </Button>
       </div>

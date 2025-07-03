@@ -101,6 +101,7 @@ export type Database = {
       }
       products: {
         Row: {
+          best_seller_threshold: number | null
           category: string
           category_id: string | null
           colors: string[] | null
@@ -108,12 +109,15 @@ export type Database = {
           description: string | null
           discount_id: string | null
           features: string[] | null
+          hair_care_instructions: string | null
           hair_type: string | null
           id: string
           image: string
+          image_gallery: string[] | null
           is_best_seller: boolean | null
           is_new: boolean | null
           lengths: string[] | null
+          live_video_url: string | null
           name: string
           original_price: number | null
           price: number
@@ -122,9 +126,11 @@ export type Database = {
           subcategory: string | null
           subcategory_id: string | null
           texture: string | null
+          type: string | null
           updated_at: string
         }
         Insert: {
+          best_seller_threshold?: number | null
           category: string
           category_id?: string | null
           colors?: string[] | null
@@ -132,12 +138,15 @@ export type Database = {
           description?: string | null
           discount_id?: string | null
           features?: string[] | null
+          hair_care_instructions?: string | null
           hair_type?: string | null
           id?: string
           image: string
+          image_gallery?: string[] | null
           is_best_seller?: boolean | null
           is_new?: boolean | null
           lengths?: string[] | null
+          live_video_url?: string | null
           name: string
           original_price?: number | null
           price: number
@@ -146,9 +155,11 @@ export type Database = {
           subcategory?: string | null
           subcategory_id?: string | null
           texture?: string | null
+          type?: string | null
           updated_at?: string
         }
         Update: {
+          best_seller_threshold?: number | null
           category?: string
           category_id?: string | null
           colors?: string[] | null
@@ -156,12 +167,15 @@ export type Database = {
           description?: string | null
           discount_id?: string | null
           features?: string[] | null
+          hair_care_instructions?: string | null
           hair_type?: string | null
           id?: string
           image?: string
+          image_gallery?: string[] | null
           is_best_seller?: boolean | null
           is_new?: boolean | null
           lengths?: string[] | null
+          live_video_url?: string | null
           name?: string
           original_price?: number | null
           price?: number
@@ -170,6 +184,7 @@ export type Database = {
           subcategory?: string | null
           subcategory_id?: string | null
           texture?: string | null
+          type?: string | null
           updated_at?: string
         }
         Relationships: [

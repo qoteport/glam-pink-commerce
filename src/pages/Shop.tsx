@@ -77,6 +77,7 @@ const Shop = () => {
 
   useEffect(() => {
     fetchProducts();
+    fetchCategories();
   }, []);
 
   const fetchProducts = async () => {
@@ -84,7 +85,12 @@ const Shop = () => {
       setLoading(true);
       const { data, error } = await supabase
         .from('products')
-        .select('*')
+        .select(`
+          *,
+          categories!category_id (name, slug),
+          subcategories!subcategory_id (name, slug),
+          discounts!discount_id (name, type, value)
+        `)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -97,7 +103,7 @@ const Shop = () => {
         originalPrice: product.original_price,
         rating: product.rating || 0,
         reviewCount: product.review_count || 0,
-        image: product.image,
+        image: product.image_gallery?.[0] || product.image,
         category: product.category as 'wigs' | 'bundles' | 'closures' | 'frontals',
         subcategory: product.subcategory,
         isNew: product.is_new,
@@ -107,7 +113,11 @@ const Shop = () => {
         description: product.description,
         features: product.features || [],
         hairType: product.hair_type,
-        texture: product.texture
+        texture: product.texture,
+        imageGallery: product.image_gallery || [],
+        hairCareInstructions: product.hair_care_instructions,
+        type: product.type,
+        liveVideoUrl: product.live_video_url
       })) || [];
 
       setProducts(transformedProducts);
@@ -120,6 +130,33 @@ const Shop = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('categories')
+        .select(`
+          *,
+          subcategories!category_id (*)
+        `)
+        .eq('is_active', true)
+        .order('sort_order');
+
+      if (error) throw error;
+      
+      const dbCategories = data?.map(cat => ({
+        value: cat.slug,
+        label: cat.name
+      })) || [];
+
+      setCategories([
+        { value: 'all', label: 'All Categories' },
+        ...dbCategories
+      ]);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
     }
   };
 
