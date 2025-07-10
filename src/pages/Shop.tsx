@@ -19,6 +19,8 @@ import {
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ProductCard from '@/components/ProductCard';
+import ProductFilter from '@/components/shop/ProductFilter';
+import ProductGrid from '@/components/shop/ProductGrid';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Product } from '@/data/products';
@@ -34,7 +36,6 @@ const Shop = () => {
   const [priceRange, setPriceRange] = useState([0, 1000]);
   const [sortBy, setSortBy] = useState('featured');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const { toast } = useToast();
 
   const [categories, setCategories] = useState([
@@ -95,7 +96,6 @@ const Shop = () => {
 
       if (error) throw error;
 
-      // Transform data to match the expected format
       const transformedProducts = data?.map(product => ({
         id: product.id,
         name: product.name,
@@ -137,10 +137,7 @@ const Shop = () => {
     try {
       const { data, error } = await supabase
         .from('categories')
-        .select(`
-          *,
-          subcategories!category_id (*)
-        `)
+        .select('*')
         .eq('is_active', true)
         .order('sort_order');
 
@@ -207,26 +204,6 @@ const Shop = () => {
     setSearchParams(newSearchParams);
   };
 
-  const handleTextureChange = (texture: string) => {
-    setSelectedTexture(texture);
-  };
-
-  const handleLengthChange = (length: string) => {
-    setSelectedLength(length);
-  };
-
-  const handlePriceRangeChange = (range: number[]) => {
-    setPriceRange(range);
-  };
-
-  const handleSortByChange = (sortByOption: string) => {
-    setSortBy(sortByOption);
-  };
-
-  const handleViewModeChange = (mode: 'grid' | 'list') => {
-    setViewMode(mode);
-  };
-
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     const newSearchParams = new URLSearchParams(searchParams);
@@ -243,7 +220,7 @@ const Shop = () => {
       <div className="min-h-screen bg-white">
         <Header onSearch={handleSearch} />
         <div className="flex items-center justify-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rosegold-500"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
         <Footer />
       </div>
@@ -255,269 +232,38 @@ const Shop = () => {
       <Header onSearch={handleSearch} />
       
       <main className="container mx-auto px-4 py-8">
-        {/* Breadcrumbs */}
-        <div className="text-sm text-gray-500 mb-4">
-          <a href="/" className="hover:text-gray-700">Home</a>
-          <span className="mx-2">/</span>
-          <span>Shop</span>
-        </div>
-
-        {/* Shop Header */}
-        <div className="md:flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">Shop All</h2>
-            <p className="text-gray-600">Explore our premium selection of wigs and hair extensions</p>
-          </div>
-
-          <div className="flex items-center space-x-4">
-            {/* Sort By */}
-            <div className="relative">
-              <select
-                value={sortBy}
-                onChange={(e) => handleSortByChange(e.target.value)}
-                className="block appearance-none w-full bg-white border border-gray-300 hover:border-gray-400 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
-              >
-                <option value="featured">Featured</option>
-                <option value="price_asc">Price: Low to High</option>
-                <option value="price_desc">Price: High to Low</option>
-                <option value="rating">Rating</option>
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                <ChevronDown className="w-4 h-4" />
-              </div>
-            </div>
-
-            {/* View Mode */}
-            <div>
-              <Button 
-                variant="outline" 
-                size="icon"
-                className={viewMode === 'grid' ? 'bg-gray-100 hover:bg-gray-200' : 'hover:bg-gray-50'}
-                onClick={() => handleViewModeChange('grid')}
-              >
-                <Grid3X3 className="h-5 w-5" />
-              </Button>
-              <Button 
-                variant="outline" 
-                size="icon"
-                className={viewMode === 'list' ? 'bg-gray-100 hover:bg-gray-200' : 'hover:bg-gray-50'}
-                onClick={() => handleViewModeChange('list')}
-              >
-                <List className="h-5 w-5" />
-              </Button>
-            </div>
-
-            {/* Mobile Filter Button */}
-            <Drawer>
-              <DrawerTrigger asChild>
-                <Button variant="outline" size="sm" className="md:hidden">
-                  <Filter className="w-4 h-4 mr-2" />
-                  Filters
-                </Button>
-              </DrawerTrigger>
-              <DrawerContent>
-                <DrawerHeader>
-                  <DrawerTitle>Filters</DrawerTitle>
-                  <DrawerDescription>
-                    Adjust your search criteria
-                  </DrawerDescription>
-                </DrawerHeader>
-                {/* Mobile Filters Content - Same as Desktop */}
-                <div className="p-4 space-y-4">
-                  <div>
-                    <h4 className="font-semibold mb-2">Category</h4>
-                    {categories.map((category) => (
-                      <div key={category.value} className="flex items-center">
-                        <Input
-                          type="radio"
-                          id={`mobile-category-${category.value}`}
-                          name="mobile-category"
-                          value={category.value}
-                          checked={selectedCategory === category.value}
-                          onChange={() => handleCategoryChange(category.value)}
-                          className="mr-2"
-                        />
-                        <label htmlFor={`mobile-category-${category.value}`}>{category.label}</label>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div>
-                    <h4 className="font-semibold mb-2">Texture</h4>
-                    {textures.map((texture) => (
-                      <div key={texture.value} className="flex items-center">
-                        <Input
-                          type="radio"
-                          id={`mobile-texture-${texture.value}`}
-                          name="mobile-texture"
-                          value={texture.value}
-                          checked={selectedTexture === texture.value}
-                          onChange={() => handleTextureChange(texture.value)}
-                          className="mr-2"
-                        />
-                        <label htmlFor={`mobile-texture-${texture.value}`}>{texture.label}</label>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div>
-                    <h4 className="font-semibold mb-2">Length</h4>
-                    {lengths.map((length) => (
-                      <div key={length.value} className="flex items-center">
-                        <Input
-                          type="radio"
-                          id={`mobile-length-${length.value}`}
-                          name="mobile-length"
-                          value={length.value}
-                          checked={selectedLength === length.value}
-                          onChange={() => handleLengthChange(length.value)}
-                          className="mr-2"
-                        />
-                        <label htmlFor={`mobile-length-${length.value}`}>{length.label}</label>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div>
-                    <h4 className="font-semibold mb-2">Price Range</h4>
-                    {priceRanges.map((range) => (
-                      <div key={range.value[0]} className="flex items-center">
-                        <Input
-                          type="radio"
-                          id={`mobile-price-${range.value[0]}`}
-                          name="mobile-price"
-                          value={range.value.toString()}
-                          checked={priceRange[0] === range.value[0] && priceRange[1] === range.value[1]}
-                          onChange={() => handlePriceRangeChange(range.value)}
-                          className="mr-2"
-                        />
-                        <label htmlFor={`mobile-price-${range.value[0]}`}>{range.label}</label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </DrawerContent>
-            </Drawer>
-          </div>
-        </div>
-
-        {/* Filters */}
-        <div className="hidden md:block">
-          <div className="border rounded-md p-4 mb-6">
-            <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
-              <SlidersHorizontal className="w-5 h-5 mr-2 text-gray-500" />
-              Filters
-            </h3>
-
-            <div className="space-y-4">
-              <div>
-                <h4 className="font-semibold mb-2">Category</h4>
-                {categories.map((category) => (
-                  <div key={category.value} className="flex items-center">
-                    <Input
-                      type="radio"
-                      id={`category-${category.value}`}
-                      name="category"
-                      value={category.value}
-                      checked={selectedCategory === category.value}
-                      onChange={() => handleCategoryChange(category.value)}
-                      className="mr-2"
-                    />
-                    <label htmlFor={`category-${category.value}`}>{category.label}</label>
-                  </div>
-                ))}
-              </div>
-
-              <div>
-                <h4 className="font-semibold mb-2">Texture</h4>
-                {textures.map((texture) => (
-                  <div key={texture.value} className="flex items-center">
-                    <Input
-                      type="radio"
-                      id={`texture-${texture.value}`}
-                      name="texture"
-                      value={texture.value}
-                      checked={selectedTexture === texture.value}
-                      onChange={() => handleTextureChange(texture.value)}
-                      className="mr-2"
-                    />
-                    <label htmlFor={`texture-${texture.value}`}>{texture.label}</label>
-                  </div>
-                ))}
-              </div>
-
-              <div>
-                <h4 className="font-semibold mb-2">Length</h4>
-                {lengths.map((length) => (
-                  <div key={length.value} className="flex items-center">
-                    <Input
-                      type="radio"
-                      id={`length-${length.value}`}
-                      name="length"
-                      value={length.value}
-                      checked={selectedLength === length.value}
-                      onChange={() => handleLengthChange(length.value)}
-                      className="mr-2"
-                    />
-                    <label htmlFor={`length-${length.value}`}>{length.label}</label>
-                  </div>
-                ))}
-              </div>
-
-              <div>
-                <h4 className="font-semibold mb-2">Price Range</h4>
-                {priceRanges.map((range) => (
-                  <div key={range.value[0]} className="flex items-center">
-                    <Input
-                      type="radio"
-                      id={`price-${range.value[0]}`}
-                      name="price"
-                      value={range.value.toString()}
-                      checked={priceRange[0] === range.value[0] && priceRange[1] === range.value[1]}
-                      onChange={() => handlePriceRangeChange(range.value)}
-                      className="mr-2"
-                    />
-                    <label htmlFor={`price-${range.value[0]}`}>{range.label}</label>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        {/* Products Grid/List */}
-        <div className="mt-8">
-          {filteredAndSortedProducts.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                <Search className="w-12 h-12 text-gray-400" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">No products found</h3>
-              <p className="text-gray-600 mb-4">Try adjusting your filters or search terms</p>
-              <Button onClick={() => {
-                setSearchQuery('');
+        <div className="flex gap-8">
+          <div className="hidden lg:block w-80 flex-shrink-0">
+            <ProductFilter
+              categories={categories}
+              textures={textures}
+              lengths={lengths}
+              priceRanges={priceRanges}
+              selectedCategory={selectedCategory}
+              selectedTexture={selectedTexture}
+              selectedLength={selectedLength}
+              priceRange={priceRange}
+              onCategoryChange={handleCategoryChange}
+              onTextureChange={setSelectedTexture}
+              onLengthChange={setSelectedLength}
+              onPriceRangeChange={setPriceRange}
+              onClearFilters={() => {
                 setSelectedCategory('all');
                 setSelectedTexture('all');
                 setSelectedLength('all');
                 setPriceRange([0, 1000]);
-              }}>
-                Clear all filters
-              </Button>
-            </div>
-          ) : (
-            <div className={`grid gap-6 ${
-              viewMode === 'grid' 
-                ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
-                : 'grid-cols-1 max-w-4xl mx-auto'
-            }`}>
-              {filteredAndSortedProducts.map((product) => (
-                <ProductCard 
-                  key={product.id} 
-                  product={product}
-                />
-              ))}
-            </div>
-          )}
+              }}
+            />
+          </div>
+
+          <div className="flex-1">
+            <ProductGrid
+              products={filteredAndSortedProducts}
+              viewMode={viewMode}
+              onViewModeChange={setViewMode}
+              loading={loading}
+            />
+          </div>
         </div>
       </main>
 

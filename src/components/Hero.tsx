@@ -1,10 +1,65 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ChevronRight, Star, Sparkles, Crown } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+
+interface HeroData {
+  title: string;
+  subtitle?: string;
+  cta_text?: string;
+  cta_url?: string;
+  background_image?: string;
+  featured_product?: {
+    id: string;
+    name: string;
+    price: number;
+    image: string;
+  };
+}
 
 const Hero = () => {
+  const [heroData, setHeroData] = useState<HeroData>({
+    title: 'Unleash Your Inner Glam',
+    subtitle: 'Premium wigs and hair bundles that transform your look and boost your confidence. Join thousands of beautiful women who trust GlamCrown Beauty.',
+    cta_text: 'Shop Premium Wigs',
+    cta_url: '/shop'
+  });
+
+  useEffect(() => {
+    fetchHeroData();
+  }, []);
+
+  const fetchHeroData = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('hero_settings')
+        .select(`
+          *,
+          products!featured_product_id (id, name, price, image)
+        `)
+        .eq('is_active', true)
+        .limit(1)
+        .single();
+
+      if (error && error.code !== 'PGRST116') throw error;
+      
+      if (data) {
+        setHeroData({
+          title: data.title,
+          subtitle: data.subtitle,
+          cta_text: data.cta_text,
+          cta_url: data.cta_url,
+          background_image: data.background_image,
+          featured_product: data.products,
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching hero data:', error);
+    }
+  };
+
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-cream-50 via-blush-50 to-rosegold-50 min-h-[80vh] flex items-center">
       {/* Background Pattern */}
@@ -40,12 +95,11 @@ const Hero = () => {
             {/* Main Headline */}
             <div className="space-y-4">
               <h1 className="text-4xl md:text-6xl font-bold leading-tight">
-                Unleash Your
-                <span className="block text-gradient">Inner Glam</span>
+                {heroData.title.split(' ').slice(0, 2).join(' ')}
+                <span className="block text-gradient">{heroData.title.split(' ').slice(2).join(' ')}</span>
               </h1>
               <p className="text-lg md:text-xl text-gray-600 leading-relaxed max-w-lg">
-                Premium wigs and hair bundles that transform your look and boost your confidence. 
-                Join thousands of beautiful women who trust GlamCrown Beauty.
+                {heroData.subtitle}
               </p>
             </div>
 
@@ -81,14 +135,16 @@ const Hero = () => {
               <Button 
                 size="lg" 
                 className="bg-gradient-to-r from-blush-500 to-rosegold-500 hover:from-blush-600 hover:to-rosegold-600 text-white px-8 py-6 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                onClick={() => window.location.href = heroData.cta_url || '/shop'}
               >
-                Shop Premium Wigs
+                {heroData.cta_text || 'Shop Premium Wigs'}
                 <ChevronRight className="ml-2" size={20} />
               </Button>
               <Button 
                 variant="outline" 
                 size="lg"
                 className="border-2 border-blush-300 text-blush-600 hover:bg-blush-50 px-8 py-6 text-lg font-semibold rounded-xl"
+                onClick={() => window.location.href = '/shop'}
               >
                 View Collections
               </Button>
@@ -133,20 +189,21 @@ const Hero = () => {
                   </Badge>
                 </div>
                 
-                <div className="absolute bottom-4 left-4 right-4">
-                  <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-semibold text-blush-700">Brazilian Curly Lace Front</p>
-                        <p className="text-sm text-gray-600">22" Natural Color</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-lg font-bold text-rosegold-600">$299</p>
-                        <p className="text-xs text-gray-500 line-through">$399</p>
+                {heroData.featured_product && (
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-semibold text-blush-700">{heroData.featured_product.name}</p>
+                          <p className="text-sm text-gray-600">Featured Product</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-lg font-bold text-rosegold-600">${heroData.featured_product.price}</p>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
 
               {/* Floating Elements */}

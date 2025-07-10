@@ -22,6 +22,9 @@ import CategoriesManager from '@/components/admin/CategoriesManager';
 import DiscountsManager from '@/components/admin/DiscountsManager';
 import UsersManager from '@/components/admin/UsersManager';
 import OrdersManager from '@/components/admin/OrdersManager';
+import HeroManager from '@/components/admin/HeroManager';
+import SocialLinksManager from '@/components/admin/SocialLinksManager';
+import InstagramManager from '@/components/admin/InstagramManager';
 import Analytics from '@/components/admin/Analytics';
 
 const Admin = () => {
@@ -128,7 +131,7 @@ const Admin = () => {
           </CardHeader>
           <CardContent>
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-6 mb-6">
+              <TabsList className="grid w-full grid-cols-9 mb-6">
                 <TabsTrigger value="products" className="flex items-center gap-2">
                   <Package className="w-4 h-4" />
                   Products
@@ -148,6 +151,18 @@ const Admin = () => {
                 <TabsTrigger value="orders" className="flex items-center gap-2">
                   <ShoppingCart className="w-4 h-4" />
                   Orders
+                </TabsTrigger>
+                <TabsTrigger value="hero" className="flex items-center gap-2">
+                  <Crown className="w-4 h-4" />
+                  Hero
+                </TabsTrigger>
+                <TabsTrigger value="social" className="flex items-center gap-2">
+                  <Settings className="w-4 h-4" />
+                  Social
+                </TabsTrigger>
+                <TabsTrigger value="instagram" className="flex items-center gap-2">
+                  <Plus className="w-4 h-4" />
+                  Instagram
                 </TabsTrigger>
                 <TabsTrigger value="analytics" className="flex items-center gap-2">
                   <BarChart3 className="w-4 h-4" />
@@ -173,6 +188,18 @@ const Admin = () => {
 
               <TabsContent value="orders" className="space-y-4">
                 <OrdersManager />
+              </TabsContent>
+
+              <TabsContent value="hero" className="space-y-4">
+                <HeroManager />
+              </TabsContent>
+
+              <TabsContent value="social" className="space-y-4">
+                <SocialLinksManager />
+              </TabsContent>
+
+              <TabsContent value="instagram" className="space-y-4">
+                <InstagramManager />
               </TabsContent>
 
               <TabsContent value="analytics" className="space-y-4">
