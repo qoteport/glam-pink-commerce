@@ -20,7 +20,8 @@ const ProductShowcase = () => {
         const { data } = await supabase
           .from('products')
           .select('*')
-          .limit(8);
+          .limit(8)
+          .order('updated_at', { ascending: false }); // Show recently updated first
         
         if (data) {
           // Transform database product to match Product interface

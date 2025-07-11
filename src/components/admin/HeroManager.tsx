@@ -197,12 +197,17 @@ const EditForm = ({
     subtitle: setting.subtitle || '',
     cta_text: setting.cta_text || '',
     cta_url: setting.cta_url || '',
-    featured_product_id: setting.featured_product_id || '',
+    featured_product_id: setting.featured_product_id || 'none',
     background_image: setting.background_image || '',
   });
 
   const handleSave = () => {
-    onSave(formData);
+    const saveData = { ...formData };
+    // Convert 'none' back to null for featured_product_id
+    if (saveData.featured_product_id === 'none') {
+      saveData.featured_product_id = '';
+    }
+    onSave(saveData);
   };
 
   const handleImageUpload = (imageUrl: string) => {
@@ -257,7 +262,7 @@ const EditForm = ({
             <SelectValue placeholder="Select a product to feature" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">No product</SelectItem>
+            <SelectItem value="none">No product</SelectItem>
             {products.map((product) => (
               <SelectItem key={product.id} value={product.id}>
                 {product.name} - ${product.price}
