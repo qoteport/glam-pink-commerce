@@ -99,6 +99,16 @@ export default {
 					700: '#d67e58',
 					800: '#c2683f',
 					900: '#a05834'
+				},
+				pink: {
+					50: 'hsl(var(--pink-50))',
+					100: 'hsl(var(--pink-100))',
+					200: 'hsl(var(--pink-200))',
+					300: 'hsl(var(--pink-300))',
+					400: 'hsl(var(--pink-400))',
+					500: 'hsl(var(--pink-500))',
+					600: 'hsl(var(--pink-600))',
+					DEFAULT: 'hsl(var(--pink))'
 				}
 			},
 			borderRadius: {

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Search, ShoppingCart, Heart, Menu, X, User, Crown, LogOut } from 'lucide-react';
+import { Search, ShoppingCart, Heart, Menu, X, User, Crown, LogOut, ChevronDown } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -21,11 +21,19 @@ const Header = ({ onSearch }: HeaderProps) => {
 
   const navItems = [
     { name: 'Home', href: '/' },
-    { name: 'Shop All', href: '/shop' },
+    { name: 'Shop', href: '/shop' },
     { name: 'Wigs', href: '/shop?category=wigs' },
-    { name: 'Bundles', href: '/shop?category=bundles' },
-    { name: 'New Arrivals', href: '/shop?filter=new' },
-    { name: 'Sale', href: '/shop?filter=sale', isSpecial: true }
+    { name: 'Wholesale Deals', href: '/shop?category=wholesale', isSpecial: true },
+    { 
+      name: 'More', 
+      href: '#',
+      isDropdown: true,
+      items: [
+        { name: 'Customized Braided Wigs', href: '/shop?category=customized-braided-wigs' },
+        { name: 'Ready to Ship Wigs', href: '/shop?category=ready-to-ship-wigs' },
+        { name: 'Wholesale Deals', href: '/shop?category=wholesale' }
+      ]
+    }
   ];
 
   const handleSearch = (e: React.FormEvent) => {
@@ -79,17 +87,41 @@ const Header = ({ onSearch }: HeaderProps) => {
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-8">
             {navItems.map((item) => (
-              <button
-                key={item.name}
-                onClick={() => handleNavClick(item.href)}
-                className={`font-medium transition-colors duration-200 hover:text-blush-500 ${
-                  item.isSpecial 
-                    ? 'text-rosegold-500 bg-rosegold-50 px-3 py-1 rounded-full' 
-                    : 'text-gray-700'
-                }`}
-              >
-                {item.name}
-              </button>
+              item.isDropdown ? (
+                <DropdownMenu key={item.name}>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className="font-medium text-gray-700 hover:text-blush-500 p-0 h-auto"
+                    >
+                      {item.name}
+                      <ChevronDown size={16} className="ml-1" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56">
+                    {item.items?.map((subItem) => (
+                      <DropdownMenuItem
+                        key={subItem.name}
+                        onClick={() => handleNavClick(subItem.href)}
+                      >
+                        {subItem.name}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <button
+                  key={item.name}
+                  onClick={() => handleNavClick(item.href)}
+                  className={`font-medium transition-colors duration-200 hover:text-blush-500 ${
+                    item.isSpecial 
+                      ? 'text-rosegold-500 bg-rosegold-50 px-3 py-1 rounded-full' 
+                      : 'text-gray-700'
+                  }`}
+                >
+                  {item.name}
+                </button>
+              )
             ))}
           </nav>
 

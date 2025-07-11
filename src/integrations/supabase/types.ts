@@ -439,6 +439,51 @@ export type Database = {
           },
         ]
       }
+      testimonials: {
+        Row: {
+          comment: string
+          created_at: string
+          display_order: number | null
+          email: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          is_featured: boolean
+          location: string | null
+          name: string
+          rating: number
+          updated_at: string
+        }
+        Insert: {
+          comment: string
+          created_at?: string
+          display_order?: number | null
+          email?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          is_featured?: boolean
+          location?: string | null
+          name: string
+          rating: number
+          updated_at?: string
+        }
+        Update: {
+          comment?: string
+          created_at?: string
+          display_order?: number | null
+          email?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          is_featured?: boolean
+          location?: string | null
+          name?: string
+          rating?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string

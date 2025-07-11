@@ -14,7 +14,8 @@ import {
   Crown,
   Plus,
   Tags,
-  Receipt
+  Receipt,
+  MessageSquare
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import ProductsManager from '@/components/admin/ProductsManager';
@@ -25,6 +26,7 @@ import OrdersManager from '@/components/admin/OrdersManager';
 import HeroManager from '@/components/admin/HeroManager';
 import SocialLinksManager from '@/components/admin/SocialLinksManager';
 import InstagramManager from '@/components/admin/InstagramManager';
+import TestimonialsManager from '@/components/admin/TestimonialsManager';
 import Analytics from '@/components/admin/Analytics';
 
 const Admin = () => {
@@ -131,7 +133,7 @@ const Admin = () => {
           </CardHeader>
           <CardContent>
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-9 mb-6">
+              <TabsList className="grid w-full grid-cols-10 mb-6">
                 <TabsTrigger value="products" className="flex items-center gap-2">
                   <Package className="w-4 h-4" />
                   Products
@@ -159,6 +161,10 @@ const Admin = () => {
                 <TabsTrigger value="social" className="flex items-center gap-2">
                   <Settings className="w-4 h-4" />
                   Social
+                </TabsTrigger>
+                <TabsTrigger value="testimonials" className="flex items-center gap-2">
+                  <MessageSquare className="w-4 h-4" />
+                  Testimonials
                 </TabsTrigger>
                 <TabsTrigger value="instagram" className="flex items-center gap-2">
                   <Plus className="w-4 h-4" />
@@ -196,6 +202,10 @@ const Admin = () => {
 
               <TabsContent value="social" className="space-y-4">
                 <SocialLinksManager />
+              </TabsContent>
+
+              <TabsContent value="testimonials" className="space-y-4">
+                <TestimonialsManager />
               </TabsContent>
 
               <TabsContent value="instagram" className="space-y-4">

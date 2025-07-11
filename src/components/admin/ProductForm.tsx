@@ -235,17 +235,6 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="image">Image URL *</Label>
-          <Input
-            id="image"
-            name="image"
-            value={formData.image}
-            onChange={handleInputChange}
-            required
-            placeholder="Enter image URL"
-          />
-        </div>
 
         <div className="space-y-2">
           <Label htmlFor="price">Price *</Label>

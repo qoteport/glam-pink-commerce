@@ -56,8 +56,20 @@ const ProductCard = ({ product, viewMode = 'grid' }: ProductCardProps) => {
     >
       {/* Product Image */}
       <div className="relative aspect-[4/5] overflow-hidden">
-        {/* Placeholder Image */}
-        <div className="w-full h-full bg-gradient-to-br from-blush-100 to-cream-100 flex items-center justify-center">
+        {/* Product Image */}
+        <img 
+          src={product.image} 
+          alt={product.name}
+          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          onError={(e) => {
+            // Fallback to placeholder if image fails to load
+            const target = e.target as HTMLImageElement;
+            target.style.display = 'none';
+            target.nextElementSibling?.classList.remove('hidden');
+          }}
+        />
+        {/* Fallback Placeholder */}
+        <div className="hidden w-full h-full bg-gradient-to-br from-blush-100 to-cream-100 flex items-center justify-center">
           <div className="text-center space-y-2">
             <div className="w-20 h-20 mx-auto bg-gradient-to-br from-blush-300 to-rosegold-300 rounded-full flex items-center justify-center">
               <span className="text-white font-bold text-lg">

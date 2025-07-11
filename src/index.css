@@ -28,6 +28,16 @@
     --accent: 343 89% 38%;
     --accent-foreground: 222.2 47.4% 11.2%;
 
+    /* Pink color scheme */
+    --pink: 329 86% 70%;
+    --pink-50: 329 100% 97%;
+    --pink-100: 329 100% 94%;
+    --pink-200: 329 96% 86%;
+    --pink-300: 329 87% 77%;
+    --pink-400: 329 86% 70%;
+    --pink-500: 329 75% 63%;
+    --pink-600: 329 69% 55%;
+
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
@@ -102,7 +112,11 @@
 
 @layer components {
   .gradient-pink {
-    background: linear-gradient(135deg, #fce7e4 0%, #f9d2ce 50%, #f4b2ab 100%);
+    background: linear-gradient(135deg, hsl(var(--pink-50)) 0%, hsl(var(--pink-200)) 50%, hsl(var(--pink-400)) 100%);
+  }
+  
+  .gradient-pink-vibrant {
+    background: linear-gradient(135deg, hsl(var(--pink-400)) 0%, hsl(var(--pink-500)) 50%, hsl(var(--pink-600)) 100%);
   }
   
   .gradient-rosegold {
@@ -111,6 +125,13 @@
   
   .text-gradient {
     background: linear-gradient(135deg, #e85d5d, #cd4037);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-pink {
+    background: linear-gradient(135deg, hsl(var(--pink-500)), hsl(var(--pink-600)));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
