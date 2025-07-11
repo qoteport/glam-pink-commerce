@@ -22,9 +22,10 @@ interface Product {
 
 interface ProductCardProps {
   product: Product;
+  viewMode?: 'grid' | 'list';
 }
 
-const ProductCard = ({ product }: ProductCardProps) => {
+const ProductCard = ({ product, viewMode = 'grid' }: ProductCardProps) => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const [isWishlisted, setIsWishlisted] = useState(false);

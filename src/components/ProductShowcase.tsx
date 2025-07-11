@@ -1,17 +1,55 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import ProductCard from './ProductCard';
 import { ChevronRight, Sparkles, Crown, Star } from 'lucide-react';
-import { products } from '@/data/products';
+import { Product } from '@/data/products';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 
 const ProductShowcase = () => {
   const navigate = useNavigate();
-  
-  // Get featured products (first 8 products)
-  const featuredProducts = products.slice(0, 8);
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    const fetchFeaturedProducts = async () => {
+      const { data } = await supabase
+        .from('products')
+        .select('*')
+        .limit(8);
+      
+      if (data) {
+        // Transform database product to match Product interface
+        const transformedProducts = data.map(product => ({
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          originalPrice: product.original_price || undefined,
+          rating: product.rating || 0,
+          reviewCount: product.review_count || 0,
+          image: product.image,
+          category: product.category as 'wigs' | 'bundles' | 'closures' | 'frontals',
+          subcategory: product.subcategory || undefined,
+          isNew: product.is_new || false,
+          isBestSeller: product.is_best_seller || false,
+          colors: product.colors || [],
+          lengths: product.lengths || [],
+          description: product.description || undefined,
+          features: product.features || [],
+          hairType: product.hair_type || undefined,
+          texture: product.texture || undefined,
+          imageGallery: product.image_gallery || [],
+          hairCareInstructions: product.hair_care_instructions || undefined,
+          type: product.type || undefined,
+          liveVideoUrl: product.live_video_url || undefined,
+        }));
+        setFeaturedProducts(transformedProducts);
+      }
+    };
+    
+    fetchFeaturedProducts();
+  }, []);
 
   const collections = [
     {

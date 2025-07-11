@@ -8,12 +8,24 @@ import { useToast } from '@/hooks/use-toast';
 import { Upload, X, ExternalLink } from 'lucide-react';
 
 interface ImageUploadProps {
-  images: string[];
-  onImagesChange: (images: string[]) => void;
+  images?: string[];
+  onImagesChange?: (images: string[]) => void;
   maxImages?: number;
+  onImageUpload?: (imageUrl: string) => void;
+  currentImage?: string;
+  bucketName?: string;
+  folder?: string;
 }
 
-const ImageUpload = ({ images, onImagesChange, maxImages = 10 }: ImageUploadProps) => {
+const ImageUpload = ({ 
+  images = [], 
+  onImagesChange, 
+  maxImages = 10, 
+  onImageUpload,
+  currentImage,
+  bucketName = 'product-images',
+  folder = ''
+}: ImageUploadProps) => {
   const [uploading, setUploading] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -35,18 +47,22 @@ const ImageUpload = ({ images, onImagesChange, maxImages = 10 }: ImageUploadProp
     setUploading(true);
     try {
       const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
+      const fileName = folder ? `${folder}/${Math.random()}.${fileExt}` : `${Math.random()}.${fileExt}`;
       const { data, error } = await supabase.storage
-        .from('product-images')
+        .from(bucketName)
         .upload(fileName, file);
 
       if (error) throw error;
 
       const { data: { publicUrl } } = supabase.storage
-        .from('product-images')
+        .from(bucketName)
         .getPublicUrl(data.path);
 
-      onImagesChange([...images, publicUrl]);
+      if (onImageUpload) {
+        onImageUpload(publicUrl);
+      } else if (onImagesChange) {
+        onImagesChange([...images, publicUrl]);
+      }
       toast({
         title: 'Success',
         description: 'Image uploaded successfully',
@@ -78,13 +94,19 @@ const ImageUpload = ({ images, onImagesChange, maxImages = 10 }: ImageUploadProp
       return;
     }
 
-    onImagesChange([...images, imageUrl.trim()]);
+    if (onImageUpload) {
+      onImageUpload(imageUrl.trim());
+    } else if (onImagesChange) {
+      onImagesChange([...images, imageUrl.trim()]);
+    }
     setImageUrl('');
   };
 
   const removeImage = (index: number) => {
     const newImages = images.filter((_, i) => i !== index);
-    onImagesChange(newImages);
+    if (onImagesChange) {
+      onImagesChange(newImages);
+    }
   };
 
   return (
@@ -138,6 +160,20 @@ const ImageUpload = ({ images, onImagesChange, maxImages = 10 }: ImageUploadProp
           </CardContent>
         </Card>
       </div>
+
+      {/* Current Image */}
+      {currentImage && (
+        <div>
+          <Label className="block mb-2">Current Image</Label>
+          <div className="relative group w-32 h-32">
+            <img
+              src={currentImage}
+              alt="Current image"
+              className="w-full h-full object-cover rounded-lg border"
+            />
+          </div>
+        </div>
+      )}
 
       {/* Image Gallery */}
       {images.length > 0 && (
