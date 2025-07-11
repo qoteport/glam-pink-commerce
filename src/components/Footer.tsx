@@ -36,11 +36,11 @@ const Footer = () => {
   };
 
   const socialLinks = [
-    { icon: Instagram, href: '#', label: '@glamcrownbeauty', followers: '45K' },
-    { icon: Facebook, href: '#', label: 'GlamCrown Beauty', followers: '32K' },
-    { icon: Youtube, href: '#', label: 'GlamCrown Beauty', followers: '28K' },
-    { icon: Twitter, href: '#', label: '@glamcrownhair', followers: '15K' },
-    { icon: Linkedin, href: '#', label: 'GlamCrown Beauty', followers: '8K' }
+    { icon: Instagram, href: '#', label: '@hairytalesbeaty', followers: '45K' },
+    { icon: Facebook, href: '#', label: 'HairyTalesBeaty', followers: '32K' },
+    { icon: Youtube, href: '#', label: 'HairyTalesBeaty', followers: '28K' },
+    { icon: Twitter, href: '#', label: '@hairytalesbeaty', followers: '15K' },
+    { icon: Linkedin, href: '#', label: 'HairyTalesBeaty', followers: '8K' }
   ];
 
   const quickLinks = [
@@ -85,7 +85,7 @@ const Footer = () => {
           <div className="text-center space-y-6">
             <div className="space-y-2">
               <h3 className="text-2xl md:text-3xl font-bold text-white">
-                ✨ Join the Glam Squad & Stay Connected ✨
+                ✨ Join the Beauty Squad & Stay Connected ✨
               </h3>
               <p className="text-blush-100 max-w-2xl mx-auto">
                 Get exclusive access to new arrivals, styling tips, and special offers. 
@@ -142,7 +142,7 @@ const Footer = () => {
               <div className="space-y-4">
                 <div className="flex items-center space-x-2">
                   <Crown size={32} className="text-blush-400" />
-                  <h4 className="text-2xl font-bold text-gradient">GlamCrown Beauty</h4>
+                  <h4 className="text-2xl font-bold text-gradient">HairyTalesBeaty</h4>
                 </div>
                 <p className="text-gray-300 leading-relaxed max-w-md">
                   Your premier destination for high-quality wigs and hair bundles. 
@@ -170,7 +170,7 @@ const Footer = () => {
                   </div>
                   <div className="flex items-center space-x-3">
                     <Mail size={16} className="text-blush-400" />
-                    <span>hello@glamcrownbeauty.com</span>
+                    <span>hello@hairytalesbeaty.com</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <MapPin size={16} className="text-blush-400" />
@@ -241,7 +241,7 @@ const Footer = () => {
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
             <div className="flex items-center space-x-4 text-sm text-gray-400">
-              <span>© 2024 GlamCrown Beauty. All rights reserved.</span>
+              <span>© 2024 HairyTalesBeaty. All rights reserved.</span>
               <Separator orientation="vertical" className="h-4 bg-gray-600" />
               <a href="#" className="hover:text-blush-400 transition-colors">Privacy Policy</a>
               <Separator orientation="vertical" className="h-4 bg-gray-600" />

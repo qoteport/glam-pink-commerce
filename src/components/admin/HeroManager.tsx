@@ -205,7 +205,7 @@ const EditForm = ({
     const saveData = { ...formData };
     // Convert 'none' back to null for featured_product_id
     if (saveData.featured_product_id === 'none') {
-      saveData.featured_product_id = '';
+      saveData.featured_product_id = null;
     }
     onSave(saveData);
   };

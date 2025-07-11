@@ -69,7 +69,7 @@ const Header = ({ onSearch }: HeaderProps) => {
             onClick={() => navigate('/')}
           >
             <h1 className="text-2xl md:text-3xl font-bold text-gradient">
-              GlamCrown Beauty
+              HairyTalesBeaty
             </h1>
             <span className="ml-2 text-xs bg-rosegold-100 text-rosegold-600 px-2 py-1 rounded-full">
               Premium
