@@ -11,40 +11,48 @@ import { supabase } from '@/integrations/supabase/client';
 const ProductShowcase = () => {
   const navigate = useNavigate();
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchFeaturedProducts = async () => {
-      const { data } = await supabase
-        .from('products')
-        .select('*')
-        .limit(8);
-      
-      if (data) {
-        // Transform database product to match Product interface
-        const transformedProducts = data.map(product => ({
-          id: product.id,
-          name: product.name,
-          price: product.price,
-          originalPrice: product.original_price || undefined,
-          rating: product.rating || 0,
-          reviewCount: product.review_count || 0,
-          image: product.image,
-          category: product.category as 'wigs' | 'bundles' | 'closures' | 'frontals',
-          subcategory: product.subcategory || undefined,
-          isNew: product.is_new || false,
-          isBestSeller: product.is_best_seller || false,
-          colors: product.colors || [],
-          lengths: product.lengths || [],
-          description: product.description || undefined,
-          features: product.features || [],
-          hairType: product.hair_type || undefined,
-          texture: product.texture || undefined,
-          imageGallery: product.image_gallery || [],
-          hairCareInstructions: product.hair_care_instructions || undefined,
-          type: product.type || undefined,
-          liveVideoUrl: product.live_video_url || undefined,
-        }));
-        setFeaturedProducts(transformedProducts);
+      try {
+        setLoading(true);
+        const { data } = await supabase
+          .from('products')
+          .select('*')
+          .limit(8);
+        
+        if (data) {
+          // Transform database product to match Product interface
+          const transformedProducts = data.map(product => ({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            originalPrice: product.original_price || undefined,
+            rating: product.rating || 0,
+            reviewCount: product.review_count || 0,
+            image: product.image,
+            category: product.category as 'wigs' | 'bundles' | 'closures' | 'frontals',
+            subcategory: product.subcategory || undefined,
+            isNew: product.is_new || false,
+            isBestSeller: product.is_best_seller || false,
+            colors: product.colors || [],
+            lengths: product.lengths || [],
+            description: product.description || undefined,
+            features: product.features || [],
+            hairType: product.hair_type || undefined,
+            texture: product.texture || undefined,
+            imageGallery: product.image_gallery || [],
+            hairCareInstructions: product.hair_care_instructions || undefined,
+            type: product.type || undefined,
+            liveVideoUrl: product.live_video_url || undefined,
+          }));
+          setFeaturedProducts(transformedProducts);
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        setLoading(false);
       }
     };
     
@@ -150,11 +158,23 @@ const ProductShowcase = () => {
           </div>
 
           {/* Product Grid - Now showing 8 products */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          {loading ? (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="aspect-[4/5] bg-gray-200 rounded-lg mb-4"></div>
+                  <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {featuredProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          )}
 
           {/* Mobile View All Button */}
           <div className="md:hidden text-center">
