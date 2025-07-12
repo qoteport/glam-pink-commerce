@@ -22,7 +22,7 @@ import ProductsManager from '@/components/admin/ProductsManager';
 import CategoriesManager from '@/components/admin/CategoriesManager';
 import DiscountsManager from '@/components/admin/DiscountsManager';
 import UsersManager from '@/components/admin/UsersManager';
-import OrdersManager from '@/components/admin/OrdersManager';
+import OrdersManagerReal from '@/components/admin/OrdersManagerReal';
 import HeroManager from '@/components/admin/HeroManager';
 import SocialLinksManager from '@/components/admin/SocialLinksManager';
 import InstagramManager from '@/components/admin/InstagramManager';
@@ -199,7 +199,7 @@ const Admin = () => {
               </TabsContent>
 
               <TabsContent value="orders" className="space-y-4">
-                <OrdersManager />
+                <OrdersManagerReal />
               </TabsContent>
 
               <TabsContent value="hero" className="space-y-4">

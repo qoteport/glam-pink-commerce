@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -7,47 +7,68 @@ import { Heart, ShoppingCart, ArrowLeft, Star } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useCart } from '@/contexts/CartContext';
-
-// Mock favorites data - in a real app, this would come from context/state management
-const mockFavorites = [
-  {
-    id: '1',
-    name: 'Premium Lace Front Wig',
-    price: 299,
-    originalPrice: 399,
-    image: '/placeholder.svg',
-    rating: 4.8,
-    reviewCount: 124,
-    colors: ['Black', 'Brown', 'Blonde'],
-    lengths: ['12"', '14"', '16"', '18"']
-  },
-  {
-    id: '2',
-    name: 'Silk Top Human Hair Wig',
-    price: 459,
-    originalPrice: 559,
-    image: '/placeholder.svg',
-    rating: 4.9,
-    reviewCount: 89,
-    colors: ['Natural Black', 'Dark Brown'],
-    lengths: ['14"', '16"', '18"', '20"']
-  }
-];
+import { useFavorites } from '@/contexts/FavoritesContext';
+import { supabase } from '@/integrations/supabase/client';
 
 const Favorites = () => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
-  const [favorites, setFavorites] = useState(mockFavorites);
+  const { favorites, removeFromFavorites, loading } = useFavorites();
+  const [favoriteProducts, setFavoriteProducts] = useState<any[]>([]);
 
-  const removeFavorite = (id: string) => {
-    setFavorites(prev => prev.filter(item => item.id !== id));
+  useEffect(() => {
+    fetchFavoriteProducts();
+  }, [favorites]);
+
+  const fetchFavoriteProducts = async () => {
+    if (favorites.length === 0) {
+      setFavoriteProducts([]);
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .in('id', favorites);
+
+      if (error) throw error;
+
+      const transformedProducts = data?.map(product => ({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        originalPrice: product.original_price,
+        image: product.image,
+        rating: product.rating || 0,
+        reviewCount: product.review_count || 0,
+        colors: product.colors || [],
+        lengths: product.lengths || []
+      })) || [];
+
+      setFavoriteProducts(transformedProducts);
+    } catch (error) {
+      console.error('Error fetching favorite products:', error);
+    }
   };
 
   const handleAddToCart = (product: any) => {
     addToCart(product, 1);
   };
 
-  if (favorites.length === 0) {
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Header />
+        <div className="flex items-center justify-center py-20">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (favoriteProducts.length === 0) {
     return (
       <div className="min-h-screen bg-white">
         <Header />
@@ -88,7 +109,7 @@ const Favorites = () => {
               Back
             </Button>
             <h1 className="text-3xl font-bold text-gray-800">
-              My Favorites ({favorites.length} items)
+              My Favorites ({favoriteProducts.length} items)
             </h1>
             <p className="text-gray-600 mt-2">Your saved wigs and hair bundles</p>
           </div>
@@ -96,7 +117,7 @@ const Favorites = () => {
 
         {/* Favorites Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {favorites.map((product) => (
+          {favoriteProducts.map((product) => (
             <Card key={product.id} className="group hover:shadow-lg transition-all duration-300 border-blush-100">
               <CardContent className="p-4">
                 {/* Product Image */}
@@ -114,7 +135,7 @@ const Favorites = () => {
                     variant="ghost"
                     size="sm"
                     className="absolute top-2 right-2 bg-white/80 hover:bg-white text-red-500 hover:text-red-600"
-                    onClick={() => removeFavorite(product.id)}
+                    onClick={() => removeFromFavorites(product.id)}
                   >
                     <Heart size={16} fill="currentColor" />
                   </Button>

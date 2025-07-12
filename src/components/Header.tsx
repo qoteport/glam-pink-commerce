@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Search, ShoppingCart, Heart, Menu, X, User, Crown, LogOut, ChevronDown } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
+import { useFavorites } from '@/contexts/FavoritesContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -16,6 +17,7 @@ const Header = ({ onSearch }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const { getTotalItems } = useCart();
+  const { favorites } = useFavorites();
   const { user, profile, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
 
@@ -88,8 +90,8 @@ const Header = ({ onSearch }: HeaderProps) => {
                 <DropdownMenu key={item.name}>
                   <DropdownMenuTrigger asChild>
                     <Button
-                      variant="ghost"
-                      className="font-medium text-gray-700 hover:text-blush-500 hover:bg-blush-50 p-0 h-auto px-3"
+                      variant="chip"
+                      className="font-medium"
                     >
                       {item.name}
                       <ChevronDown size={16} className="ml-1" />
@@ -100,7 +102,7 @@ const Header = ({ onSearch }: HeaderProps) => {
                       <DropdownMenuItem
                         key={subItem.name}
                         onClick={() => handleNavClick(subItem.href)}
-                        className="hover:bg-blush-50 hover:text-blush-600 cursor-pointer"
+                        className="hover:bg-blush-50 hover:text-blush-600 cursor-pointer text-foreground"
                       >
                         {subItem.name}
                       </DropdownMenuItem>
@@ -167,14 +169,14 @@ const Header = ({ onSearch }: HeaderProps) => {
                   <DropdownMenuSeparator />
                   {isAdmin && (
                     <>
-                      <DropdownMenuItem onClick={() => navigate('/admin')} className="hover:bg-blush-50 hover:text-blush-600 cursor-pointer">
-                        <Crown className="mr-2 h-4 w-4" />
-                        Admin Dashboard
-                      </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/admin')} className="hover:bg-blush-50 hover:text-blush-600 cursor-pointer text-foreground">
+                    <Crown className="mr-2 h-4 w-4" />
+                    Admin Dashboard
+                  </DropdownMenuItem>
                       <DropdownMenuSeparator />
                     </>
                   )}
-                  <DropdownMenuItem onClick={handleSignOut} className="hover:bg-blush-50 hover:text-blush-600 cursor-pointer">
+                  <DropdownMenuItem onClick={handleSignOut} className="hover:bg-blush-50 hover:text-blush-600 cursor-pointer text-foreground">
                     <LogOut className="mr-2 h-4 w-4" />
                     Sign Out
                   </DropdownMenuItem>
@@ -198,9 +200,11 @@ const Header = ({ onSearch }: HeaderProps) => {
               onClick={() => navigate('/favorites')}
             >
               <Heart size={20} className="text-blush-600 group-hover:text-blush-700 transition-colors" />
-              <Badge className="absolute -top-2 -right-2 bg-rosegold-500 text-white text-xs min-w-[20px] h-5 flex items-center justify-center">
-                2
-              </Badge>
+              {favorites.length > 0 && (
+                <Badge className="absolute -top-2 -right-2 bg-rosegold-500 text-white text-xs min-w-[20px] h-5 flex items-center justify-center">
+                  {favorites.length}
+                </Badge>
+              )}
             </Button>
 
             <Button 
@@ -221,7 +225,7 @@ const Header = ({ onSearch }: HeaderProps) => {
             <Button
               variant="ghost"
               size="sm"
-              className="lg:hidden text-blush-600 hover:text-blush-700 hover:bg-blush-50"
+              className="lg:hidden"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
               {isMenuOpen ? <X size={20} /> : <Menu size={20} />}

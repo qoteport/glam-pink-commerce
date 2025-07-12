@@ -117,7 +117,7 @@ const Cart = () => {
                           <Button
                             variant="outline"
                             size="sm"
-                            className="h-8 w-8 p-0 border-blush-300 text-blush-600 hover:bg-blush-50 hover:text-blush-700"
+                            className="h-8 w-8 p-0"
                             onClick={() => updateQuantity(`${item.id}-${item.selectedColor}-${item.selectedLength}`, item.quantity - 1)}
                           >
                             <Minus size={14} />
@@ -126,7 +126,7 @@ const Cart = () => {
                           <Button
                             variant="outline"
                             size="sm"
-                            className="h-8 w-8 p-0 border-blush-300 text-blush-600 hover:bg-blush-50 hover:text-blush-700"
+                            className="h-8 w-8 p-0"
                             onClick={() => updateQuantity(`${item.id}-${item.selectedColor}-${item.selectedLength}`, item.quantity + 1)}
                           >
                             <Plus size={14} />
@@ -188,7 +188,10 @@ const Cart = () => {
                 </div>
 
                 {/* Checkout Button */}
-                <Button className="w-full bg-gradient-to-r from-blush-500 to-rosegold-500 hover:from-blush-600 hover:to-rosegold-600 text-white font-semibold py-3">
+                <Button 
+                  className="w-full bg-gradient-to-r from-blush-500 to-rosegold-500 hover:from-blush-600 hover:to-rosegold-600 text-white font-semibold py-3"
+                  onClick={() => navigate('/checkout')}
+                >
                   Proceed to Checkout
                 </Button>
 

@@ -12,12 +12,14 @@ import Footer from '@/components/Footer';
 import ProductCard from '@/components/ProductCard';
 import { supabase } from '@/integrations/supabase/client';
 import { useCart } from '@/contexts/CartContext';
+import { useFavorites } from '@/contexts/FavoritesContext';
 import { useToast } from '@/hooks/use-toast';
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
   const { toast } = useToast();
   
   const [product, setProduct] = useState<any>(null);
@@ -26,7 +28,7 @@ const ProductDetail = () => {
   const [selectedColor, setSelectedColor] = useState('');
   const [selectedLength, setSelectedLength] = useState('');
   const [quantity, setQuantity] = useState(1);
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  
   const [selectedImageIndex, setSelectedImageIndex] = useState(-1); // -1 for main image
 
   useEffect(() => {
@@ -442,12 +444,12 @@ const ProductDetail = () => {
                 
                 <Button
                   variant="outline"
-                  onClick={() => setIsWishlisted(!isWishlisted)}
+                  onClick={() => isFavorite(product.id) ? removeFromFavorites(product.id) : addToFavorites(product.id)}
                   className="px-4"
                 >
                   <Heart 
                     size={20} 
-                    className={isWishlisted ? 'text-red-500 fill-current' : 'text-gray-600'} 
+                    className={isFavorite(product.id) ? 'text-red-500 fill-current' : ''} 
                   />
                 </Button>
                 
