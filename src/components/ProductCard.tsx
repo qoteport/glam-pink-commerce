@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Heart, Star, ShoppingCart, Eye } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
+import { useFavorites } from '@/contexts/FavoritesContext';
 
 interface Product {
   id: string;
@@ -28,7 +29,7 @@ interface ProductCardProps {
 const ProductCard = ({ product, viewMode = 'grid' }: ProductCardProps) => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
   const [selectedColor, setSelectedColor] = useState(product.colors?.[0] || '');
   
   const discountPercentage = product.originalPrice 
@@ -125,13 +126,17 @@ const ProductCard = ({ product, viewMode = 'grid' }: ProductCardProps) => {
           className="absolute top-3 right-3 bg-white/80 hover:bg-white w-8 h-8 p-0"
           onClick={(e) => {
             e.stopPropagation();
-            setIsWishlisted(!isWishlisted);
+            if (isFavorite(product.id)) {
+              removeFromFavorites(product.id);
+            } else {
+              addToFavorites(product.id);
+            }
           }}
         >
           <Heart 
             size={16} 
             className={`transition-colors ${
-              isWishlisted ? 'text-red-500 fill-current' : 'text-gray-600'
+              isFavorite(product.id) ? 'text-primary fill-current' : 'text-gray-600'
             }`} 
           />
         </Button>

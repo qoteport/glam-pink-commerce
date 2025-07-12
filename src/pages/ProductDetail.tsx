@@ -453,7 +453,25 @@ const ProductDetail = () => {
                   />
                 </Button>
                 
-                <Button variant="outline" className="px-4">
+                <Button 
+                  variant="outline" 
+                  className="px-4"
+                  onClick={() => {
+                    if (navigator.share) {
+                      navigator.share({
+                        title: product.name,
+                        text: `Check out this amazing ${product.name}!`,
+                        url: window.location.href
+                      });
+                    } else {
+                      navigator.clipboard.writeText(window.location.href);
+                      toast({
+                        title: 'Link copied!',
+                        description: 'Product link has been copied to clipboard',
+                      });
+                    }
+                  }}
+                >
                   <Share2 size={20} className="text-gray-600" />
                 </Button>
               </div>

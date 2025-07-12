@@ -69,7 +69,11 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   };
 
   const removeFromCart = (id: string) => {
-    setItems(prevItems => prevItems.filter(item => item.id !== id));
+    setItems(prevItems => prevItems.filter(item => {
+      // Handle both simple id and composite key (id-color-length)
+      const itemKey = `${item.id}-${item.selectedColor}-${item.selectedLength}`;
+      return item.id !== id && itemKey !== id;
+    }));
   };
 
   const updateQuantity = (id: string, quantity: number) => {
@@ -79,9 +83,11 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     }
     
     setItems(prevItems =>
-      prevItems.map(item =>
-        item.id === id ? { ...item, quantity } : item
-      )
+      prevItems.map(item => {
+        // Handle both simple id and composite key (id-color-length)
+        const itemKey = `${item.id}-${item.selectedColor}-${item.selectedLength}`;
+        return (item.id === id || itemKey === id) ? { ...item, quantity } : item;
+      })
     );
   };
 
