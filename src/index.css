@@ -2,18 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. */
+/* Full pink color scheme */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 329 100% 99%;
+    --foreground: 329 75% 20%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 329 100% 98%;
+    --card-foreground: 329 75% 20%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 329 100% 98%;
+    --popover-foreground: 329 75% 20%;
 
     --primary: 329 86% 70%;
     --primary-foreground: 329 75% 20%;
@@ -25,9 +25,8 @@
     --muted-foreground: 329 30% 45%;
 
     --accent: 329 86% 70%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent-foreground: 329 75% 20%;
 
-    /* Pink color scheme */
     --pink: 329 86% 70%;
     --pink-50: 329 100% 97%;
     --pink-100: 329 100% 94%;
@@ -38,7 +37,7 @@
     --pink-600: 329 69% 55%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 329 100% 98%;
 
     --border: 329 31.8% 91.4%;
     --input: 329 31.8% 91.4%;
@@ -46,52 +45,52 @@
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 329 69% 55%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 329 4.8% 95.9%;
-    --sidebar-accent-foreground: 329 5.9% 10%;
-    --sidebar-border: 329 13% 91%;
+    --sidebar-background: 329 100% 97%;
+    --sidebar-foreground: 329 75% 20%;
+    --sidebar-primary: 329 75% 63%;
+    --sidebar-primary-foreground: 329 100% 98%;
+    --sidebar-accent: 329 96% 94%;
+    --sidebar-accent-foreground: 329 75% 20%;
+    --sidebar-border: 329 31.8% 91.4%;
     --sidebar-ring: 329 86% 70%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 329 35% 10%;
+    --foreground: 329 100% 98%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 329 35% 10%;
+    --card-foreground: 329 100% 98%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 329 35% 12%;
+    --popover-foreground: 329 100% 98%;
 
     --primary: 329 75% 63%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary-foreground: 329 100% 98%;
 
     --secondary: 329 32.6% 17.5%;
-    --secondary-foreground: 329 40% 98%;
+    --secondary-foreground: 329 100% 98%;
 
     --muted: 329 32.6% 17.5%;
-    --muted-foreground: 329 20.2% 65.1%;
+    --muted-foreground: 329 50% 80%;
 
     --accent: 329 32.6% 17.5%;
-    --accent-foreground: 329 40% 98%;
+    --accent-foreground: 329 100% 98%;
 
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 329 100% 98%;
 
     --border: 329 32.6% 17.5%;
     --input: 329 32.6% 17.5%;
     --ring: 329 69% 55%;
 
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 329 75% 63%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 329 3.7% 15.9%;
-    --sidebar-accent-foreground: 329 4.8% 95.9%;
-    --sidebar-border: 329 3.7% 15.9%;
+    --sidebar-background: 329 25% 10%;
+    --sidebar-foreground: 329 100% 98%;
+    --sidebar-primary: 329 69% 55%;
+    --sidebar-primary-foreground: 329 100% 98%;
+    --sidebar-accent: 329 20% 25%;
+    --sidebar-accent-foreground: 329 100% 98%;
+    --sidebar-border: 329 20% 25%;
     --sidebar-ring: 329 69% 55%;
   }
 }
