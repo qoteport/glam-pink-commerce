@@ -68,10 +68,18 @@ const Cart = () => {
                 <CardContent className="p-6">
                   <div className="flex gap-4">
                     {/* Product Image */}
-                    <div className="w-24 h-24 bg-gradient-to-br from-blush-100 to-cream-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <span className="text-blush-600 font-bold text-lg">
-                        {item.name.charAt(0)}
-                      </span>
+                    <div className="w-24 h-24 bg-gradient-to-br from-blush-100 to-cream-100 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                      {item.image ? (
+                        <img 
+                          src={item.image} 
+                          alt={item.name} 
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-blush-600 font-bold text-lg">
+                          {item.name.charAt(0)}
+                        </span>
+                      )}
                     </div>
 
                     {/* Product Details */}
@@ -109,6 +117,7 @@ const Cart = () => {
                           <Button
                             variant="outline"
                             size="sm"
+                            className="h-8 w-8 p-0 border-blush-300 text-blush-600 hover:bg-blush-50 hover:text-blush-700"
                             onClick={() => updateQuantity(`${item.id}-${item.selectedColor}-${item.selectedLength}`, item.quantity - 1)}
                           >
                             <Minus size={14} />
@@ -117,6 +126,7 @@ const Cart = () => {
                           <Button
                             variant="outline"
                             size="sm"
+                            className="h-8 w-8 p-0 border-blush-300 text-blush-600 hover:bg-blush-50 hover:text-blush-700"
                             onClick={() => updateQuantity(`${item.id}-${item.selectedColor}-${item.selectedLength}`, item.quantity + 1)}
                           >
                             <Plus size={14} />

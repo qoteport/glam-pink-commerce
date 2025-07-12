@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ChevronRight, Star, Sparkles, Crown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
 
 interface HeroData {
   title: string;
@@ -20,6 +21,7 @@ interface HeroData {
 }
 
 const Hero = () => {
+  const navigate = useNavigate();
   const [heroData, setHeroData] = useState<HeroData>({
     title: 'Unleash Your Inner Glam',
     subtitle: 'Premium wigs and hair bundles that transform your look and boost your confidence. Join thousands of beautiful women who trust GlamCrown Beauty.',
@@ -135,7 +137,7 @@ const Hero = () => {
               <Button 
                 size="lg" 
                 className="bg-gradient-to-r from-blush-500 to-rosegold-500 hover:from-blush-600 hover:to-rosegold-600 text-white px-8 py-6 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-                onClick={() => window.location.href = heroData.cta_url || '/shop'}
+                onClick={() => navigate(heroData.cta_url || '/shop')}
               >
                 {heroData.cta_text || 'Shop Premium Wigs'}
                 <ChevronRight className="ml-2" size={20} />
@@ -144,7 +146,7 @@ const Hero = () => {
                 variant="outline" 
                 size="lg"
                 className="border-2 border-blush-300 text-blush-600 hover:bg-blush-50 px-8 py-6 text-lg font-semibold rounded-xl"
-                onClick={() => window.location.href = '/shop'}
+                onClick={() => navigate('/shop')}
               >
                 View Collections
               </Button>

@@ -11,6 +11,7 @@ import Cart from "./pages/Cart";
 import NotFound from "./pages/NotFound";
 import WholesaleDeals from "./pages/WholesaleDeals";
 import CustomBraidedWigs from "./pages/CustomBraidedWigs";
+import Favorites from "./pages/Favorites";
 import { AuthProvider } from '@/contexts/AuthContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import Auth from '@/pages/Auth';
@@ -33,6 +34,7 @@ const App = () => (
               <Route path="/cart" element={<Cart />} />
               <Route path="/wholesale-deals" element={<WholesaleDeals />} />
               <Route path="/custom-braided-wigs" element={<CustomBraidedWigs />} />
+              <Route path="/favorites" element={<Favorites />} />
               <Route path="/auth" element={<Auth />} />
               <Route 
                 path="/admin" 

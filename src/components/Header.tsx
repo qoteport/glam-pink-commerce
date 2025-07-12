@@ -89,17 +89,18 @@ const Header = ({ onSearch }: HeaderProps) => {
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
-                      className="font-medium text-gray-700 hover:text-blush-500 p-0 h-auto px-3"
+                      className="font-medium text-gray-700 hover:text-blush-500 hover:bg-blush-50 p-0 h-auto px-3"
                     >
                       {item.name}
                       <ChevronDown size={16} className="ml-1" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56">
+                  <DropdownMenuContent className="w-56 bg-white border border-blush-100 shadow-lg">
                     {item.items?.map((subItem) => (
                       <DropdownMenuItem
                         key={subItem.name}
                         onClick={() => handleNavClick(subItem.href)}
+                        className="hover:bg-blush-50 hover:text-blush-600 cursor-pointer"
                       >
                         {subItem.name}
                       </DropdownMenuItem>
@@ -154,7 +155,7 @@ const Header = ({ onSearch }: HeaderProps) => {
                     </div>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuContent align="end" className="w-56 bg-white border border-blush-100 shadow-lg">
                   <div className="flex items-center justify-start gap-2 p-2">
                     <div className="flex flex-col space-y-1 leading-none">
                       <p className="font-medium">{profile?.full_name || 'User'}</p>
@@ -166,14 +167,14 @@ const Header = ({ onSearch }: HeaderProps) => {
                   <DropdownMenuSeparator />
                   {isAdmin && (
                     <>
-                      <DropdownMenuItem onClick={() => navigate('/admin')}>
+                      <DropdownMenuItem onClick={() => navigate('/admin')} className="hover:bg-blush-50 hover:text-blush-600 cursor-pointer">
                         <Crown className="mr-2 h-4 w-4" />
                         Admin Dashboard
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                     </>
                   )}
-                  <DropdownMenuItem onClick={handleSignOut}>
+                  <DropdownMenuItem onClick={handleSignOut} className="hover:bg-blush-50 hover:text-blush-600 cursor-pointer">
                     <LogOut className="mr-2 h-4 w-4" />
                     Sign Out
                   </DropdownMenuItem>
@@ -190,8 +191,13 @@ const Header = ({ onSearch }: HeaderProps) => {
               </Button>
             )}
             
-            <Button variant="ghost" size="sm" className="relative hover:bg-blush-50 hidden md:flex">
-              <Heart size={20} className="text-blush-600" />
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="relative hover:bg-blush-50 hidden md:flex group"
+              onClick={() => navigate('/favorites')}
+            >
+              <Heart size={20} className="text-blush-600 group-hover:text-blush-700 transition-colors" />
               <Badge className="absolute -top-2 -right-2 bg-rosegold-500 text-white text-xs min-w-[20px] h-5 flex items-center justify-center">
                 2
               </Badge>
@@ -200,10 +206,10 @@ const Header = ({ onSearch }: HeaderProps) => {
             <Button 
               variant="ghost" 
               size="sm" 
-              className="relative hover:bg-blush-50"
+              className="relative hover:bg-blush-50 group"
               onClick={() => navigate('/cart')}
             >
-              <ShoppingCart size={20} className="text-blush-600" />
+              <ShoppingCart size={20} className="text-blush-600 group-hover:text-blush-700 transition-colors" />
               {getTotalItems() > 0 && (
                 <Badge className="absolute -top-2 -right-2 bg-rosegold-500 text-white text-xs min-w-[20px] h-5 flex items-center justify-center">
                   {getTotalItems()}
@@ -215,7 +221,7 @@ const Header = ({ onSearch }: HeaderProps) => {
             <Button
               variant="ghost"
               size="sm"
-              className="lg:hidden"
+              className="lg:hidden text-blush-600 hover:text-blush-700 hover:bg-blush-50"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
               {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -279,25 +285,31 @@ const Header = ({ onSearch }: HeaderProps) => {
                 )
               ))}
                
-               {/* Mobile-only menu items */}
-               <div className="border-t border-gray-200 pt-4 mt-4 space-y-2">
-                 <button className="flex items-center w-full font-medium py-2 text-left text-gray-600 hover:text-blush-500">
-                   <Heart size={16} className="mr-2" />
-                   Favorites
-                 </button>
-                 {user && isAdmin && (
-                   <button
-                     onClick={() => {
-                       navigate('/admin');
-                       setIsMenuOpen(false);
-                     }}
-                     className="flex items-center w-full font-medium py-2 text-left text-rosegold-600 bg-rosegold-50 px-3 py-2 rounded-lg"
-                   >
-                     <Crown className="mr-2 w-4 h-4" />
-                     Admin Dashboard
-                   </button>
-                 )}
-               </div>
+                {/* Mobile-only menu items */}
+                <div className="border-t border-gray-200 pt-4 mt-4 space-y-2">
+                  <button 
+                    onClick={() => {
+                      navigate('/favorites');
+                      setIsMenuOpen(false);
+                    }}
+                    className="flex items-center w-full font-medium py-2 text-left text-gray-600 hover:text-blush-500"
+                  >
+                    <Heart size={16} className="mr-2" />
+                    Favorites
+                  </button>
+                  {user && isAdmin && (
+                    <button
+                      onClick={() => {
+                        navigate('/admin');
+                        setIsMenuOpen(false);
+                      }}
+                      className="flex items-center w-full font-medium py-2 text-left text-rosegold-600 bg-rosegold-50 px-3 py-2 rounded-lg"
+                    >
+                      <Crown className="mr-2 w-4 h-4" />
+                      Admin Dashboard
+                    </button>
+                  )}
+                </div>
             </div>
           </nav>
         </div>
