@@ -15,6 +15,8 @@ import ImageUpload from './ImageUpload';
 import Hero from '../Hero';
 import Hero2 from '../Hero2';
 import Hero3 from '../Hero3';
+import Hero4 from '../Hero4';
+import Hero5 from '../Hero5';
 
 interface HeroSetting {
   id: string;
@@ -123,6 +125,21 @@ const HeroManager = () => {
 
   const toggleActive = async (id: string, is_active: boolean) => {
     await handleUpdate(id, { is_active });
+  };
+
+  const renderHeroPreview = (design: string) => {
+    switch (design) {
+      case 'hero2':
+        return <Hero2 />;
+      case 'hero3':
+        return <Hero3 />;
+      case 'hero4':
+        return <Hero4 />;
+      case 'hero5':
+        return <Hero5 />;
+      default:
+        return <Hero />;
+    }
   };
 
   if (loading) {
@@ -238,6 +255,10 @@ const EditForm = ({
         return <Hero2 />;
       case 'hero3':
         return <Hero3 />;
+      case 'hero4':
+        return <Hero4 />;
+      case 'hero5':
+        return <Hero5 />;
       default:
         return <Hero />;
     }
@@ -264,9 +285,30 @@ const EditForm = ({
               <SelectItem value="hero1">Classic Design</SelectItem>
               <SelectItem value="hero2">Modern Dark Design</SelectItem>
               <SelectItem value="hero3">Split Layout Design</SelectItem>
+              <SelectItem value="hero4">Image-Only Design</SelectItem>
+              <SelectItem value="hero5">Video Background Design</SelectItem>
             </SelectContent>
           </Select>
         </div>
+        
+        {/* Special note for Hero5 video design */}
+        {formData.hero_design === 'hero5' && (
+          <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <p className="text-sm text-blue-700">
+              <strong>Video Design:</strong> Upload a video file (.mp4) as the background image, or use a regular image as fallback.
+            </p>
+          </div>
+        )}
+        
+        {/* Special note for Hero4 image design */}
+        {formData.hero_design === 'hero4' && (
+          <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+            <p className="text-sm text-green-700">
+              <strong>Image-Only Design:</strong> This design focuses entirely on your background image with minimal text overlay.
+            </p>
+          </div>
+        )}
+        
         <div>
           <Label htmlFor="title">Title</Label>
           <Input
