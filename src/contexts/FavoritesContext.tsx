@@ -16,7 +16,14 @@ const FavoritesContext = createContext<FavoritesContextType | undefined>(undefin
 export const useFavorites = () => {
   const context = useContext(FavoritesContext);
   if (!context) {
-    throw new Error('useFavorites must be used within a FavoritesProvider');
+    // Return a default context that doesn't do anything if not in provider
+    return {
+      favorites: [],
+      addToFavorites: async () => {},
+      removeFromFavorites: async () => {},
+      isFavorite: () => false,
+      loading: false
+    };
   }
   return context;
 };
