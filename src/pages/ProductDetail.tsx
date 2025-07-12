@@ -27,7 +27,7 @@ const ProductDetail = () => {
   const [selectedLength, setSelectedLength] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(-1); // -1 for main image
 
   useEffect(() => {
     if (id) {
@@ -206,10 +206,16 @@ const ProductDetail = () => {
             <Dialog>
               <DialogTrigger asChild>
                 <div className="aspect-square bg-gradient-to-br from-muted/20 to-muted/40 rounded-2xl overflow-hidden cursor-pointer relative group">
-                  {product.image || (product.imageGallery && product.imageGallery[selectedImageIndex]) ? (
+                  {product.image || (product.imageGallery && product.imageGallery.length > 0) ? (
                     <>
                       <img
-                        src={product.imageGallery && product.imageGallery[selectedImageIndex] ? product.imageGallery[selectedImageIndex] : product.image}
+                        src={
+                          selectedImageIndex === -1 || selectedImageIndex === null
+                            ? product.image
+                            : (product.imageGallery && product.imageGallery[selectedImageIndex]) 
+                              ? product.imageGallery[selectedImageIndex] 
+                              : product.image
+                        }
                         alt={product.name}
                         className="w-full h-full object-cover transition-transform group-hover:scale-105"
                       />
@@ -236,7 +242,13 @@ const ProductDetail = () => {
               <DialogContent className="max-w-4xl p-0">
                 <div className="aspect-square">
                   <img
-                    src={product.imageGallery && product.imageGallery[selectedImageIndex] ? product.imageGallery[selectedImageIndex] : product.image}
+                    src={
+                      selectedImageIndex === -1 || selectedImageIndex === null
+                        ? product.image
+                        : (product.imageGallery && product.imageGallery[selectedImageIndex]) 
+                          ? product.imageGallery[selectedImageIndex] 
+                          : product.image
+                    }
                     alt={product.name}
                     className="w-full h-full object-cover"
                   />
@@ -245,8 +257,24 @@ const ProductDetail = () => {
             </Dialog>
             
             {/* Image Gallery Grid */}
-            {product.imageGallery && product.imageGallery.length > 1 && (
+            {product.imageGallery && product.imageGallery.length > 0 && (
               <div className="grid grid-cols-4 gap-2">
+                {/* Always show main image first */}
+                <button
+                  onClick={() => setSelectedImageIndex(-1)}
+                  className={`aspect-square rounded-lg overflow-hidden border-2 transition-all ${
+                    selectedImageIndex === -1 
+                      ? 'border-pink-400 scale-105' 
+                      : 'border-transparent hover:border-pink-200'
+                  }`}
+                >
+                  <img 
+                    src={product.image} 
+                    alt={`${product.name} main`} 
+                    className="w-full h-full object-cover" 
+                  />
+                </button>
+                {/* Gallery images */}
                 {product.imageGallery.map((image, index) => (
                   <button
                     key={index}
@@ -274,7 +302,7 @@ const ProductDetail = () => {
             <div>
               <div className="flex items-center space-x-2 mb-2">
                 {product.isNew && (
-                  <Badge className="bg-green-500 text-white">New</Badge>
+                  <Badge className="bg-green-500 text-white">Ready to Ship</Badge>
                 )}
                 {product.isBestSeller && (
                   <Badge className="bg-rosegold-500 text-white">Best Seller</Badge>

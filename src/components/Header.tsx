@@ -79,9 +79,6 @@ const Header = ({ onSearch }: HeaderProps) => {
             <h1 className="text-2xl md:text-3xl font-bold text-gradient">
               HairyTalesBeaty
             </h1>
-            <span className="ml-2 text-xs bg-rosegold-100 text-rosegold-600 px-2 py-1 rounded-full">
-              Premium
-            </span>
           </div>
 
           {/* Desktop Navigation */}
@@ -193,7 +190,7 @@ const Header = ({ onSearch }: HeaderProps) => {
               </Button>
             )}
             
-            <Button variant="ghost" size="sm" className="relative hover:bg-blush-50">
+            <Button variant="ghost" size="sm" className="relative hover:bg-blush-50 hidden md:flex">
               <Heart size={20} className="text-blush-600" />
               <Badge className="absolute -top-2 -right-2 bg-rosegold-500 text-white text-xs min-w-[20px] h-5 flex items-center justify-center">
                 2
@@ -281,15 +278,26 @@ const Header = ({ onSearch }: HeaderProps) => {
                   </button>
                 )
               ))}
-              {user && isAdmin && (
-                <button
-                  onClick={() => navigate('/admin')}
-                  className="font-medium py-2 text-left text-rosegold-600 bg-rosegold-50 px-3 py-2 rounded-lg"
-                >
-                  <Crown className="inline mr-2 w-4 h-4" />
-                  Admin Dashboard
-                </button>
-              )}
+               
+               {/* Mobile-only menu items */}
+               <div className="border-t border-gray-200 pt-4 mt-4 space-y-2">
+                 <button className="flex items-center w-full font-medium py-2 text-left text-gray-600 hover:text-blush-500">
+                   <Heart size={16} className="mr-2" />
+                   Favorites
+                 </button>
+                 {user && isAdmin && (
+                   <button
+                     onClick={() => {
+                       navigate('/admin');
+                       setIsMenuOpen(false);
+                     }}
+                     className="flex items-center w-full font-medium py-2 text-left text-rosegold-600 bg-rosegold-50 px-3 py-2 rounded-lg"
+                   >
+                     <Crown className="mr-2 w-4 h-4" />
+                     Admin Dashboard
+                   </button>
+                 )}
+               </div>
             </div>
           </nav>
         </div>

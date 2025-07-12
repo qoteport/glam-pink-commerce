@@ -84,17 +84,28 @@ const HeroManager = () => {
     try {
       const { error } = await supabase
         .from('hero_settings')
-        .update(updates)
+        .update({
+          ...updates,
+          updated_at: new Date().toISOString()
+        })
         .eq('id', id);
 
       if (error) throw error;
 
-      fetchHeroSettings();
+      setHeroSettings(prev => 
+        prev.map(setting => 
+          setting.id === id ? { ...setting, ...updates } : setting
+        )
+      );
+
       setEditingId(null);
       toast({
         title: 'Success',
         description: 'Hero settings updated successfully',
       });
+
+      // Refresh data to ensure consistency
+      fetchHeroSettings();
     } catch (error) {
       console.error('Error updating hero settings:', error);
       toast({
@@ -202,11 +213,12 @@ const EditForm = ({
   });
 
   const handleSave = () => {
-    const saveData = { ...formData };
+    const saveData: any = { ...formData };
     // Convert 'none' back to null for featured_product_id
     if (saveData.featured_product_id === 'none') {
       saveData.featured_product_id = null;
     }
+    // Ensure all fields are properly formatted
     onSave(saveData);
   };
 

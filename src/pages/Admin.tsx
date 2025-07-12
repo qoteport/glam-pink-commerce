@@ -135,20 +135,52 @@ const Admin = () => {
           </CardHeader>
           <CardContent>
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-5 lg:grid-cols-10 mb-6">
-                <TabsTrigger value="products">Products</TabsTrigger>
-                <TabsTrigger value="categories">Categories</TabsTrigger>
-                <TabsTrigger value="discounts">Discounts</TabsTrigger>
-                <TabsTrigger value="users">Users</TabsTrigger>
-                <TabsTrigger value="orders">Orders</TabsTrigger>
-                <TabsTrigger value="hero">Hero</TabsTrigger>
-                <TabsTrigger value="social">Social</TabsTrigger>
-                <TabsTrigger value="testimonials">Testimonials</TabsTrigger>
-                <TabsTrigger value="wholesale">Wholesale Deals</TabsTrigger>
-                <TabsTrigger value="custom-orders">Custom Orders</TabsTrigger>
-                <TabsTrigger value="instagram">Instagram</TabsTrigger>
-                <TabsTrigger value="analytics">Analytics</TabsTrigger>
-              </TabsList>
+              <div className="overflow-x-auto mb-6">
+                <TabsList className="flex w-max space-x-1 p-1">
+                  <TabsTrigger value="products" className="flex items-center space-x-2">
+                    <Package size={16} />
+                    <span>Products</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="categories" className="flex items-center space-x-2">
+                    <Tags size={16} />
+                    <span>Categories</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="discounts" className="flex items-center space-x-2">
+                    <Receipt size={16} />
+                    <span>Discounts</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="users" className="flex items-center space-x-2">
+                    <Users size={16} />
+                    <span>Users</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="orders" className="flex items-center space-x-2">
+                    <ShoppingCart size={16} />
+                    <span>Orders</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="hero" className="flex items-center space-x-2">
+                    <Crown size={16} />
+                    <span>Hero</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="social" className="flex items-center space-x-2">
+                    <Settings size={16} />
+                    <span>Social</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="testimonials" className="flex items-center space-x-2">
+                    <MessageSquare size={16} />
+                    <span>Testimonials</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="wholesale" className="flex items-center space-x-2">
+                    <BarChart3 size={16} />
+                    <span>Wholesale</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="custom-orders" className="flex items-center space-x-2">
+                    <Plus size={16} />
+                    <span>Custom Orders</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="instagram">Instagram</TabsTrigger>
+                  <TabsTrigger value="analytics">Analytics</TabsTrigger>
+                </TabsList>
+              </div>
 
               <TabsContent value="products" className="space-y-4">
                 <ProductsManager />

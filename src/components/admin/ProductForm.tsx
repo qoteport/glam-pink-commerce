@@ -533,8 +533,11 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
                 checked={formData.is_new}
                 onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_new: checked }))}
               />
-              <Label htmlFor="is_new">Mark as New Product</Label>
+              <Label htmlFor="is_new">Ready to Ship</Label>
             </div>
+            <p className="text-sm text-muted-foreground">
+              Mark this product as ready to ship for immediate availability
+            </p>
 
             <div className="flex items-center space-x-2">
               <Switch

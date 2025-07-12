@@ -108,7 +108,7 @@ const ProductCard = ({ product, viewMode = 'grid' }: ProductCardProps) => {
         {/* Badges */}
         <div className="absolute top-3 left-3 space-y-2">
           {product.isNew && (
-            <Badge className="bg-green-500 text-white">New</Badge>
+            <Badge className="bg-green-500 text-white">Ready to Ship</Badge>
           )}
           {product.isBestSeller && (
             <Badge className="bg-rosegold-500 text-white">Best Seller</Badge>

@@ -170,16 +170,24 @@ const Hero = () => {
               {/* Main Image Container */}
               <div className="relative overflow-hidden rounded-3xl shadow-2xl">
                 <div className="aspect-[4/5] bg-gradient-to-br from-blush-100 to-rosegold-100 flex items-center justify-center">
-                  {/* Placeholder for hero image */}
-                  <div className="text-center space-y-4">
-                    <div className="w-32 h-32 mx-auto bg-gradient-to-br from-blush-300 to-rosegold-300 rounded-full flex items-center justify-center">
-                      <Crown size={60} className="text-white" />
+                  {heroData.background_image ? (
+                    <img 
+                      src={heroData.background_image} 
+                      alt="Hero Image" 
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    /* Placeholder for hero image */
+                    <div className="text-center space-y-4">
+                      <div className="w-32 h-32 mx-auto bg-gradient-to-br from-blush-300 to-rosegold-300 rounded-full flex items-center justify-center">
+                        <Crown size={60} className="text-white" />
+                      </div>
+                      <div className="space-y-2">
+                        <p className="text-lg font-semibold text-blush-700">Beautiful Model</p>
+                        <p className="text-sm text-gray-600">Wearing Premium Lace Front Wig</p>
+                      </div>
                     </div>
-                    <div className="space-y-2">
-                      <p className="text-lg font-semibold text-blush-700">Beautiful Model</p>
-                      <p className="text-sm text-gray-600">Wearing Premium Lace Front Wig</p>
-                    </div>
-                  </div>
+                  )}
                 </div>
                 
                 {/* Overlay elements */}
