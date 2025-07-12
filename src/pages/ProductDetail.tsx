@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Star, Heart, ShoppingCart, Share2, ArrowLeft, Plus, Minus } from 'lucide-react';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { Star, Heart, ShoppingCart, Share2, ArrowLeft, Plus, Minus, Expand } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ProductCard from '@/components/ProductCard';
@@ -26,11 +27,17 @@ const ProductDetail = () => {
   const [selectedLength, setSelectedLength] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   useEffect(() => {
     if (id) {
       fetchProduct(id);
     }
+  }, [id]);
+
+  useEffect(() => {
+    // Scroll to top when component mounts
+    window.scrollTo(0, 0);
   }, [id]);
 
   const fetchProduct = async (productId: string) => {
@@ -56,7 +63,7 @@ const ProductDetail = () => {
         originalPrice: data.original_price,
         rating: data.rating || 0,
         reviewCount: data.review_count || 0,
-        image: data.image_gallery?.[0] || data.image,
+        image: data.image,
         category: data.category,
         subcategory: data.subcategory,
         isNew: data.is_new,
@@ -196,42 +203,69 @@ const ProductDetail = () => {
           {/* Product Images */}
           <div className="space-y-4">
             {/* Main Image */}
-            <div className="aspect-square bg-gradient-to-br from-muted/20 to-muted/40 rounded-2xl overflow-hidden">
-              {product.imageGallery && product.imageGallery.length > 0 ? (
-                <img
-                  src={product.imageGallery[0]}
-                  alt={product.name}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <div className="text-center space-y-4">
-                    <div className="w-32 h-32 mx-auto bg-gradient-to-br from-primary/30 to-primary/50 rounded-full flex items-center justify-center">
-                      <span className="text-white font-bold text-4xl">
-                        {product.name.charAt(0)}
-                      </span>
+            <Dialog>
+              <DialogTrigger asChild>
+                <div className="aspect-square bg-gradient-to-br from-muted/20 to-muted/40 rounded-2xl overflow-hidden cursor-pointer relative group">
+                  {product.image || (product.imageGallery && product.imageGallery[selectedImageIndex]) ? (
+                    <>
+                      <img
+                        src={product.imageGallery && product.imageGallery[selectedImageIndex] ? product.imageGallery[selectedImageIndex] : product.image}
+                        alt={product.name}
+                        className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                        <Expand className="text-white opacity-0 group-hover:opacity-100 transition-opacity" size={32} />
+                      </div>
+                    </>
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <div className="text-center space-y-4">
+                        <div className="w-32 h-32 mx-auto bg-gradient-to-br from-primary/30 to-primary/50 rounded-full flex items-center justify-center">
+                          <span className="text-white font-bold text-4xl">
+                            {product.name.charAt(0)}
+                          </span>
+                        </div>
+                        <p className="text-primary font-medium text-lg">
+                          {product.name}
+                        </p>
+                      </div>
                     </div>
-                    <p className="text-primary font-medium text-lg">
-                      {product.name}
-                    </p>
-                  </div>
+                  )}
                 </div>
-              )}
-            </div>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl p-0">
+                <div className="aspect-square">
+                  <img
+                    src={product.imageGallery && product.imageGallery[selectedImageIndex] ? product.imageGallery[selectedImageIndex] : product.image}
+                    alt={product.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </DialogContent>
+            </Dialog>
             
-            {/* Thumbnail Images */}
-            <div className="grid grid-cols-4 gap-2">
-              {product.imageGallery && product.imageGallery.length > 1 ? 
-                product.imageGallery.slice(1, 5).map((image, i) => (
-                  <div key={i} className="aspect-square rounded-lg overflow-hidden">
-                    <img src={image} alt={`${product.name} ${i + 2}`} className="w-full h-full object-cover" />
-                  </div>
-                )) :
-                [1, 2, 3, 4].map((i) => (
-                  <div key={i} className="aspect-square bg-gradient-to-br from-muted/10 to-muted/20 rounded-lg"></div>
-                ))
-              }
-            </div>
+            {/* Image Gallery Grid */}
+            {product.imageGallery && product.imageGallery.length > 1 && (
+              <div className="grid grid-cols-4 gap-2">
+                {product.imageGallery.map((image, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setSelectedImageIndex(index)}
+                    className={`aspect-square rounded-lg overflow-hidden border-2 transition-all ${
+                      selectedImageIndex === index 
+                        ? 'border-pink-400 scale-105' 
+                        : 'border-transparent hover:border-pink-200'
+                    }`}
+                  >
+                    <img 
+                      src={image} 
+                      alt={`${product.name} ${index + 1}`} 
+                      className="w-full h-full object-cover" 
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Product Info */}

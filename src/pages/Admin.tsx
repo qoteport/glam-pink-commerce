@@ -27,6 +27,8 @@ import HeroManager from '@/components/admin/HeroManager';
 import SocialLinksManager from '@/components/admin/SocialLinksManager';
 import InstagramManager from '@/components/admin/InstagramManager';
 import TestimonialsManager from '@/components/admin/TestimonialsManager';
+import WholesaleDealsManager from '@/components/admin/WholesaleDealsManager';
+import CustomWigOrdersManager from '@/components/admin/CustomWigOrdersManager';
 import Analytics from '@/components/admin/Analytics';
 
 const Admin = () => {
@@ -133,47 +135,19 @@ const Admin = () => {
           </CardHeader>
           <CardContent>
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-10 mb-6">
-                <TabsTrigger value="products" className="flex items-center gap-2">
-                  <Package className="w-4 h-4" />
-                  Products
-                </TabsTrigger>
-                <TabsTrigger value="categories" className="flex items-center gap-2">
-                  <Tags className="w-4 h-4" />
-                  Categories
-                </TabsTrigger>
-                <TabsTrigger value="discounts" className="flex items-center gap-2">
-                  <Receipt className="w-4 h-4" />
-                  Discounts
-                </TabsTrigger>
-                <TabsTrigger value="users" className="flex items-center gap-2">
-                  <Users className="w-4 h-4" />
-                  Users
-                </TabsTrigger>
-                <TabsTrigger value="orders" className="flex items-center gap-2">
-                  <ShoppingCart className="w-4 h-4" />
-                  Orders
-                </TabsTrigger>
-                <TabsTrigger value="hero" className="flex items-center gap-2">
-                  <Crown className="w-4 h-4" />
-                  Hero
-                </TabsTrigger>
-                <TabsTrigger value="social" className="flex items-center gap-2">
-                  <Settings className="w-4 h-4" />
-                  Social
-                </TabsTrigger>
-                <TabsTrigger value="testimonials" className="flex items-center gap-2">
-                  <MessageSquare className="w-4 h-4" />
-                  Testimonials
-                </TabsTrigger>
-                <TabsTrigger value="instagram" className="flex items-center gap-2">
-                  <Plus className="w-4 h-4" />
-                  Instagram
-                </TabsTrigger>
-                <TabsTrigger value="analytics" className="flex items-center gap-2">
-                  <BarChart3 className="w-4 h-4" />
-                  Analytics
-                </TabsTrigger>
+              <TabsList className="grid w-full grid-cols-5 lg:grid-cols-10 mb-6">
+                <TabsTrigger value="products">Products</TabsTrigger>
+                <TabsTrigger value="categories">Categories</TabsTrigger>
+                <TabsTrigger value="discounts">Discounts</TabsTrigger>
+                <TabsTrigger value="users">Users</TabsTrigger>
+                <TabsTrigger value="orders">Orders</TabsTrigger>
+                <TabsTrigger value="hero">Hero</TabsTrigger>
+                <TabsTrigger value="social">Social</TabsTrigger>
+                <TabsTrigger value="testimonials">Testimonials</TabsTrigger>
+                <TabsTrigger value="wholesale">Wholesale Deals</TabsTrigger>
+                <TabsTrigger value="custom-orders">Custom Orders</TabsTrigger>
+                <TabsTrigger value="instagram">Instagram</TabsTrigger>
+                <TabsTrigger value="analytics">Analytics</TabsTrigger>
               </TabsList>
 
               <TabsContent value="products" className="space-y-4">
@@ -206,6 +180,14 @@ const Admin = () => {
 
               <TabsContent value="testimonials" className="space-y-4">
                 <TestimonialsManager />
+              </TabsContent>
+
+              <TabsContent value="wholesale" className="space-y-4">
+                <WholesaleDealsManager />
+              </TabsContent>
+
+              <TabsContent value="custom-orders" className="space-y-4">
+                <CustomWigOrdersManager />
               </TabsContent>
 
               <TabsContent value="instagram" className="space-y-4">

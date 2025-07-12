@@ -23,15 +23,15 @@ const Header = ({ onSearch }: HeaderProps) => {
     { name: 'Home', href: '/' },
     { name: 'Shop', href: '/shop' },
     { name: 'Wigs', href: '/shop?category=wigs' },
-    { name: 'Wholesale Deals', href: '/shop?category=wholesale', isSpecial: true },
+    { name: 'Wholesale Deals', href: '/wholesale-deals', isSpecial: true },
     { 
       name: 'More', 
       href: '#',
       isDropdown: true,
       items: [
-        { name: 'Customized Braided Wigs', href: '/shop?category=customized-braided-wigs' },
+        { name: 'Customized Braided Wigs', href: '/custom-braided-wigs' },
         { name: 'Ready to Ship Wigs', href: '/shop?category=ready-to-ship-wigs' },
-        { name: 'Wholesale Deals', href: '/shop?category=wholesale' }
+        { name: 'Wholesale Deals', href: '/wholesale-deals' }
       ]
     }
   ];
@@ -92,7 +92,7 @@ const Header = ({ onSearch }: HeaderProps) => {
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
-                      className="font-medium text-gray-700 hover:text-blush-500 p-0 h-auto"
+                      className="font-medium text-gray-700 hover:text-blush-500 p-0 h-auto px-3"
                     >
                       {item.name}
                       <ChevronDown size={16} className="ml-1" />
@@ -246,23 +246,40 @@ const Header = ({ onSearch }: HeaderProps) => {
         </form>
       </div>
 
-      {/* Mobile Menu */}
+        {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="lg:hidden bg-white border-t border-blush-100 animate-slide-up">
           <nav className="container mx-auto px-4 py-4">
             <div className="flex flex-col space-y-4">
               {navItems.map((item) => (
-                <button
-                  key={item.name}
-                  onClick={() => handleNavClick(item.href)}
-                  className={`font-medium py-2 transition-colors duration-200 hover:text-blush-500 text-left ${
-                    item.isSpecial 
-                      ? 'text-rosegold-500 bg-rosegold-50 px-3 py-2 rounded-lg' 
-                      : 'text-gray-700'
-                  }`}
-                >
-                  {item.name}
-                </button>
+                item.isDropdown ? (
+                  <div key={item.name} className="space-y-2">
+                    <div className="font-medium py-2 text-gray-700 border-b border-gray-200">
+                      {item.name}
+                    </div>
+                    {item.items?.map((subItem) => (
+                      <button
+                        key={subItem.name}
+                        onClick={() => handleNavClick(subItem.href)}
+                        className="font-medium py-2 pl-4 transition-colors duration-200 hover:text-blush-500 text-left text-gray-600 block w-full"
+                      >
+                        {subItem.name}
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <button
+                    key={item.name}
+                    onClick={() => handleNavClick(item.href)}
+                    className={`font-medium py-2 transition-colors duration-200 hover:text-blush-500 text-left ${
+                      item.isSpecial 
+                        ? 'text-rosegold-500 bg-rosegold-50 px-3 py-2 rounded-lg' 
+                        : 'text-gray-700'
+                    }`}
+                  >
+                    {item.name}
+                  </button>
+                )
               ))}
               {user && isAdmin && (
                 <button

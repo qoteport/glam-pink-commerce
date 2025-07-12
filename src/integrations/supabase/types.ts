@@ -50,6 +50,57 @@ export type Database = {
         }
         Relationships: []
       }
+      custom_wig_orders: {
+        Row: {
+          color: string | null
+          created_at: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string | null
+          estimated_completion: string | null
+          id: string
+          length: string | null
+          quoted_price: number | null
+          special_instructions: string | null
+          status: string
+          texture: string | null
+          updated_at: string
+          wig_type: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          customer_email: string
+          customer_name: string
+          customer_phone?: string | null
+          estimated_completion?: string | null
+          id?: string
+          length?: string | null
+          quoted_price?: number | null
+          special_instructions?: string | null
+          status?: string
+          texture?: string | null
+          updated_at?: string
+          wig_type: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          customer_email?: string
+          customer_name?: string
+          customer_phone?: string | null
+          estimated_completion?: string | null
+          id?: string
+          length?: string | null
+          quoted_price?: number | null
+          special_instructions?: string | null
+          status?: string
+          texture?: string | null
+          updated_at?: string
+          wig_type?: string
+        }
+        Relationships: []
+      }
       discounts: {
         Row: {
           code: string | null
@@ -502,6 +553,78 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      wholesale_deal_products: {
+        Row: {
+          created_at: string
+          deal_id: string
+          id: string
+          product_id: string
+          wholesale_price: number
+        }
+        Insert: {
+          created_at?: string
+          deal_id: string
+          id?: string
+          product_id: string
+          wholesale_price: number
+        }
+        Update: {
+          created_at?: string
+          deal_id?: string
+          id?: string
+          product_id?: string
+          wholesale_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wholesale_deal_products_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "wholesale_deals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wholesale_deal_products_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wholesale_deals: {
+        Row: {
+          created_at: string
+          description: string | null
+          discount_percentage: number
+          id: string
+          is_active: boolean
+          min_quantity: number
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          discount_percentage?: number
+          id?: string
+          is_active?: boolean
+          min_quantity?: number
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          discount_percentage?: number
+          id?: string
+          is_active?: boolean
+          min_quantity?: number
+          name?: string
+          updated_at?: string
         }
         Relationships: []
       }
