@@ -7,10 +7,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Save, Upload } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Save, Upload, Eye } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import ImageUpload from './ImageUpload';
+import Hero from '../Hero';
+import Hero2 from '../Hero2';
+import Hero3 from '../Hero3';
 
 interface HeroSetting {
   id: string;
@@ -20,6 +24,7 @@ interface HeroSetting {
   cta_text?: string;
   cta_url?: string;
   background_image?: string;
+  hero_design?: string;
   is_active: boolean;
 }
 
@@ -210,6 +215,7 @@ const EditForm = ({
     cta_url: setting.cta_url || '',
     featured_product_id: setting.featured_product_id || 'none',
     background_image: setting.background_image || '',
+    hero_design: setting.hero_design || 'hero1',
   });
 
   const handleSave = () => {
@@ -226,82 +232,124 @@ const EditForm = ({
     setFormData(prev => ({ ...prev, background_image: imageUrl }));
   };
 
+  const renderHeroPreview = (design: string) => {
+    switch (design) {
+      case 'hero2':
+        return <Hero2 />;
+      case 'hero3':
+        return <Hero3 />;
+      default:
+        return <Hero />;
+    }
+  };
+
   return (
-    <div className="space-y-4">
-      <div>
-        <Label htmlFor="title">Title</Label>
-        <Input
-          id="title"
-          value={formData.title}
-          onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-          placeholder="Main hero title"
-        />
-      </div>
-      <div>
-        <Label htmlFor="subtitle">Subtitle</Label>
-        <Textarea
-          id="subtitle"
-          value={formData.subtitle}
-          onChange={(e) => setFormData(prev => ({ ...prev, subtitle: e.target.value }))}
-          placeholder="Hero subtitle description"
-        />
-      </div>
-      <div>
-        <Label htmlFor="cta_text">CTA Button Text</Label>
-        <Input
-          id="cta_text"
-          value={formData.cta_text}
-          onChange={(e) => setFormData(prev => ({ ...prev, cta_text: e.target.value }))}
-          placeholder="Shop Now, Learn More, etc."
-        />
-      </div>
-      <div>
-        <Label htmlFor="cta_url">CTA URL</Label>
-        <Input
-          id="cta_url"
-          value={formData.cta_url}
-          onChange={(e) => setFormData(prev => ({ ...prev, cta_url: e.target.value }))}
-          placeholder="/shop, /products, etc."
-        />
-      </div>
-      <div>
-        <Label htmlFor="featured_product">Featured Product</Label>
-        <Select 
-          value={formData.featured_product_id} 
-          onValueChange={(value) => setFormData(prev => ({ ...prev, featured_product_id: value }))}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select a product to feature" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="none">No product</SelectItem>
-            {products.map((product) => (
-              <SelectItem key={product.id} value={product.id}>
-                {product.name} - ${product.price}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div>
-        <Label>Background Image</Label>
-        <ImageUpload
-          onImageUpload={handleImageUpload}
-          currentImage={formData.background_image}
-          bucketName="product-images"
-          folder="hero"
-        />
-      </div>
-      <div className="flex gap-2">
-        <Button onClick={handleSave}>
-          <Save size={16} className="mr-2" />
-          Save Changes
-        </Button>
-        <Button variant="outline" onClick={onCancel}>
-          Cancel
-        </Button>
-      </div>
-    </div>
+    <Tabs defaultValue="edit" className="w-full">
+      <TabsList className="grid w-full grid-cols-2">
+        <TabsTrigger value="edit">Edit Settings</TabsTrigger>
+        <TabsTrigger value="preview">Preview</TabsTrigger>
+      </TabsList>
+      
+      <TabsContent value="edit" className="space-y-4">
+        <div>
+          <Label htmlFor="hero_design">Hero Design</Label>
+          <Select 
+            value={formData.hero_design} 
+            onValueChange={(value) => setFormData(prev => ({ ...prev, hero_design: value }))}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select hero design" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="hero1">Classic Design</SelectItem>
+              <SelectItem value="hero2">Modern Dark Design</SelectItem>
+              <SelectItem value="hero3">Split Layout Design</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="title">Title</Label>
+          <Input
+            id="title"
+            value={formData.title}
+            onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+            placeholder="Main hero title"
+          />
+        </div>
+        <div>
+          <Label htmlFor="subtitle">Subtitle</Label>
+          <Textarea
+            id="subtitle"
+            value={formData.subtitle}
+            onChange={(e) => setFormData(prev => ({ ...prev, subtitle: e.target.value }))}
+            placeholder="Hero subtitle description"
+          />
+        </div>
+        <div>
+          <Label htmlFor="cta_text">CTA Button Text</Label>
+          <Input
+            id="cta_text"
+            value={formData.cta_text}
+            onChange={(e) => setFormData(prev => ({ ...prev, cta_text: e.target.value }))}
+            placeholder="Shop Now, Learn More, etc."
+          />
+        </div>
+        <div>
+          <Label htmlFor="cta_url">CTA URL</Label>
+          <Input
+            id="cta_url"
+            value={formData.cta_url}
+            onChange={(e) => setFormData(prev => ({ ...prev, cta_url: e.target.value }))}
+            placeholder="/shop, /products, etc."
+          />
+        </div>
+        <div>
+          <Label htmlFor="featured_product">Featured Product</Label>
+          <Select 
+            value={formData.featured_product_id} 
+            onValueChange={(value) => setFormData(prev => ({ ...prev, featured_product_id: value }))}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select a product to feature" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">No product</SelectItem>
+              {products.map((product) => (
+                <SelectItem key={product.id} value={product.id}>
+                  {product.name} - ${product.price}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label>Background Image</Label>
+          <ImageUpload
+            onImageUpload={handleImageUpload}
+            currentImage={formData.background_image}
+            bucketName="product-images"
+            folder="hero"
+          />
+        </div>
+        <div className="flex gap-2">
+          <Button onClick={handleSave}>
+            <Save size={16} className="mr-2 text-white" />
+            Save Changes
+          </Button>
+          <Button variant="outline" onClick={onCancel}>
+            Cancel
+          </Button>
+        </div>
+      </TabsContent>
+      
+      <TabsContent value="preview" className="space-y-4">
+        <div className="border rounded-lg overflow-hidden shadow-lg">
+          <div className="scale-50 origin-top-left w-[200%] h-[200%] overflow-hidden">
+            {renderHeroPreview(formData.hero_design)}
+          </div>
+        </div>
+      </TabsContent>
+    </Tabs>
   );
 };
 

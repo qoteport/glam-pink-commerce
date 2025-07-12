@@ -41,6 +41,7 @@ const Hero2 = () => {
           products!featured_product_id (id, name, price, image)
         `)
         .eq('is_active', true)
+        .eq('hero_design', 'hero2')
         .limit(1)
         .single();
 

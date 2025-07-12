@@ -191,6 +191,7 @@ export type Database = {
           cta_text: string | null
           cta_url: string | null
           featured_product_id: string | null
+          hero_design: string | null
           id: string
           is_active: boolean
           subtitle: string | null
@@ -203,6 +204,7 @@ export type Database = {
           cta_text?: string | null
           cta_url?: string | null
           featured_product_id?: string | null
+          hero_design?: string | null
           id?: string
           is_active?: boolean
           subtitle?: string | null
@@ -215,6 +217,7 @@ export type Database = {
           cta_text?: string | null
           cta_url?: string | null
           featured_product_id?: string | null
+          hero_design?: string | null
           id?: string
           is_active?: boolean
           subtitle?: string | null
