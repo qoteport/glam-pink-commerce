@@ -264,7 +264,7 @@ const ProductDetail = () => {
             {product.imageGallery && product.imageGallery.length > 0 && (
               <div className="grid grid-cols-4 gap-2">
                 {/* Always show main image first */}
-                {/* <button
+                <button
                   onClick={() => setSelectedImageIndex(-1)}
                   className={`aspect-square rounded-lg overflow-hidden border-2 transition-all ${
                     selectedImageIndex === -1 
@@ -277,24 +277,24 @@ const ProductDetail = () => {
                     alt={`${product.name} main`} 
                     className="w-full h-full object-cover" 
                   />
-                </button> */}
+                </button>
                 {/* Gallery images */}
                 {product.imageGallery.map((image, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setSelectedImageIndex(index)}
-                    className={`aspect-square rounded-lg overflow-hidden border-2 transition-all ${
-                      selectedImageIndex === index 
-                        ? 'border-pink-400 scale-105' 
-                        : 'border-transparent hover:border-pink-200'
-                    }`}
-                  >
-                    <img 
-                      src={image} 
-                      alt={`${product.name} ${index + 1}`} 
-                      className="w-full h-full object-cover" 
-                    />
-                  </button>
+                  // <button
+                  //   key={index}
+                  //   onClick={() => setSelectedImageIndex(index)}
+                  //   className={`aspect-square rounded-lg overflow-hidden border-2 transition-all ${
+                  //     selectedImageIndex === index 
+                  //       ? 'border-pink-400 scale-105' 
+                  //       : 'border-transparent hover:border-pink-200'
+                  //   }`}
+                  // >
+                  //   <img 
+                  //     src={image} 
+                  //     alt={`${product.name} ${index + 1}`} 
+                  //     className="w-full h-full object-cover" 
+                  //   />
+                  // </button>
                 ))}
               </div>
             )}
