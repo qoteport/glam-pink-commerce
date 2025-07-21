@@ -49,7 +49,7 @@ const ProductDetail = () => {
         .from('products')
         .select(`
           *,
-          categories!category_id (name, slug),
+          categories!fk_products_category (name, slug),
           subcategories!subcategory_id (name, slug),
           discounts!discount_id (name, type, value)
         `)
