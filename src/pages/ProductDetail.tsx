@@ -27,6 +27,7 @@ const ProductDetail = () => {
   const [loading, setLoading] = useState(true);
   const [selectedColor, setSelectedColor] = useState('');
   const [selectedLength, setSelectedLength] = useState('');
+  const [selectedSize, setSelectedSize] = useState('');
   const [quantity, setQuantity] = useState(1);
   
   const [selectedImageIndex, setSelectedImageIndex] = useState(-1); // -1 for main image
@@ -85,6 +86,7 @@ const ProductDetail = () => {
       setProduct(transformedProduct);
       setSelectedColor(transformedProduct.colors?.[0] || '');
       setSelectedLength(transformedProduct.lengths?.[0] || '');
+      setSelectedSize(transformedProduct.size?.[0] || '');
 
       // Fetch similar products
       // fetchSimilarProducts(data.category);
@@ -409,6 +411,25 @@ const ProductDetail = () => {
               </div>
             )}
 
+            {/* Cap Size Selection */}
+            {product.size && (
+              <div>
+                <h3 className="font-semibold mb-3">Size: {selectedSize}"</h3>
+                <div className="flex flex-wrap gap-2">
+                  {product.size.map((size, index) => (
+                    <Badge
+                      key={index}
+                      variant={selectedSize === size ? 'default' : 'outline'}
+                      className="cursor-pointer"
+                      onClick={() => setSelectedSize(size)}
+                    >
+                      {size}"
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Quantity */}
             <div>
               <h3 className="font-semibold mb-3">Quantity</h3>
@@ -513,10 +534,10 @@ const ProductDetail = () => {
                           <dt className="text-gray-600">Hair Type:</dt>
                           <dd className="font-medium">{product.hairType}</dd>
                         </div>
-                        <div className="flex justify-between">
+                        {/* <div className="flex justify-between">
                           <dt className="text-gray-600">Texture:</dt>
                           <dd className="font-medium">{product.texture}</dd>
-                        </div>
+                        </div> */}
                         <div className="flex justify-between">
                           <dt className="text-gray-600">Category:</dt>
                           <dd className="font-medium capitalize">{product.category}</dd>
