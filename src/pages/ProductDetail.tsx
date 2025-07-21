@@ -504,24 +504,24 @@ const ProductDetail = () => {
 
             {/* Product Highlights */}
             <div className="grid grid-cols-2 gap-3 pt-4 border-t">
-              <div className="flex items-center space-x-2 text-sm">
+              {/* <div className="flex items-center space-x-2 text-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
                 <span>Free shipping over $75</span>
-              </div>
+              </div> */}
               <div className="flex items-center space-x-2 text-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
                 <span>30-day returns</span>
               </div>
-              <div className="flex items-center space-x-2 text-sm">
+              {/* <div className="flex items-center space-x-2 text-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
                 <span>100% Virgin Hair</span>
-              </div>
+              </div> */}
               <div className="flex items-center space-x-2 text-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -578,7 +578,12 @@ const ProductDetail = () => {
                             <dd className="font-medium text-gray-900">{product.subcategory}</dd>
                           </div>
                         )}
-                 
+                        {product.texture && (
+                          // <div className="flex justify-between py-2 border-b">
+                          //   <dt className="text-gray-600">Texture:</dt>
+                          //   <dd className="font-medium text-gray-900">{product.texture}</dd>
+                          // </div>
+                        )}
                       </dl>
                     </div>
                     
