@@ -49,9 +49,7 @@ const ProductDetail = () => {
         .from('products')
         .select(`
           *,
-          categories!category_id (name, slug),
-          subcategories!subcategory_id (name, slug),
-          discounts!discount_id (name, type, value)
+        
         `)
         .eq('id', productId)
         .single();
