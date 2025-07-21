@@ -579,10 +579,10 @@ const ProductDetail = () => {
                           </div>
                         )}
                         {product.texture && (
-                          <div className="flex justify-between py-2 border-b">
-                            <dt className="text-gray-600">Texture:</dt>
-                            <dd className="font-medium text-gray-900">{product.texture}</dd>
-                          </div>
+                          // <div className="flex justify-between py-2 border-b">
+                          //   <dt className="text-gray-600">Texture:</dt>
+                          //   <dd className="font-medium text-gray-900">{product.texture}</dd>
+                          // </div>
                         )}
                       </dl>
                     </div>
