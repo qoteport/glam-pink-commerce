@@ -48,14 +48,14 @@ const ProductDetail = () => {
       const { data, error } = await supabase
         .from('products')
         .select(`
-          *
-          // categories!category_id (name, slug),
-          // subcategories!subcategory_id (name, slug),
-          // discounts!discount_id (name, type, value)
+          *,
+          categories!category_id (name, slug),
+          subcategories!subcategory_id (name, slug),
+          discounts!discount_id (name, type, value)
         `)
         .eq('id', productId)
         .single();
-      console.log(error)
+
       if (error) throw error;
 
       const transformedProduct = {
