@@ -171,6 +171,8 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
         updated_at: new Date().toISOString()
       };
 
+      console.log(dataToSave);
+
       let error;
 
       if (product) {

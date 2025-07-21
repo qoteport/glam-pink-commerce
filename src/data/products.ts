@@ -6,7 +6,7 @@ export interface Product {
   rating: number;
   reviewCount: number;
   image: string;
-  category: 'wigs' | 'bundles' | 'closures' | 'frontals';
+  category: string;
   subcategory?: string;
   isNew?: boolean;
   isBestSeller?: boolean;
