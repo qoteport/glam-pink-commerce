@@ -279,7 +279,7 @@ const ProductDetail = () => {
             </div>
           </div>
 
-         {/* Product Info Section */}
+      {/* Product Info Section */}
           <div className="space-y-6">
             {/* Title and Badges */}
             <div className="space-y-3">
@@ -530,7 +530,7 @@ const ProductDetail = () => {
             </div>
           </div>
         </div>
-        </div>
+
 
         {/* Product Details Tabs */}
         <div className="mt-16">
