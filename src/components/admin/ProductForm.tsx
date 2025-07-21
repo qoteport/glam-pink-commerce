@@ -64,6 +64,7 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
     texture_id: '',
     colors: '',
     lengths: '',
+    size: '',
     hair_care_instructions: '',
     type: '',
     live_video_url: '',
@@ -107,6 +108,7 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
         texture_id: product.texture_id || '',
         colors: product.colors?.join(', ') || '',
         lengths: product.lengths?.join(', ') || '',
+        size: product.size?.join(', ') || '', 
         hair_care_instructions: product.hair_care_instructions || '',
         type: product.type || '',
         live_video_url: product.live_video_url || '',
@@ -169,6 +171,7 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
         texture_id: formData.texture_id || null,
         colors: formData.colors ? formData.colors.split(',').map(c => c.trim()) : [],
         lengths: formData.lengths ? formData.lengths.split(',').map(l => l.trim()) : [],
+        size: formData.size ? formData.size.split(',').map(l => l.trim()) : [],
         hair_care_instructions: formData.hair_care_instructions || null,
         type: formData.type || null,
         live_video_url: formData.live_video_url || null,
@@ -257,7 +260,7 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
           />
         </div>
 
-        <div className="space-y-2">
+        {/* <div className="space-y-2">
           <Label htmlFor="original_price">Original Price</Label>
           <Input
             id="original_price"
@@ -268,7 +271,7 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
             onChange={handleInputChange}
             placeholder="0.00"
           />
-        </div>
+        </div> */}
 
         <div className="space-y-2">
           <Label htmlFor="category_id">Category *</Label>
@@ -411,7 +414,7 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
           </p>
         </div>
 
-        <div className="space-y-2">
+        {/* <div className="space-y-2">
           <Label htmlFor="type">Type</Label>
           <Input
             id="type"
@@ -420,7 +423,7 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
             onChange={handleInputChange}
             placeholder="e.g., 360 Lace, HD Lace, etc."
           />
-        </div>
+        </div> */}
       </div>
         </CardContent>
       </Card>
@@ -493,6 +496,16 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
                 id="lengths"
                 name="lengths"
                 value={formData.lengths}
+                onChange={handleInputChange}
+                placeholder="16, 18, 20, 22"
+              />
+            </div>
+               <div className="space-y-2">
+              <Label htmlFor="lengths">Cap sizes (comma separated)</Label>
+              <Input
+                id="size"
+                name="size"
+                value={formData.size}
                 onChange={handleInputChange}
                 placeholder="16, 18, 20, 22"
               />
