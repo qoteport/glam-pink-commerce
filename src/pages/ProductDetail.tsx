@@ -277,8 +277,8 @@ const ProductDetail = () => {
                     alt={`${product.name} main`} 
                     className="w-full h-full object-cover" 
                   />
-                </button>
-                {/* Gallery images */} */}
+                </button> */}
+                {/* Gallery images */}
                 {product.imageGallery.map((image, index) => (
                   <button
                     key={index}
