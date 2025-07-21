@@ -55,7 +55,7 @@ const ProductDetail = () => {
         `)
         .eq('id', productId)
         .single();
-
+      console.log(error)
       if (error) throw error;
 
       const transformedProduct = {
