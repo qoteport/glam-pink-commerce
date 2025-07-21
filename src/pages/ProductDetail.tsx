@@ -48,10 +48,7 @@ const ProductDetail = () => {
       const { data, error } = await supabase
         .from('products')
         .select(`
-          *,
-          categories!products_category_id_fkey (name, slug),
-          subcategories!subcategory_id (name, slug),
-          discounts!discount_id (name, type, value)
+          *
         `)
         .eq('id', productId)
         .single();
