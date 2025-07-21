@@ -296,7 +296,7 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
           </select>
         </div>
 
-        {/* <div className="space-y-2">
+        <div className="space-y-2">
           <Label htmlFor="subcategory_id">Subcategory</Label>
           <select
             id="subcategory_id"
@@ -319,7 +319,7 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
                 <option key={sub.id} value={sub.id}>{sub.name}</option>
               ))}
           </select>
-        </div> */}
+        </div>
 
       <div className="space-y-2">
           <Label htmlFor="hair_type_id">Hair Type</Label>
@@ -342,9 +342,9 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
               <option key={htype.id} value={htype.id}>{htype.name}</option>
             ))}
           </select>
-        </div> 
+        </div>
 
-        {/* <div className="space-y-2">
+        <div className="space-y-2">
           <Label htmlFor="texture_id">Texture</Label>
           <select
             id="texture_id"
@@ -365,9 +365,9 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
               <option key={htexture.id} value={htexture.id}>{htexture.name}</option>
             ))}
           </select>
-        </div> */}
+        </div>
 
-        {/* <div className="space-y-2">
+        <div className="space-y-2">
           <Label htmlFor="rating">Rating</Label>
           <Input
             id="rating"
@@ -380,9 +380,9 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
             onChange={handleInputChange}
             placeholder="0.0"
           />
-        </div> */}
+        </div>
 
-        {/* <div className="space-y-2">
+        <div className="space-y-2">
           <Label htmlFor="review_count">Review Count</Label>
           <Input
             id="review_count"
@@ -393,7 +393,7 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
             onChange={handleInputChange}
             placeholder="0"
           />
-        </div> */}
+        </div>
 
         <div className="space-y-2">
           <Label htmlFor="best_seller_threshold">Best Seller Threshold</Label>
@@ -411,7 +411,7 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
           </p>
         </div>
 
-        {/* <div className="space-y-2">
+        <div className="space-y-2">
           <Label htmlFor="type">Type</Label>
           <Input
             id="type"
@@ -421,7 +421,7 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
             placeholder="e.g., 360 Lace, HD Lace, etc."
           />
         </div>
-      </div> */}
+      </div>
         </CardContent>
       </Card>
 
