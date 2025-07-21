@@ -137,7 +137,7 @@ const ProductDetail = () => {
 
   // Create media array with main image + video (if exists) + gallery images
   const mediaItems = [
-    { type: 'image', url: product.image, alt: product.name }
+    // { type: 'image', url: product.image, alt: product.name }
   ];
   
   if (product.liveVideoUrl) {
