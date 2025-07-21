@@ -279,8 +279,257 @@ const ProductDetail = () => {
             </div>
           </div>
 
-          {/* Product Info Section - Remains the same as previous implementation */}
-          {/* ... (rest of the product info section code remains unchanged) ... */}
+         {/* Product Info Section */}
+          <div className="space-y-6">
+            {/* Title and Badges */}
+            <div className="space-y-3">
+              <div className="flex flex-wrap gap-2">
+                {product.isNew && (
+                  <Badge className="bg-green-500 hover:bg-green-600 text-white">New Arrival</Badge>
+                )}
+                {product.isBestSeller && (
+                  <Badge className="bg-rosegold-500 hover:bg-rosegold-600 text-white">Best Seller</Badge>
+                )}
+                {discountPercentage > 0 && (
+                  <Badge className="bg-red-500 hover:bg-red-600 text-white">-{discountPercentage}% OFF</Badge>
+                )}
+              </div>
+              
+              <h1 className="text-3xl font-bold text-gray-900">
+                {product.name}
+              </h1>
+              
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      size={18}
+                      className={i < Math.floor(product.rating) 
+                        ? 'text-yellow-400 fill-current' 
+                        : 'text-gray-300'
+                      }
+                    />
+                  ))}
+                </div>
+                <span className="text-gray-600 text-sm">
+                  {product.rating} ({product.reviewCount} reviews)
+                </span>
+              </div>
+            </div>
+
+            {/* Price */}
+            <div className="flex items-center space-x-4 py-2">
+              <span className="text-3xl font-bold text-primary">
+                ${product.price.toFixed(2)}
+              </span>
+              {product.originalPrice && (
+                <span className="text-lg text-gray-500 line-through">
+                  ${product.originalPrice.toFixed(2)}
+                </span>
+              )}
+            </div>
+
+            {/* Description */}
+            <p className="text-gray-700 leading-relaxed">
+              {product.description}
+            </p>
+
+            {/* Features */}
+            {product.features?.length > 0 && (
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h3 className="font-semibold mb-3 text-gray-900">Key Features:</h3>
+                <ul className="space-y-2">
+                  {product.features.map((feature, index) => (
+                    <li key={index} className="flex items-start text-sm text-gray-700">
+                      <svg className="w-4 h-4 text-blush-500 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Variants */}
+            <div className="space-y-5">
+              {/* Color Selection */}
+              {product.colors?.length > 0 && (
+                <div>
+                  <h3 className="font-semibold mb-2 text-gray-900">Color: <span className="font-normal">{selectedColor}</span></h3>
+                  <div className="flex flex-wrap gap-2">
+                    {product.colors.map((color, index) => (
+                      <button
+                        key={index}
+                        className={`w-10 h-10 rounded-full border-2 transition-all flex items-center justify-center ${
+                          selectedColor === color 
+                            ? 'border-primary scale-110 shadow-md' 
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                        style={{ backgroundColor: color }}
+                        onClick={() => setSelectedColor(color)}
+                        aria-label={`Select color ${color}`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Length Selection */}
+              {product.lengths?.length > 0 && (
+                <div>
+                  <h3 className="font-semibold mb-2 text-gray-900">Length: <span className="font-normal">{selectedLength}"</span></h3>
+                  <div className="flex flex-wrap gap-2">
+                    {product.lengths.map((length, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setSelectedLength(length)}
+                        className={`px-4 py-2 rounded-md border transition-all ${
+                          selectedLength === length 
+                            ? 'bg-primary text-white border-primary' 
+                            : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        {length}"
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Size Selection */}
+              {product.size?.length > 0 && (
+                <div>
+                  <h3 className="font-semibold mb-2 text-gray-900">Size: <span className="font-normal">{selectedSize}"</span></h3>
+                  <div className="flex flex-wrap gap-2">
+                    {product.size.map((size, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setSelectedSize(size)}
+                        className={`px-4 py-2 rounded-md border transition-all ${
+                          selectedSize === size 
+                            ? 'bg-primary text-white border-primary' 
+                            : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        {size}"
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Quantity */}
+              <div>
+                <h3 className="font-semibold mb-2 text-gray-900">Quantity</h3>
+                <div className="flex items-center space-x-3 w-fit border rounded-lg p-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0"
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  >
+                    <Minus size={16} />
+                  </Button>
+                  <span className="w-12 text-center font-semibold">{quantity}</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0"
+                    onClick={() => setQuantity(quantity + 1)}
+                  >
+                    <Plus size={16} />
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="space-y-3 pt-2">
+              <div className="flex gap-3">
+                <Button 
+                  onClick={handleAddToCart}
+                  className="flex-1 bg-gradient-to-r from-blush-500 to-rosegold-500 hover:from-blush-600 hover:to-rosegold-600 text-white font-semibold py-3 h-12"
+                >
+                  <ShoppingCart size={20} className="mr-2" />
+                  Add to Cart
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-12 w-12"
+                  onClick={() => isFavorite(product.id) ? removeFromFavorites(product.id) : addToFavorites(product.id)}
+                >
+                  <Heart 
+                    size={20} 
+                    className={isFavorite(product.id) ? 'text-red-500 fill-current' : ''} 
+                  />
+                </Button>
+              </div>
+              
+              <Button 
+                variant="outline" 
+                className="w-full h-12 border-primary text-primary hover:bg-primary/10"
+              >
+                Buy Now - Express Checkout
+              </Button>
+              
+              <Button 
+                variant="ghost" 
+                size="sm"
+                className="w-full text-gray-600 hover:bg-gray-50"
+                onClick={() => {
+                  if (navigator.share) {
+                    navigator.share({
+                      title: product.name,
+                      text: `Check out this amazing ${product.name}!`,
+                      url: window.location.href
+                    });
+                  } else {
+                    navigator.clipboard.writeText(window.location.href);
+                    toast({
+                      title: 'Link copied!',
+                      description: 'Product link has been copied to clipboard',
+                    });
+                  }
+                }}
+              >
+                <Share2 size={16} className="mr-2" />
+                Share this product
+              </Button>
+            </div>
+
+            {/* Product Highlights */}
+            <div className="grid grid-cols-2 gap-3 pt-4 border-t">
+              <div className="flex items-center space-x-2 text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Free shipping over $75</span>
+              </div>
+              <div className="flex items-center space-x-2 text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span>30-day returns</span>
+              </div>
+              <div className="flex items-center space-x-2 text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span>100% Virgin Hair</span>
+              </div>
+              <div className="flex items-center space-x-2 text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Secure checkout</span>
+              </div>
+            </div>
+          </div>
+        </div>
         </div>
 
         {/* Product Details Tabs */}
