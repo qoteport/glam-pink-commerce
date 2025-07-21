@@ -71,17 +71,19 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
   const [categories, setCategories] = useState<Array<{id: string, name: string}>>([]);
   const [subcategories, setSubcategories] = useState<Array<{id: string, name: string, category_id: string}>>([]);
   const [discounts, setDiscounts] = useState<Array<{id: string, name: string}>>([]);
+  const [textures, setTextures] = useState<Array<{id: string, name: string}>>([]);
+  const [hairtypes, setHairTypes] = useState<Array<{id: string, name: string}>>([]);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
 
-  const textures = [
-    'Straight', 'Body Wave', 'Deep Wave', 'Curly', 'Loose Wave', 'Water Wave'
-  ];
+  // const textures = [
+  //   'Straight', 'Body Wave', 'Deep Wave', 'Curly', 'Loose Wave', 'Water Wave'
+  // ];
 
-  const hairTypes = [
-    'Virgin Brazilian', 'Virgin Peruvian', 'Virgin Malaysian', 'Virgin Indian'
-  ];
+  // const hairTypes = [
+  //   'Virgin Brazilian', 'Virgin Peruvian', 'Virgin Malaysian', 'Virgin Indian'
+  // ];
 
   useEffect(() => {
     fetchCategoriesAndDiscounts();
@@ -106,7 +108,9 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
         description: product.description || '',
         features: product.features?.join(', ') || '',
         hair_type: product.hair_type || '',
+        hair_type_id: product.hair_type_id || '',
         texture: product.texture || '',
+        texture_id: product.texture_id || '',
         colors: product.colors?.join(', ') || '',
         lengths: product.lengths?.join(', ') || '',
         hair_care_instructions: product.hair_care_instructions || '',
@@ -120,19 +124,25 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
 
   const fetchCategoriesAndDiscounts = async () => {
     try {
-      const [categoriesResult, subcategoriesResult, discountsResult] = await Promise.all([
+      const [categoriesResult, subcategoriesResult, discountsResult, texturesResult, hairTypesResult] = await Promise.all([
         supabase.from('categories').select('id, name').eq('is_active', true).order('sort_order'),
         supabase.from('subcategories').select('id, name, category_id').eq('is_active', true).order('sort_order'),
-        supabase.from('discounts').select('id, name').eq('is_active', true)
+        supabase.from('discounts').select('id, name').eq('is_active', true),
+        supabase.from('textures').select('id, name').eq('is_active', true),
+        supabase.from('hair_types').select('id, name').eq('is_active', true),
       ]);
       
       if (categoriesResult.error) throw categoriesResult.error;
       if (subcategoriesResult.error) throw subcategoriesResult.error;
       if (discountsResult.error) throw discountsResult.error;
+      if (texturesResult.error) throw texturesResult.error;
+      if (hairTypesResult.error) throw hairTypesResult.error;
       
       setCategories(categoriesResult.data || []);
       setSubcategories(subcategoriesResult.data || []);
       setDiscounts(discountsResult.data || []);
+      setTextures(texturesResult.data || []);
+      setHairTypes(hairTypesResult.data || []);
     } catch (error) {
       console.error('Error fetching categories and discounts:', error);
     }
@@ -160,7 +170,9 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
         description: formData.description || null,
         features: formData.features ? formData.features.split(',').map(f => f.trim()) : [],
         hair_type: formData.hair_type || null,
+        hair_type_id: formData.hair_type_id || null,
         texture: formData.texture || null,
+        texture_id: formData.texture_id || null,
         colors: formData.colors ? formData.colors.split(',').map(c => c.trim()) : [],
         lengths: formData.lengths ? formData.lengths.split(',').map(l => l.trim()) : [],
         hair_care_instructions: formData.hair_care_instructions || null,
@@ -170,6 +182,8 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
         image_gallery: formData.image_gallery,
         updated_at: new Date().toISOString()
       };
+
+      console.log(dataToSave);
 
       let error;
 
@@ -314,7 +328,7 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
           </select>
         </div>
 
-        <div className="space-y-2">
+        {/* <div className="space-y-2">
           <Label htmlFor="hair_type">Hair Type</Label>
           <select
             id="hair_type"
@@ -328,9 +342,61 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
               <option key={type} value={type}>{type}</option>
             ))}
           </select>
+        </div> */}
+
+
+      <div className="space-y-2">
+          <Label htmlFor="hair_type_id">Hair Type</Label>
+          <select
+            id="hair_type_id"
+            name="hair_type_id"
+            value={formData.hair_type_id}
+            onChange={(e) => {
+              const selectedHairType = hairtypes.find(hairtype => hairtype.id === e.target.value);
+              setFormData(prev => ({ 
+                ...prev, 
+                hair_type_id: e.target.value,
+                hair_type: selectedHairType?.name.toLowerCase() || '',
+              }));
+            }}
+            required
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rosegold-500"
+          >
+            <option value="">Select hair type</option>
+            {hairtypes.map(htype => (
+              <option key={htype.id} value={htype.id}>{htype.name}</option>
+            ))}
+          </select>
         </div>
 
+
+
         <div className="space-y-2">
+          <Label htmlFor="texture_id">Texture</Label>
+          <select
+            id="texture_id"
+            name="texture_id"
+            value={formData.texture_id}
+            onChange={(e) => {
+              const selectedTextures = textures.find(hairtype => hairtype.id === e.target.value);
+              setFormData(prev => ({ 
+                ...prev, 
+                texture_id: e.target.value,
+                texture: selectedTextures?.name.toLowerCase() || '',
+              }));
+            }}
+            required
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rosegold-500"
+          >
+            <option value="">Select texture</option>
+            {textures.map(htexture => (
+              <option key={htexture.id} value={htexture.id}>{htexture.name}</option>
+            ))}
+          </select>
+        </div>
+            
+
+        {/* <div className="space-y-2">
           <Label htmlFor="texture">Texture</Label>
           <select
             id="texture"
@@ -344,7 +410,7 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
               <option key={texture} value={texture}>{texture}</option>
             ))}
           </select>
-        </div>
+        </div> */}
 
         <div className="space-y-2">
           <Label htmlFor="rating">Rating</Label>
