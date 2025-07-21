@@ -49,7 +49,9 @@ const ProductDetail = () => {
         .from('products')
         .select(`
           *,
-        
+          categories!category_id (name, slug),
+          subcategories!subcategory_id (name, slug),
+          discounts!discount_id (name, type, value)
         `)
         .eq('id', productId)
         .single();
@@ -85,7 +87,7 @@ const ProductDetail = () => {
       setSelectedLength(transformedProduct.lengths?.[0] || '');
 
       // Fetch similar products
-      fetchSimilarProducts(data.category);
+      // fetchSimilarProducts(data.category);
     } catch (error) {
       console.error('Error fetching product:', error);
       toast({
