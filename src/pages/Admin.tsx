@@ -20,6 +20,8 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import ProductsManager from '@/components/admin/ProductsManager';
 import CategoriesManager from '@/components/admin/CategoriesManager';
+import TexturesManager from '@/components/admin/TexturesManager';
+import HairTypesManager from '@/components/admin/HairTypesManager';
 import DiscountsManager from '@/components/admin/DiscountsManager';
 import UsersManager from '@/components/admin/UsersManager';
 import OrdersManagerReal from '@/components/admin/OrdersManagerReal';
@@ -81,7 +83,7 @@ const Admin = () => {
             <div className="flex items-center">
               <Crown className="w-8 h-8 text-rosegold-500 mr-3" />
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+                <h1 className="text-2xl font-bold text-gray-900">HairyTalesBeauty Admin</h1>
                 <p className="text-sm text-gray-600">Welcome back, {profile?.full_name || 'Admin'}</p>
               </div>
             </div>
@@ -187,7 +189,22 @@ const Admin = () => {
               </TabsContent>
 
               <TabsContent value="categories" className="space-y-4">
-                <CategoriesManager />
+                <Tabs defaultValue="categories" className="w-full">
+                  <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="categories">Categories</TabsTrigger>
+                    <TabsTrigger value="textures">Textures</TabsTrigger>
+                    <TabsTrigger value="hairtypes">Hair Types</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="categories" className="space-y-4">
+                    <CategoriesManager />
+                  </TabsContent>
+                  <TabsContent value="textures" className="space-y-4">
+                    <TexturesManager />
+                  </TabsContent>
+                  <TabsContent value="hairtypes" className="space-y-4">
+                    <HairTypesManager />
+                  </TabsContent>
+                </Tabs>
               </TabsContent>
 
               <TabsContent value="discounts" className="space-y-4">
