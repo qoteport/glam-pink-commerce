@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,7 +24,9 @@ interface Product {
   description?: string;
   features?: string[];
   hair_type?: string;
+  hair_type_id?: string;
   texture?: string;
+  texture_id?: string;
   colors?: string[];
   lengths?: string[];
   hair_care_instructions?: string;
@@ -58,7 +59,9 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
     description: '',
     features: '',
     hair_type: '',
+    hair_type_id: '',
     texture: '',
+    texture_id: '',
     colors: '',
     lengths: '',
     hair_care_instructions: '',
@@ -75,15 +78,6 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
   const [hairtypes, setHairTypes] = useState<Array<{id: string, name: string}>>([]);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
-
-
-  // const textures = [
-  //   'Straight', 'Body Wave', 'Deep Wave', 'Curly', 'Loose Wave', 'Water Wave'
-  // ];
-
-  // const hairTypes = [
-  //   'Virgin Brazilian', 'Virgin Peruvian', 'Virgin Malaysian', 'Virgin Indian'
-  // ];
 
   useEffect(() => {
     fetchCategoriesAndDiscounts();
@@ -249,7 +243,6 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
           />
         </div>
 
-
         <div className="space-y-2">
           <Label htmlFor="price">Price *</Label>
           <Input
@@ -328,23 +321,6 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
           </select>
         </div>
 
-        {/* <div className="space-y-2">
-          <Label htmlFor="hair_type">Hair Type</Label>
-          <select
-            id="hair_type"
-            name="hair_type"
-            value={formData.hair_type}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rosegold-500"
-          >
-            <option value="">Select hair type</option>
-            {hairTypes.map(type => (
-              <option key={type} value={type}>{type}</option>
-            ))}
-          </select>
-        </div> */}
-
-
       <div className="space-y-2">
           <Label htmlFor="hair_type_id">Hair Type</Label>
           <select
@@ -356,10 +332,9 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
               setFormData(prev => ({ 
                 ...prev, 
                 hair_type_id: e.target.value,
-                hair_type: selectedHairType?.name.toLowerCase() || '',
+                hair_type: selectedHairType?.name || '',
               }));
             }}
-            required
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rosegold-500"
           >
             <option value="">Select hair type</option>
@@ -369,8 +344,6 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
           </select>
         </div>
 
-
-
         <div className="space-y-2">
           <Label htmlFor="texture_id">Texture</Label>
           <select
@@ -378,14 +351,13 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
             name="texture_id"
             value={formData.texture_id}
             onChange={(e) => {
-              const selectedTextures = textures.find(hairtype => hairtype.id === e.target.value);
+              const selectedTexture = textures.find(texture => texture.id === e.target.value);
               setFormData(prev => ({ 
                 ...prev, 
                 texture_id: e.target.value,
-                texture: selectedTextures?.name.toLowerCase() || '',
+                texture: selectedTexture?.name || '',
               }));
             }}
-            required
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rosegold-500"
           >
             <option value="">Select texture</option>
@@ -394,23 +366,6 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
             ))}
           </select>
         </div>
-            
-
-        {/* <div className="space-y-2">
-          <Label htmlFor="texture">Texture</Label>
-          <select
-            id="texture"
-            name="texture"
-            value={formData.texture}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rosegold-500"
-          >
-            <option value="">Select texture</option>
-            {textures.map(texture => (
-              <option key={texture} value={texture}>{texture}</option>
-            ))}
-          </select>
-        </div> */}
 
         <div className="space-y-2">
           <Label htmlFor="rating">Rating</Label>
