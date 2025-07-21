@@ -588,7 +588,7 @@ const ProductDetail = () => {
                     </div>
                     
                     <div>
-                      <h3 className="font-semibold text-lg mb-4 text-gray-900">What's Included</h3>
+                      {/* <h3 className="font-semibold text-lg mb-4 text-gray-900">What's Included</h3>
                       <ul className="space-y-3">
                         <li className="flex items-start py-2 border-b">
                           <svg className="w-5 h-5 text-blush-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -614,7 +614,7 @@ const ProductDetail = () => {
                           </svg>
                           <span>Quality guarantee certificate</span>
                         </li>
-                      </ul>
+                      </ul> */}
                     </div>
                   </div>
                 </CardContent>
