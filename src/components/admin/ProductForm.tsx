@@ -29,6 +29,7 @@ interface Product {
   texture_id?: string;
   colors?: string[];
   lengths?: string[];
+  size?: string[];
   hair_care_instructions?: string;
   type?: string;
   live_video_url?: string;
@@ -171,7 +172,7 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
         texture_id: formData.texture_id || null,
         colors: formData.colors ? formData.colors.split(',').map(c => c.trim()) : [],
         lengths: formData.lengths ? formData.lengths.split(',').map(l => l.trim()) : [],
-        size: formData.size ? formData.size.split(',').map(l => l.trim()) : [],
+        size: formData.size ? formData.size.split(',').map(s => s.trim()) : [],
         hair_care_instructions: formData.hair_care_instructions || null,
         type: formData.type || null,
         live_video_url: formData.live_video_url || null,
@@ -260,19 +261,6 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
           />
         </div>
 
-        {/* <div className="space-y-2">
-          <Label htmlFor="original_price">Original Price</Label>
-          <Input
-            id="original_price"
-            name="original_price"
-            type="number"
-            step="0.01"
-            value={formData.original_price}
-            onChange={handleInputChange}
-            placeholder="0.00"
-          />
-        </div> */}
-
         <div className="space-y-2">
           <Label htmlFor="category_id">Category *</Label>
           <select
@@ -299,31 +287,6 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
           </select>
         </div>
 
-        {/* <div className="space-y-2">
-          <Label htmlFor="subcategory_id">Subcategory</Label>
-          <select
-            id="subcategory_id"
-            name="subcategory_id"
-            value={formData.subcategory_id}
-            onChange={(e) => {
-              const selectedSubcategory = subcategories.find(sub => sub.id === e.target.value);
-              setFormData(prev => ({ 
-                ...prev, 
-                subcategory_id: e.target.value,
-                subcategory: selectedSubcategory?.name || ''
-              }));
-            }}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rosegold-500"
-          >
-            <option value="">Select a subcategory</option>
-            {subcategories
-              .filter(sub => sub.category_id === formData.category_id)
-              .map(sub => (
-                <option key={sub.id} value={sub.id}>{sub.name}</option>
-              ))}
-          </select>
-        </div> */}
-
       <div className="space-y-2">
           <Label htmlFor="hair_type_id">Hair Type</Label>
           <select
@@ -347,57 +310,6 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
           </select>
         </div>
 
-        {/* <div className="space-y-2">
-          <Label htmlFor="texture_id">Texture</Label>
-          <select
-            id="texture_id"
-            name="texture_id"
-            value={formData.texture_id}
-            onChange={(e) => {
-              const selectedTexture = textures.find(texture => texture.id === e.target.value);
-              setFormData(prev => ({ 
-                ...prev, 
-                texture_id: e.target.value,
-                texture: selectedTexture?.name || '',
-              }));
-            }}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rosegold-500"
-          >
-            <option value="">Select texture</option>
-            {textures.map(htexture => (
-              <option key={htexture.id} value={htexture.id}>{htexture.name}</option>
-            ))}
-          </select>
-        </div> */}
-
-        {/* <div className="space-y-2">
-          <Label htmlFor="rating">Rating</Label>
-          <Input
-            id="rating"
-            name="rating"
-            type="number"
-            step="0.1"
-            min="0"
-            max="5"
-            value={formData.rating}
-            onChange={handleInputChange}
-            placeholder="0.0"
-          />
-        </div> */}
-
-        {/* <div className="space-y-2">
-          <Label htmlFor="review_count">Review Count</Label>
-          <Input
-            id="review_count"
-            name="review_count"
-            type="number"
-            min="0"
-            value={formData.review_count}
-            onChange={handleInputChange}
-            placeholder="0"
-          />
-        </div> */}
-
         <div className="space-y-2">
           <Label htmlFor="best_seller_threshold">Best Seller Threshold</Label>
           <Input
@@ -413,17 +325,6 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
             Products with review count above this threshold become best sellers automatically
           </p>
         </div>
-
-        {/* <div className="space-y-2">
-          <Label htmlFor="type">Type</Label>
-          <Input
-            id="type"
-            name="type"
-            value={formData.type}
-            onChange={handleInputChange}
-            placeholder="e.g., 360 Lace, HD Lace, etc."
-          />
-        </div> */}
       </div>
         </CardContent>
       </Card>
@@ -501,38 +402,18 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
               />
             </div>
                <div className="space-y-2">
-              <Label htmlFor="lengths">Cap sizes (comma separated)</Label>
+              <Label htmlFor="size">Cap sizes (comma separated)</Label>
               <Input
                 id="size"
                 name="size"
                 value={formData.size}
                 onChange={handleInputChange}
-                placeholder="16, 18, 20, 22"
+                placeholder="Small, Medium, Large"
               />
             </div>
           </div>
         </CardContent>
       </Card>
-
-      {/* Features */}
-      {/* <Card>
-        <CardHeader>
-          <CardTitle>Features</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            <Label htmlFor="features">Features (comma separated)</Label>
-            <Textarea
-              id="features"
-              name="features"
-              value={formData.features}
-              onChange={handleInputChange}
-              placeholder="100% Virgin Hair, Pre-plucked Hairline, Bleached Knots"
-              rows={2}
-            />
-          </div>
-        </CardContent>
-      </Card> */}
 
       {/* Product Images */}
       <Card>

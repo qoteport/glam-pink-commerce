@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -50,7 +49,7 @@ const ProductDetail = () => {
         .from('products')
         .select(`
           *,
-          categories!fk_products_category (name, slug),
+          categories!products_category_id_fkey (name, slug),
           subcategories!subcategory_id (name, slug),
           discounts!discount_id (name, type, value)
         `)
@@ -73,6 +72,7 @@ const ProductDetail = () => {
         isBestSeller: data.is_best_seller,
         colors: data.colors || [],
         lengths: data.lengths || [],
+        size: data.size || [],
         description: data.description,
         features: data.features || [],
         hairType: data.hair_type,
@@ -263,21 +263,6 @@ const ProductDetail = () => {
             {/* Image Gallery Grid */}
             {product.imageGallery && product.imageGallery.length > 0 && (
               <div className="grid grid-cols-4 gap-2">
-                {/* Always show main image first */}
-                {/* <button
-                  onClick={() => setSelectedImageIndex(-1)}
-                  className={`aspect-square rounded-lg overflow-hidden border-2 transition-all ${
-                    selectedImageIndex === -1 
-                      ? 'border-pink-400 scale-105' 
-                      : 'border-transparent hover:border-pink-200'
-                  }`}
-                >
-                  <img 
-                    src={product.image} 
-                    alt={`${product.name} main`} 
-                    className="w-full h-full object-cover" 
-                  />
-                </button> */}
                 {/* Gallery images */}
                 {product.imageGallery.map((image, index) => (
                   <button
@@ -412,9 +397,9 @@ const ProductDetail = () => {
             )}
 
             {/* Cap Size Selection */}
-            {product.size && (
+            {product.size && product.size.length > 0 && (
               <div>
-                <h3 className="font-semibold mb-3">Size: {selectedSize}"</h3>
+                <h3 className="font-semibold mb-3">Size: {selectedSize}</h3>
                 <div className="flex flex-wrap gap-2">
                   {product.size.map((size, index) => (
                     <Badge
@@ -423,7 +408,7 @@ const ProductDetail = () => {
                       className="cursor-pointer"
                       onClick={() => setSelectedSize(size)}
                     >
-                      {size}"
+                      {size}
                     </Badge>
                   ))}
                 </div>
@@ -534,10 +519,6 @@ const ProductDetail = () => {
                           <dt className="text-gray-600">Hair Type:</dt>
                           <dd className="font-medium">{product.hairType}</dd>
                         </div>
-                        {/* <div className="flex justify-between">
-                          <dt className="text-gray-600">Texture:</dt>
-                          <dd className="font-medium">{product.texture}</dd>
-                        </div> */}
                         <div className="flex justify-between">
                           <dt className="text-gray-600">Category:</dt>
                           <dd className="font-medium capitalize">{product.category}</dd>

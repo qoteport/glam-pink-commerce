@@ -1,3 +1,4 @@
+
 export interface Product {
   id: string;
   name: string;
@@ -12,6 +13,7 @@ export interface Product {
   isBestSeller?: boolean;
   colors?: string[];
   lengths?: string[];
+  size?: string[];
   description?: string;
   features?: string[];
   hairType?: string;
