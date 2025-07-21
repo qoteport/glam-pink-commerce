@@ -321,7 +321,7 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
           </select>
         </div> */}
 
-      { <div className="space-y-2">
+      <div className="space-y-2">
           <Label htmlFor="hair_type_id">Hair Type</Label>
           <select
             id="hair_type_id"
@@ -342,7 +342,7 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
               <option key={htype.id} value={htype.id}>{htype.name}</option>
             ))}
           </select>
-        </div> }
+        </div> 
 
         {/* <div className="space-y-2">
           <Label htmlFor="texture_id">Texture</Label>
