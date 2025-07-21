@@ -142,7 +142,7 @@ const Footer = () => {
               <div className="space-y-4">
                 <div className="flex items-center space-x-2">
                   <Crown size={32} className="text-blush-400" />
-                  <h4 className="text-2xl font-bold text-gradient">HairyTalesBeaty</h4>
+                  <h4 className="text-2xl font-bold text-gradient">HairyTalesBeauty</h4>
                 </div>
                 <p className="text-gray-300 leading-relaxed max-w-md">
                   Your premier destination for high-quality wigs and hair bundles. 

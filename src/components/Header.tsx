@@ -79,7 +79,7 @@ const Header = ({ onSearch }: HeaderProps) => {
             onClick={() => navigate('/')}
           >
             <h1 className="text-2xl md:text-3xl font-bold text-gradient">
-              HairyTalesBeaty
+              HairyTalesBeauty
             </h1>
           </div>
 
