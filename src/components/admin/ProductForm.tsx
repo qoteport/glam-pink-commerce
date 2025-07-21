@@ -515,7 +515,7 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
       </Card>
 
       {/* Features */}
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle>Features</CardTitle>
         </CardHeader>
@@ -532,7 +532,7 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
             />
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
 
       {/* Product Images */}
       <Card>
