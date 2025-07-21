@@ -279,7 +279,7 @@ const ProductDetail = () => {
                   />
                 </button>
                 {/* Gallery images */}
-                {product.imageGallery.slice(1).map((image, index) => (
+                {product.imageGallery.map((image, index) => (
                   <button
                     key={index}
                     onClick={() => setSelectedImageIndex(index)}
