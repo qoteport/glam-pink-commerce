@@ -279,23 +279,7 @@ const ProductDetail = () => {
                   />
                 </button>
                 {/* Gallery images */}
-                {product.imageGallery.map((image, index) => (
-                  // <button
-                  //   key={index}
-                  //   onClick={() => setSelectedImageIndex(index)}
-                  //   className={`aspect-square rounded-lg overflow-hidden border-2 transition-all ${
-                  //     selectedImageIndex === index 
-                  //       ? 'border-pink-400 scale-105' 
-                  //       : 'border-transparent hover:border-pink-200'
-                  //   }`}
-                  // >
-                  //   <img 
-                  //     src={image} 
-                  //     alt={`${product.name} ${index + 1}`} 
-                  //     className="w-full h-full object-cover" 
-                  //   />
-                  // </button>
-                ))}
+            
               </div>
             )}
           </div>
