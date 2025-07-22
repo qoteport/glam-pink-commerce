@@ -19,6 +19,7 @@ interface Product {
   isBestSeller?: boolean;
   colors?: string[];
   lengths?: string[];
+  size?: string[];
 }
 
 interface ProductCardProps {
@@ -192,7 +193,8 @@ const ProductCard = ({ product, viewMode = 'grid' }: ProductCardProps) => {
           </div>
         )}
 
-        {/* Length Options */}
+       <div className="flex flex-row gap-10">
+         {/* Length Options */}
         {product.lengths && (
           <div className="space-y-2">
             <p className="text-xs text-gray-600 font-medium">Lengths:</p>
@@ -209,6 +211,26 @@ const ProductCard = ({ product, viewMode = 'grid' }: ProductCardProps) => {
             </div>
           </div>
         )}
+
+
+         {/* Sizes Options */}
+        {product.size && (
+          <div className="space-y-2">
+            <p className="text-xs text-gray-600 font-medium">Sizes:</p>
+            <div className="flex flex-wrap gap-1">
+              {product.size.map((length, index) => (
+                <Badge
+                  key={index}
+                  variant="outline"
+                  className="text-xs border-blush-200 hover:border-blush-300 cursor-pointer"
+                >
+                  {length}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        )}
+       </div>
 
         {/* Price */}
         <div className="flex items-center justify-between">

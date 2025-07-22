@@ -43,6 +43,7 @@ const ProductShowcase = () => {
             features: product.features || [],
             hairType: product.hair_type || undefined,
             texture: product.texture || undefined,
+            size: product.size || undefined,
             imageGallery: product.image_gallery || [],
             hairCareInstructions: product.hair_care_instructions || undefined,
             type: product.type || undefined,
