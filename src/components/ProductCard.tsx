@@ -195,7 +195,7 @@ const ProductCard = ({ product, viewMode = 'grid' }: ProductCardProps) => {
 
        <div className="flex flex-row gap-10">
          {/* Length Options */}
-        {product.lengths && (
+        {product.lengths.lenght && (
           <div className="space-y-2">
             <p className="text-xs text-gray-600 font-medium">Lengths:</p>
             <div className="flex flex-wrap gap-1">
@@ -214,7 +214,7 @@ const ProductCard = ({ product, viewMode = 'grid' }: ProductCardProps) => {
 
 
          {/* Sizes Options */}
-        {product.size && (
+        {product.size.lenght && (
           <div className="space-y-2">
             <p className="text-xs text-gray-600 font-medium">Sizes:</p>
             <div className="flex flex-wrap gap-1">
