@@ -170,7 +170,7 @@ const ProductCard = ({ product, viewMode = 'grid' }: ProductCardProps) => {
         </div>
 
         {/* Color Options */}
-        {product.colors && (
+        {product.colors?.length > 0 && (
           <div className="space-y-2">
             <p className="text-xs text-gray-600 font-medium">Colors:</p>
             <div className="flex space-x-2">
@@ -195,7 +195,7 @@ const ProductCard = ({ product, viewMode = 'grid' }: ProductCardProps) => {
 
        <div className="flex flex-row gap-10">
          {/* Length Options */}
-        {product.lengths.lenght && (
+        {product.lengths?.length > 0 && (
           <div className="space-y-2">
             <p className="text-xs text-gray-600 font-medium">Lengths:</p>
             <div className="flex flex-wrap gap-1">
@@ -214,7 +214,7 @@ const ProductCard = ({ product, viewMode = 'grid' }: ProductCardProps) => {
 
 
          {/* Sizes Options */}
-        {product.size.lenght && (
+        {product.size?.length > 0 && (
           <div className="space-y-2">
             <p className="text-xs text-gray-600 font-medium">Sizes:</p>
             <div className="flex flex-wrap gap-1">
