@@ -15,7 +15,8 @@ import {
   Plus,
   Tags,
   Receipt,
-  MessageSquare
+  MessageSquare,
+  Grid3x3
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import ProductsManager from '@/components/admin/ProductsManager';
@@ -31,6 +32,7 @@ import InstagramManager from '@/components/admin/InstagramManager';
 import TestimonialsManager from '@/components/admin/TestimonialsManager';
 import WholesaleDealsManager from '@/components/admin/WholesaleDealsManager';
 import CustomWigOrdersManager from '@/components/admin/CustomWigOrdersManager';
+import ProductCollectionsManager from '@/components/admin/ProductCollectionsManager';
 import Analytics from '@/components/admin/Analytics';
 
 const Admin = () => {
@@ -147,6 +149,10 @@ const Admin = () => {
                     <Tags size={16} />
                     <span>Categories</span>
                   </TabsTrigger>
+                  <TabsTrigger value="collections" className="flex items-center space-x-2">
+                    <Grid3x3 size={16} />
+                    <span>Collections</span>
+                  </TabsTrigger>
                   <TabsTrigger value="discounts" className="flex items-center space-x-2">
                     <Receipt size={16} />
                     <span>Discounts</span>
@@ -205,6 +211,10 @@ const Admin = () => {
                     <HairTypesManager />
                   </TabsContent>
                 </Tabs>
+              </TabsContent>
+
+              <TabsContent value="collections" className="space-y-4">
+                <ProductCollectionsManager />
               </TabsContent>
 
               <TabsContent value="discounts" className="space-y-4">

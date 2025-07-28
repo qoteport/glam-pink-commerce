@@ -453,6 +453,48 @@ export type Database = {
         }
         Relationships: []
       }
+      product_collections: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          display_order: number | null
+          gradient: string
+          icon: string
+          id: string
+          is_active: boolean
+          item_count: string | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          gradient?: string
+          icon?: string
+          id?: string
+          is_active?: boolean
+          item_count?: string | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          gradient?: string
+          icon?: string
+          id?: string
+          is_active?: boolean
+          item_count?: string | null
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           best_seller_threshold: number | null
@@ -465,6 +507,7 @@ export type Database = {
           features: string[] | null
           hair_care_instructions: string | null
           hair_type: string | null
+          hair_type_id: string | null
           id: string
           image: string
           image_gallery: string[] | null
@@ -477,9 +520,11 @@ export type Database = {
           price: number
           rating: number | null
           review_count: number | null
+          size: string[] | null
           subcategory: string | null
           subcategory_id: string | null
           texture: string | null
+          texture_id: string | null
           type: string | null
           updated_at: string
         }
@@ -494,6 +539,7 @@ export type Database = {
           features?: string[] | null
           hair_care_instructions?: string | null
           hair_type?: string | null
+          hair_type_id?: string | null
           id?: string
           image: string
           image_gallery?: string[] | null
@@ -506,9 +552,11 @@ export type Database = {
           price: number
           rating?: number | null
           review_count?: number | null
+          size?: string[] | null
           subcategory?: string | null
           subcategory_id?: string | null
           texture?: string | null
+          texture_id?: string | null
           type?: string | null
           updated_at?: string
         }
@@ -523,6 +571,7 @@ export type Database = {
           features?: string[] | null
           hair_care_instructions?: string | null
           hair_type?: string | null
+          hair_type_id?: string | null
           id?: string
           image?: string
           image_gallery?: string[] | null
@@ -535,9 +584,11 @@ export type Database = {
           price?: number
           rating?: number | null
           review_count?: number | null
+          size?: string[] | null
           subcategory?: string | null
           subcategory_id?: string | null
           texture?: string | null
+          texture_id?: string | null
           type?: string | null
           updated_at?: string
         }
@@ -550,10 +601,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "products_category_id_fkey"
-            columns: ["category_id"]
+            foreignKeyName: "fk_products_hair_type"
+            columns: ["hair_type_id"]
             isOneToOne: false
-            referencedRelation: "categories"
+            referencedRelation: "hair_types"
             referencedColumns: ["id"]
           },
           {
@@ -603,6 +654,7 @@ export type Database = {
         Row: {
           created_at: string
           display_order: number
+          followers_count: number | null
           id: string
           is_active: boolean
           platform: string
@@ -612,6 +664,7 @@ export type Database = {
         Insert: {
           created_at?: string
           display_order?: number
+          followers_count?: number | null
           id?: string
           is_active?: boolean
           platform: string
@@ -621,6 +674,7 @@ export type Database = {
         Update: {
           created_at?: string
           display_order?: number
+          followers_count?: number | null
           id?: string
           is_active?: boolean
           platform?: string

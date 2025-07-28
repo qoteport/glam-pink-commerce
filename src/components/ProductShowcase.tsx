@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -7,23 +8,38 @@ import { Product } from '@/data/products';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 
+interface ProductCollection {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  gradient: string;
+  item_count: string;
+  category: string;
+  is_active: boolean;
+  display_order: number;
+}
+
 const ProductShowcase = () => {
   const navigate = useNavigate();
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+  const [collections, setCollections] = useState<ProductCollection[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchFeaturedProducts = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
-        const { data } = await supabase
+        
+        // Fetch featured products
+        const { data: productsData } = await supabase
           .from('products')
           .select('*')
           .limit(8)
           .order('updated_at', { ascending: false });
         
-        if (data) {
-          const transformedProducts = data.map(product => ({
+        if (productsData) {
+          const transformedProducts = productsData.map(product => ({
             id: product.id,
             name: product.name,
             price: product.price,
@@ -49,42 +65,39 @@ const ProductShowcase = () => {
           }));
           setFeaturedProducts(transformedProducts);
         }
+
+        // Fetch collections
+        const { data: collectionsData } = await supabase
+          .from('product_collections')
+          .select('*')
+          .eq('is_active', true)
+          .order('display_order');
+
+        if (collectionsData) {
+          setCollections(collectionsData);
+        }
       } catch (error) {
-        console.error('Error fetching products:', error);
+        console.error('Error fetching data:', error);
       } finally {
         setLoading(false);
       }
     };
     
-    fetchFeaturedProducts();
+    fetchData();
   }, []);
 
-  const collections = [
-    {
-      name: 'Lace Front Wigs',
-      description: 'Natural hairline, breathable comfort',
-      icon: Crown,
-      gradient: 'from-blush-400 to-rosegold-400',
-      itemCount: '120+ styles',
-      category: 'wigs'
-    },
-    {
-      name: 'Hair Bundles',
-      description: 'Premium virgin hair collections',
-      icon: Sparkles,
-      gradient: 'from-rosegold-400 to-cream-400',
-      itemCount: '80+ bundles',
-      category: 'bundles'
-    },
-    {
-      name: 'Closure & Frontals',
-      description: 'Complete your perfect look',
-      icon: Star,
-      gradient: 'from-cream-400 to-blush-400',
-      itemCount: '45+ options',
-      category: 'closures'
+  const getIconComponent = (iconName: string) => {
+    switch (iconName) {
+      case 'Crown':
+        return Crown;
+      case 'Sparkles':
+        return Sparkles;
+      case 'Star':
+        return Star;
+      default:
+        return Crown;
     }
-  ];
+  };
 
   return (
     <section className="py-16 bg-white" id="shop">
@@ -105,35 +118,38 @@ const ProductShowcase = () => {
 
         {/* Collection Categories */}
         <div className="grid md:grid-cols-3 gap-6 mb-16">
-          {collections.map((collection, index) => (
-            <div
-              key={index}
-              className="group relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br text-white cursor-pointer hover-lift"
-              onClick={() => navigate(`/shop?category=${collection.category}`)}
-            >
-              <div className={`absolute inset-0 bg-gradient-to-br ${collection.gradient} opacity-90`}></div>
-              <div className="relative z-10 space-y-4">
-                <div className="flex items-center justify-between">
-                  <collection.icon size={32} className="text-white" />
-                  <Badge className="bg-white/20 text-white border-white/30">
-                    {collection.itemCount}
-                  </Badge>
+          {collections.map((collection) => {
+            const IconComponent = getIconComponent(collection.icon);
+            return (
+              <div
+                key={collection.id}
+                className="group relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br text-white cursor-pointer hover-lift"
+                onClick={() => navigate(`/shop?category=${collection.category}`)}
+              >
+                <div className={`absolute inset-0 bg-gradient-to-br ${collection.gradient} opacity-90`}></div>
+                <div className="relative z-10 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <IconComponent size={32} className="text-white" />
+                    <Badge className="bg-white/20 text-white border-white/30">
+                      {collection.item_count}
+                    </Badge>
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">{collection.name}</h3>
+                    <p className="text-white/90 text-sm">{collection.description}</p>
+                  </div>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="bg-white/20 hover:bg-white/30 text-white border-white/30"
+                  >
+                    Explore Collection
+                    <ChevronRight size={16} className="ml-1" />
+                  </Button>
                 </div>
-                <div>
-                  <h3 className="text-xl font-bold mb-2">{collection.name}</h3>
-                  <p className="text-white/90 text-sm">{collection.description}</p>
-                </div>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="bg-white/20 hover:bg-white/30 text-white border-white/30"
-                >
-                  Explore Collection
-                  <ChevronRight size={16} className="ml-1" />
-                </Button>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Featured Products */}

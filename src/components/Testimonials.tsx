@@ -5,6 +5,20 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Star, Quote, Instagram, Heart } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
+interface Testimonial {
+  id: string;
+  name: string;
+  email?: string;
+  rating: number;
+  comment: string;
+  image_url?: string;
+  location?: string;
+  is_featured: boolean;
+  is_active: boolean;
+  display_order: number;
+  created_at: string;
+}
+
 interface InstagramData {
   instagram_handle?: string;
   hashtag?: string;
@@ -22,6 +36,7 @@ interface InstagramPost {
 }
 
 const Testimonials = () => {
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [instagramData, setInstagramData] = useState<InstagramData>({
     instagram_handle: '@glamcrownbeauty',
     hashtag: '#GlamCrownLooks',
@@ -30,13 +45,24 @@ const Testimonials = () => {
     display_feed: true
   });
   const [instagramPosts, setInstagramPosts] = useState<InstagramPost[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchInstagramData();
+    fetchData();
   }, []);
 
-  const fetchInstagramData = async () => {
+  const fetchData = async () => {
     try {
+      // Fetch testimonials
+      const { data: testimonialsData, error: testimonialsError } = await supabase
+        .from('testimonials')
+        .select('*')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true });
+
+      if (testimonialsError) throw testimonialsError;
+      setTestimonials(testimonialsData || []);
+
       // Fetch Instagram settings
       const { data: settingsData, error: settingsError } = await supabase
         .from('instagram_settings')
@@ -61,61 +87,19 @@ const Testimonials = () => {
       if (postsError) throw postsError;
       setInstagramPosts(postsData || []);
     } catch (error) {
-      console.error('Error fetching Instagram data:', error);
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const testimonials = [
-    {
-      id: 1,
-      name: 'Sarah Johnson',
-      location: 'Atlanta, GA',
-      rating: 5,
-      review: "Absolutely obsessed with my new lace front! The quality is incredible and it looks so natural. I've gotten so many compliments. Will definitely be ordering again!",
-      product: 'Brazilian Curly Lace Front',
-      image: '/placeholder-customer-1.jpg',
-      verified: true,
-      instagramHandle: '@sarahglam_',
-      beforeAfter: true
-    },
-    {
-      id: 2,
-      name: 'Maya Rodriguez',
-      location: 'Los Angeles, CA',
-      rating: 5,
-      review: "The hair bundles are amazing quality! Soft, no shedding, and the color matches perfectly. Customer service was super helpful too. Highly recommend!",
-      product: 'Body Wave Bundle Set',
-      image: '/placeholder-customer-2.jpg',
-      verified: true,
-      instagramHandle: '@maya_beautyx',
-      beforeAfter: false
-    },
-    {
-      id: 3,
-      name: 'Zoe Williams',
-      location: 'Houston, TX',
-      rating: 5,
-      review: "I was nervous about ordering online but GlamCrown exceeded my expectations! Fast shipping, beautiful packaging, and the wig is perfection. My confidence is through the roof!",
-      product: 'Straight HD Lace Frontal',
-      image: '/placeholder-customer-3.jpg',
-      verified: true,
-      instagramHandle: '@zoe_crown',
-      beforeAfter: true
-    },
-    {
-      id: 4,
-      name: 'Jasmine Davis',
-      location: 'Miami, FL',
-      rating: 5,
-      review: "The deep wave wig is stunning! Installation was easy and it blends perfectly with my natural hair. Worth every penny. Thank you GlamCrown!",
-      product: 'Deep Wave 360 Lace Wig',
-      image: '/placeholder-customer-4.jpg',
-      verified: true,
-      instagramHandle: '@jasmine_waves',
-      beforeAfter: false
-    }
-  ];
-
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <section className="py-16 bg-gradient-to-br from-cream-50 to-blush-50">
@@ -135,76 +119,72 @@ const Testimonials = () => {
         </div>
 
         {/* Testimonials Grid */}
-        <div className="grid md:grid-cols-2 gap-8 mb-16">
-          {testimonials.map((testimonial) => (
-            <Card key={testimonial.id} className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover-lift">
-              <CardContent className="p-6 space-y-4">
-                {/* Header with Customer Info */}
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center space-x-4">
-                    {/* Customer Avatar */}
-                    <div className="w-12 h-12 bg-gradient-to-br from-blush-300 to-rosegold-300 rounded-full flex items-center justify-center">
-                      <span className="text-white font-bold">
-                        {testimonial.name.charAt(0)}
-                      </span>
-                    </div>
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <h4 className="font-semibold text-gray-800">{testimonial.name}</h4>
-                        {testimonial.verified && (
+        {testimonials.length > 0 && (
+          <div className="grid md:grid-cols-2 gap-8 mb-16">
+            {testimonials.slice(0, 4).map((testimonial) => (
+              <Card key={testimonial.id} className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover-lift">
+                <CardContent className="p-6 space-y-4">
+                  {/* Header with Customer Info */}
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center space-x-4">
+                      {/* Customer Avatar */}
+                      {testimonial.image_url ? (
+                        <img
+                          src={testimonial.image_url}
+                          alt={testimonial.name}
+                          className="w-12 h-12 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 bg-gradient-to-br from-blush-300 to-rosegold-300 rounded-full flex items-center justify-center">
+                          <span className="text-white font-bold">
+                            {testimonial.name.charAt(0)}
+                          </span>
+                        </div>
+                      )}
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <h4 className="font-semibold text-gray-800">{testimonial.name}</h4>
                           <Badge className="bg-green-100 text-green-600 text-xs">
                             ✓ Verified
                           </Badge>
+                        </div>
+                        {testimonial.location && (
+                          <p className="text-sm text-gray-600">{testimonial.location}</p>
                         )}
                       </div>
-                      <p className="text-sm text-gray-600">{testimonial.location}</p>
-                      <a 
-                        href="#" 
-                        className="text-xs text-blush-500 hover:text-blush-600 flex items-center space-x-1"
-                      >
-                        <Instagram size={12} />
-                        <span>{testimonial.instagramHandle}</span>
-                      </a>
                     </div>
+                    {/* Featured Badge */}
+                    {testimonial.is_featured && (
+                      <Badge className="bg-blush-100 text-blush-600 text-xs">
+                        Featured
+                      </Badge>
+                    )}
                   </div>
-                  {/* Product Badge */}
-                  <Badge className="bg-blush-100 text-blush-600 text-xs">
-                    {testimonial.product}
-                  </Badge>
-                </div>
 
-                {/* Rating */}
-                <div className="flex items-center space-x-2">
-                  <div className="flex">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} size={16} className="text-yellow-400 fill-current" />
-                    ))}
+                  {/* Rating */}
+                  <div className="flex items-center space-x-2">
+                    <div className="flex">
+                      {[...Array(testimonial.rating)].map((_, i) => (
+                        <Star key={i} size={16} className="text-yellow-400 fill-current" />
+                      ))}
+                    </div>
+                    <span className="text-sm text-gray-600">
+                      {testimonial.rating}.0
+                    </span>
                   </div>
-                  <span className="text-sm text-gray-600">
-                    {testimonial.rating}.0
-                  </span>
-                </div>
 
-                {/* Review Text */}
-                <div className="relative">
-                  <Quote className="absolute -top-2 -left-2 text-blush-200" size={24} />
-                  <p className="text-gray-700 leading-relaxed pl-4">
-                    {testimonial.review}
-                  </p>
-                </div>
-
-                {/* Before/After Badge */}
-                {testimonial.beforeAfter && (
-                  <div className="flex items-center space-x-2 pt-2">
-                    <Badge className="bg-rosegold-100 text-rosegold-600 text-xs">
-                      📸 Before & After Available
-                    </Badge>
+                  {/* Review Text */}
+                  <div className="relative">
+                    <Quote className="absolute -top-2 -left-2 text-blush-200" size={24} />
+                    <p className="text-gray-700 leading-relaxed pl-4">
+                      {testimonial.comment}
+                    </p>
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
 
         {/* Instagram Feed Section */}
         {instagramData.display_feed && (

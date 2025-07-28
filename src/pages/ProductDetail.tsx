@@ -1,117 +1,124 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
-  Heart, 
   Star, 
+  Heart, 
+  Share2, 
   ShoppingCart, 
-  ArrowLeft, 
   Truck, 
   Shield, 
-  RotateCcw,
-  Play,
+  RotateCcw, 
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Play,
+  Sparkles
 } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useFavorites } from '@/contexts/FavoritesContext';
+import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Product } from '@/data/products';
-import { useToast } from '@/hooks/use-toast';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
+  const { toast } = useToast();
+
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedColor, setSelectedColor] = useState<string>('');
   const [selectedLength, setSelectedLength] = useState<string>('');
   const [selectedSize, setSelectedSize] = useState<string>('');
+  const [quantity, setQuantity] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const { toast } = useToast();
 
   useEffect(() => {
-    const fetchProduct = async () => {
-      if (!id) return;
-      
-      try {
-        setLoading(true);
-        const { data, error } = await supabase
-          .from('products')
-          .select(`
-            *,
-            discounts (
-              name,
-              type,
-              value,
-              code,
-              is_active,
-              starts_at,
-              expires_at
-            )
-          `)
-          .eq('id', id)
-          .single();
-
-        if (error) {
-          console.error('Error fetching product:', error);
-          return;
-        }
-
-        if (data) {
-          const transformedProduct: Product = {
-            id: data.id,
-            name: data.name,
-            price: data.price,
-            originalPrice: data.original_price || undefined,
-            rating: data.rating || 0,
-            reviewCount: data.review_count || 0,
-            image: data.image,
-            category: data.category as 'wigs' | 'bundles' | 'closures' | 'frontals',
-            subcategory: data.subcategory || undefined,
-            isNew: data.is_new || false,
-            isBestSeller: data.is_best_seller || false,
-            colors: data.colors || [],
-            lengths: data.lengths || [],
-            size: data.size || [],
-            description: data.description || undefined,
-            features: data.features || [],
-            hairType: data.hair_type || undefined,
-            texture: data.texture || undefined,
-            imageGallery: data.image_gallery || [],
-            hairCareInstructions: data.hair_care_instructions || undefined,
-            type: data.type || undefined,
-            liveVideoUrl: data.live_video_url || undefined,
-          };
-          setProduct(transformedProduct);
-          
-          // Set default selections
-          if (transformedProduct.colors && transformedProduct.colors.length > 0) {
-            setSelectedColor(transformedProduct.colors[0]);
-          }
-          if (transformedProduct.lengths && transformedProduct.lengths.length > 0) {
-            setSelectedLength(transformedProduct.lengths[0]);
-          }
-          if (transformedProduct.size && transformedProduct.size.length > 0) {
-            setSelectedSize(transformedProduct.size[0]);
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching product:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProduct();
+    if (id) {
+      fetchProduct(id);
+    }
   }, [id]);
+
+  const fetchProduct = async (productId: string) => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('products')
+        .select(`
+          *,
+          discounts (
+            id,
+            name,
+            type,
+            value,
+            code,
+            is_active,
+            starts_at,
+            expires_at
+          )
+        `)
+        .eq('id', productId)
+        .single();
+
+      if (error) throw error;
+
+      if (data) {
+        const transformedProduct: Product = {
+          id: data.id,
+          name: data.name,
+          price: data.price,
+          originalPrice: data.original_price || undefined,
+          rating: data.rating || 0,
+          reviewCount: data.review_count || 0,
+          image: data.image,
+          category: data.category as 'wigs' | 'bundles' | 'closures' | 'frontals',
+          subcategory: data.subcategory || undefined,
+          isNew: data.is_new || false,
+          isBestSeller: data.is_best_seller || false,
+          colors: data.colors || [],
+          lengths: data.lengths || [],
+          size: data.size || [],
+          description: data.description || undefined,
+          features: data.features || [],
+          hairType: data.hair_type || undefined,
+          texture: data.texture || undefined,
+          imageGallery: data.image_gallery || [],
+          hairCareInstructions: data.hair_care_instructions || undefined,
+          type: data.type || undefined,
+          liveVideoUrl: data.live_video_url || undefined,
+        };
+
+        setProduct(transformedProduct);
+        
+        // Set default selections
+        if (transformedProduct.colors.length > 0) {
+          setSelectedColor(transformedProduct.colors[0]);
+        }
+        if (transformedProduct.lengths.length > 0) {
+          setSelectedLength(transformedProduct.lengths[0]);
+        }
+        if (transformedProduct.size && transformedProduct.size.length > 0) {
+          setSelectedSize(transformedProduct.size[0]);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching product:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to load product details',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleAddToCart = () => {
     if (!product) return;
@@ -124,12 +131,12 @@ const ProductDetail = () => {
       selectedColor,
       selectedLength,
       selectedSize,
-      quantity: 1
+      quantity
     };
 
     addToCart(cartItem);
     toast({
-      title: 'Added to Cart',
+      title: 'Added to cart',
       description: `${product.name} has been added to your cart.`,
     });
   };
@@ -140,113 +147,99 @@ const ProductDetail = () => {
     if (isFavorite(product.id)) {
       removeFromFavorites(product.id);
       toast({
-        title: 'Removed from Favorites',
+        title: 'Removed from favorites',
         description: `${product.name} has been removed from your favorites.`,
       });
     } else {
       addToFavorites(product);
       toast({
-        title: 'Added to Favorites',
+        title: 'Added to favorites',
         description: `${product.name} has been added to your favorites.`,
       });
     }
   };
 
   const nextImage = () => {
-    if (product?.imageGallery) {
-      setCurrentImageIndex((prev) => 
-        prev === product.imageGallery!.length - 1 ? 0 : prev + 1
-      );
-    }
+    if (!product) return;
+    const totalImages = product.imageGallery.length || 1;
+    setCurrentImageIndex((prev) => (prev + 1) % totalImages);
   };
 
   const prevImage = () => {
-    if (product?.imageGallery) {
-      setCurrentImageIndex((prev) => 
-        prev === 0 ? product.imageGallery!.length - 1 : prev - 1
-      );
-    }
+    if (!product) return;
+    const totalImages = product.imageGallery.length || 1;
+    setCurrentImageIndex((prev) => (prev - 1 + totalImages) % totalImages);
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white">
-        <Header />
-        <div className="flex items-center justify-center py-16">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blush-500"></div>
-        </div>
-        <Footer />
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-white">
-        <Header />
-        <div className="container mx-auto px-4 py-16 text-center">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">Product Not Found</h1>
-          <p className="text-gray-600 mb-8">The product you're looking for doesn't exist.</p>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Product not found</h2>
           <Button onClick={() => navigate('/shop')}>
             Back to Shop
           </Button>
         </div>
-        <Footer />
       </div>
     );
   }
 
-  const allImages = product.imageGallery && product.imageGallery.length > 0 
-    ? product.imageGallery 
-    : [product.image];
+  const currentImage = product.imageGallery.length > 0 
+    ? product.imageGallery[currentImageIndex] 
+    : product.image;
 
   return (
-    <div className="min-h-screen bg-white">
-      <Header />
-      
+    <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
         {/* Breadcrumb */}
-        <div className="flex items-center space-x-2 text-sm text-gray-600 mb-8">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate('/shop')}
-            className="p-0 h-auto text-blush-600 hover:text-blush-700"
+        <div className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
+          <button onClick={() => navigate('/shop')} className="hover:text-blush-600">
+            Shop
+          </button>
+          <span>/</span>
+          <button 
+            onClick={() => navigate(`/shop?category=${product.category}`)}
+            className="hover:text-blush-600 capitalize"
           >
-            <ArrowLeft size={16} className="mr-1" />
-            Back to Shop
-          </Button>
+            {product.category}
+          </button>
           <span>/</span>
-          <span className="capitalize">{product.category}</span>
-          <span>/</span>
-          <span className="text-gray-800">{product.name}</span>
+          <span className="text-gray-900">{product.name}</span>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12">
           {/* Product Images */}
           <div className="space-y-4">
             {/* Main Image */}
-            <div className="relative aspect-square overflow-hidden rounded-2xl bg-gray-100 group">
+            <div className="relative aspect-square bg-white rounded-lg overflow-hidden shadow-lg">
               <img
-                src={allImages[currentImageIndex]}
+                src={currentImage}
                 alt={product.name}
                 className="w-full h-full object-cover"
               />
               
-              {/* Navigation Arrows */}
-              {allImages.length > 1 && (
+              {/* Image Navigation */}
+              {product.imageGallery.length > 1 && (
                 <>
                   <button
                     onClick={prevImage}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-md"
                   >
-                    <ChevronLeft size={20} />
+                    <ChevronLeft className="w-5 h-5" />
                   </button>
                   <button
                     onClick={nextImage}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-md"
                   >
-                    <ChevronRight size={20} />
+                    <ChevronRight className="w-5 h-5" />
                   </button>
                 </>
               )}
@@ -254,39 +247,42 @@ const ProductDetail = () => {
               {/* Badges */}
               <div className="absolute top-4 left-4 flex flex-col space-y-2">
                 {product.isNew && (
-                  <Badge className="bg-green-500 text-white">New</Badge>
+                  <Badge className="bg-green-100 text-green-600">New</Badge>
                 )}
                 {product.isBestSeller && (
-                  <Badge className="bg-rosegold-500 text-white">Best Seller</Badge>
+                  <Badge className="bg-blush-100 text-blush-600">Best Seller</Badge>
                 )}
               </div>
 
-              {/* Live Video Play Button */}
+              {/* Live Video Button */}
               {product.liveVideoUrl && (
-                <button
-                  onClick={() => window.open(product.liveVideoUrl, '_blank')}
-                  className="absolute bottom-4 right-4 bg-black/70 hover:bg-black/80 text-white p-3 rounded-full transition-colors"
-                >
-                  <Play size={20} className="ml-1" />
-                </button>
+                <div className="absolute bottom-4 right-4">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => window.open(product.liveVideoUrl, '_blank')}
+                    className="bg-white/90 hover:bg-white"
+                  >
+                    <Play className="w-4 h-4 mr-2" />
+                    Watch Live
+                  </Button>
+                </div>
               )}
             </div>
 
-            {/* Image Thumbnails */}
-            {allImages.length > 1 && (
-              <div className="flex space-x-2 overflow-x-auto pb-2">
-                {allImages.map((image, index) => (
+            {/* Thumbnail Gallery */}
+            {product.imageGallery.length > 1 && (
+              <div className="flex space-x-2 overflow-x-auto">
+                {product.imageGallery.map((img, index) => (
                   <button
                     key={index}
                     onClick={() => setCurrentImageIndex(index)}
-                    className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors ${
-                      index === currentImageIndex 
-                        ? 'border-blush-500' 
-                        : 'border-gray-200 hover:border-gray-300'
+                    className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 ${
+                      index === currentImageIndex ? 'border-blush-500' : 'border-gray-200'
                     }`}
                   >
                     <img
-                      src={image}
+                      src={img}
                       alt={`${product.name} ${index + 1}`}
                       className="w-full h-full object-cover"
                     />
@@ -296,17 +292,18 @@ const ProductDetail = () => {
             )}
           </div>
 
-          {/* Product Details */}
+          {/* Product Info */}
           <div className="space-y-6">
-            {/* Header */}
             <div>
-              <h1 className="text-3xl font-bold text-gray-800 mb-2">{product.name}</h1>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>
+              
+              {/* Rating */}
               <div className="flex items-center space-x-4 mb-4">
                 <div className="flex items-center space-x-1">
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      size={16}
+                      size={20}
                       className={i < product.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}
                     />
                   ))}
@@ -315,103 +312,117 @@ const ProductDetail = () => {
                   </span>
                 </div>
               </div>
-              
+
               {/* Price */}
-              <div className="flex items-center space-x-4 mb-4">
-                <span className="text-3xl font-bold text-blush-600">${product.price}</span>
+              <div className="flex items-center space-x-4 mb-6">
+                <span className="text-3xl font-bold text-gray-900">
+                  ${product.price}
+                </span>
                 {product.originalPrice && (
-                  <span className="text-xl text-gray-500 line-through">${product.originalPrice}</span>
+                  <span className="text-xl text-gray-500 line-through">
+                    ${product.originalPrice}
+                  </span>
                 )}
               </div>
 
-              {/* Category & Type */}
-              <div className="flex items-center space-x-2 mb-4">
-                <Badge variant="outline" className="capitalize">{product.category}</Badge>
-                {product.subcategory && (
-                  <Badge variant="outline" className="capitalize">{product.subcategory}</Badge>
-                )}
-                {product.type && (
-                  <Badge variant="outline">{product.type}</Badge>
-                )}
-              </div>
+              {/* Description */}
+              {product.description && (
+                <p className="text-gray-600 mb-6">{product.description}</p>
+              )}
             </div>
 
             {/* Options */}
             <div className="space-y-4">
-              {/* Colors */}
-              {product.colors && product.colors.length > 0 && (
+              {/* Color Selection */}
+              {product.colors.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-medium text-gray-700 mb-3">Color</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {product.colors.map((color) => (
-                      <button
-                        key={color}
-                        onClick={() => setSelectedColor(color)}
-                        className={`px-4 py-2 rounded-lg border text-sm transition-colors ${
-                          selectedColor === color
-                            ? 'border-blush-500 bg-blush-50 text-blush-700'
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
-                      >
-                        {color}
-                      </button>
-                    ))}
-                  </div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Color
+                  </label>
+                  <Select value={selectedColor} onValueChange={setSelectedColor}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select color" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {product.colors.map((color) => (
+                        <SelectItem key={color} value={color}>
+                          {color}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               )}
 
-              {/* Lengths */}
-              {product.lengths && product.lengths.length > 0 && (
+              {/* Length Selection */}
+              {product.lengths.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-medium text-gray-700 mb-3">Length</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {product.lengths.map((length) => (
-                      <button
-                        key={length}
-                        onClick={() => setSelectedLength(length)}
-                        className={`px-4 py-2 rounded-lg border text-sm transition-colors ${
-                          selectedLength === length
-                            ? 'border-blush-500 bg-blush-50 text-blush-700'
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
-                      >
-                        {length}"
-                      </button>
-                    ))}
-                  </div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Length
+                  </label>
+                  <Select value={selectedLength} onValueChange={setSelectedLength}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select length" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {product.lengths.map((length) => (
+                        <SelectItem key={length} value={length}>
+                          {length}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               )}
 
-              {/* Sizes */}
+              {/* Size Selection */}
               {product.size && product.size.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-medium text-gray-700 mb-3">Size</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {product.size.map((size) => (
-                      <button
-                        key={size}
-                        onClick={() => setSelectedSize(size)}
-                        className={`px-4 py-2 rounded-lg border text-sm transition-colors ${
-                          selectedSize === size
-                            ? 'border-blush-500 bg-blush-50 text-blush-700'
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
-                      >
-                        {size}
-                      </button>
-                    ))}
-                  </div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Size
+                  </label>
+                  <Select value={selectedSize} onValueChange={setSelectedSize}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select size" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {product.size.map((size) => (
+                        <SelectItem key={size} value={size}>
+                          {size}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               )}
+
+              {/* Quantity */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Quantity
+                </label>
+                <Select value={quantity.toString()} onValueChange={(value) => setQuantity(Number(value))}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[1, 2, 3, 4, 5].map((num) => (
+                      <SelectItem key={num} value={num.toString()}>
+                        {num}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
-            {/* Actions */}
+            {/* Action Buttons */}
             <div className="flex space-x-4">
               <Button
                 onClick={handleAddToCart}
-                className="flex-1 bg-blush-600 hover:bg-blush-700 text-white"
+                className="flex-1 bg-gradient-to-r from-blush-500 to-rosegold-500 hover:from-blush-600 hover:to-rosegold-600 text-white"
               >
-                <ShoppingCart size={20} className="mr-2" />
+                <ShoppingCart className="w-5 h-5 mr-2" />
                 Add to Cart
               </Button>
               <Button
@@ -419,27 +430,30 @@ const ProductDetail = () => {
                 onClick={handleToggleFavorite}
                 className={`${
                   isFavorite(product.id) 
-                    ? 'text-red-500 border-red-500 hover:bg-red-50' 
-                    : 'text-gray-600 border-gray-300 hover:bg-gray-50'
+                    ? 'bg-red-50 border-red-200 text-red-600' 
+                    : 'border-gray-300 text-gray-700'
                 }`}
               >
-                <Heart size={20} className={isFavorite(product.id) ? 'fill-current' : ''} />
+                <Heart className={`w-5 h-5 ${isFavorite(product.id) ? 'fill-current' : ''}`} />
+              </Button>
+              <Button variant="outline" className="border-gray-300 text-gray-700">
+                <Share2 className="w-5 h-5" />
               </Button>
             </div>
 
-            {/* Trust Indicators */}
+            {/* Features */}
             <div className="grid grid-cols-3 gap-4 py-6 border-t border-gray-200">
-              <div className="flex items-center space-x-2">
-                <Truck size={16} className="text-blush-600" />
-                <span className="text-sm text-gray-600">Free Shipping</span>
+              <div className="text-center">
+                <Truck className="w-6 h-6 text-blush-500 mx-auto mb-2" />
+                <p className="text-sm text-gray-600">Free Shipping</p>
               </div>
-              <div className="flex items-center space-x-2">
-                <Shield size={16} className="text-blush-600" />
-                <span className="text-sm text-gray-600">Secure Payment</span>
+              <div className="text-center">
+                <Shield className="w-6 h-6 text-blush-500 mx-auto mb-2" />
+                <p className="text-sm text-gray-600">Quality Guarantee</p>
               </div>
-              <div className="flex items-center space-x-2">
-                <RotateCcw size={16} className="text-blush-600" />
-                <span className="text-sm text-gray-600">Easy Returns</span>
+              <div className="text-center">
+                <RotateCcw className="w-6 h-6 text-blush-500 mx-auto mb-2" />
+                <p className="text-sm text-gray-600">30-Day Returns</p>
               </div>
             </div>
           </div>
@@ -447,56 +461,20 @@ const ProductDetail = () => {
 
         {/* Product Details Tabs */}
         <div className="mt-16">
-          <Tabs defaultValue="description" className="w-full">
+          <Tabs defaultValue="details" className="w-full">
             <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="description">Description</TabsTrigger>
-              <TabsTrigger value="specifications">Specifications</TabsTrigger>
+              <TabsTrigger value="details">Details</TabsTrigger>
               <TabsTrigger value="care">Hair Care</TabsTrigger>
+              <TabsTrigger value="reviews">Reviews</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="description" className="mt-8">
+            <TabsContent value="details" className="mt-6">
               <Card>
                 <CardContent className="p-6">
-                  <div className="prose max-w-none">
-                    <p className="text-gray-700 leading-relaxed mb-6">
-                      {product.description || 'This premium hair product offers exceptional quality and style.'}
-                    </p>
-                    
-                    {product.features && product.features.length > 0 && (
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-800 mb-4">Key Features</h3>
-                        <ul className="space-y-2">
-                          {product.features.map((feature, index) => (
-                            <li key={index} className="flex items-start space-x-2">
-                              <span className="text-blush-600 mt-1">•</span>
-                              <span className="text-gray-700">{feature}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            
-            <TabsContent value="specifications" className="mt-8">
-              <Card>
-                <CardContent className="p-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid md:grid-cols-2 gap-8">
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-800 mb-4">Product Details</h3>
+                      <h3 className="text-lg font-semibold mb-4">Product Information</h3>
                       <div className="space-y-3">
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Category:</span>
-                          <span className="font-medium capitalize">{product.category}</span>
-                        </div>
-                        {product.subcategory && (
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">Subcategory:</span>
-                            <span className="font-medium capitalize">{product.subcategory}</span>
-                          </div>
-                        )}
                         {product.hairType && (
                           <div className="flex justify-between">
                             <span className="text-gray-600">Hair Type:</span>
@@ -509,87 +487,70 @@ const ProductDetail = () => {
                             <span className="font-medium">{product.texture}</span>
                           </div>
                         )}
+                        {product.type && (
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Type:</span>
+                            <span className="font-medium">{product.type}</span>
+                          </div>
+                        )}
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Category:</span>
+                          <span className="font-medium capitalize">{product.category}</span>
+                        </div>
                       </div>
                     </div>
-                    
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-800 mb-4">Available Options</h3>
-                      <div className="space-y-3">
-                        {product.colors && product.colors.length > 0 && (
-                          <div>
-                            <span className="text-gray-600 block mb-1">Colors:</span>
-                            <div className="flex flex-wrap gap-1">
-                              {product.colors.map((color, index) => (
-                                <Badge key={index} variant="outline" className="text-xs">
-                                  {color}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                        {product.lengths && product.lengths.length > 0 && (
-                          <div>
-                            <span className="text-gray-600 block mb-1">Lengths:</span>
-                            <div className="flex flex-wrap gap-1">
-                              {product.lengths.map((length, index) => (
-                                <Badge key={index} variant="outline" className="text-xs">
-                                  {length}"
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                        {product.size && product.size.length > 0 && (
-                          <div>
-                            <span className="text-gray-600 block mb-1">Sizes:</span>
-                            <div className="flex flex-wrap gap-1">
-                              {product.size.map((size, index) => (
-                                <Badge key={index} variant="outline" className="text-xs">
-                                  {size}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-                        )}
+
+                    {product.features.length > 0 && (
+                      <div>
+                        <h3 className="text-lg font-semibold mb-4">Key Features</h3>
+                        <ul className="space-y-2">
+                          {product.features.map((feature, index) => (
+                            <li key={index} className="flex items-start">
+                              <Sparkles className="w-4 h-4 text-blush-500 mr-2 mt-0.5 flex-shrink-0" />
+                              <span className="text-gray-600">{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
             </TabsContent>
-            
-            <TabsContent value="care" className="mt-8">
+
+            <TabsContent value="care" className="mt-6">
               <Card>
                 <CardContent className="p-6">
-                  <div className="prose max-w-none">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Hair Care Instructions</h3>
-                    <div className="text-gray-700 leading-relaxed">
-                      {product.hairCareInstructions ? (
-                        <p>{product.hairCareInstructions}</p>
-                      ) : (
-                        <div>
-                          <p className="mb-4">Follow these general care instructions to maintain your hair's quality:</p>
-                          <ul className="space-y-2">
-                            <li className="flex items-start space-x-2">
-                              <span className="text-blush-600 mt-1">•</span>
-                              <span>Wash with sulfate-free shampoo and conditioner</span>
-                            </li>
-                            <li className="flex items-start space-x-2">
-                              <span className="text-blush-600 mt-1">•</span>
-                              <span>Use heat protectant before styling</span>
-                            </li>
-                            <li className="flex items-start space-x-2">
-                              <span className="text-blush-600 mt-1">•</span>
-                              <span>Avoid excessive heat and chemical processing</span>
-                            </li>
-                            <li className="flex items-start space-x-2">
-                              <span className="text-blush-600 mt-1">•</span>
-                              <span>Store properly when not in use</span>
-                            </li>
-                          </ul>
-                        </div>
-                      )}
+                  <h3 className="text-lg font-semibold mb-4">Hair Care Instructions</h3>
+                  {product.hairCareInstructions ? (
+                    <div className="prose max-w-none">
+                      <p className="text-gray-600">{product.hairCareInstructions}</p>
                     </div>
+                  ) : (
+                    <div className="text-gray-600">
+                      <p>General hair care instructions:</p>
+                      <ul className="list-disc pl-6 mt-2 space-y-1">
+                        <li>Wash with sulfate-free shampoo</li>
+                        <li>Use a wide-tooth comb when wet</li>
+                        <li>Deep condition weekly</li>
+                        <li>Avoid excessive heat styling</li>
+                        <li>Store properly when not in use</li>
+                      </ul>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="reviews" className="mt-6">
+              <Card>
+                <CardContent className="p-6">
+                  <h3 className="text-lg font-semibold mb-4">Customer Reviews</h3>
+                  <div className="text-center text-gray-500 py-8">
+                    <p>No reviews yet. Be the first to review this product!</p>
+                    <Button className="mt-4 bg-blush-500 hover:bg-blush-600 text-white">
+                      Write a Review
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -597,8 +558,6 @@ const ProductDetail = () => {
           </Tabs>
         </div>
       </div>
-      
-      <Footer />
     </div>
   );
 };
