@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -21,10 +20,9 @@ const ProductShowcase = () => {
           .from('products')
           .select('*')
           .limit(8)
-          .order('updated_at', { ascending: false }); // Show recently updated first
+          .order('updated_at', { ascending: false });
         
         if (data) {
-          // Transform database product to match Product interface
           const transformedProducts = data.map(product => ({
             id: product.id,
             name: product.name,
@@ -39,11 +37,11 @@ const ProductShowcase = () => {
             isBestSeller: product.is_best_seller || false,
             colors: product.colors || [],
             lengths: product.lengths || [],
+            size: product.size || [],
             description: product.description || undefined,
             features: product.features || [],
             hairType: product.hair_type || undefined,
             texture: product.texture || undefined,
-            size: product.size || undefined,
             imageGallery: product.image_gallery || [],
             hairCareInstructions: product.hair_care_instructions || undefined,
             type: product.type || undefined,
