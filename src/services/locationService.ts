@@ -16,12 +16,12 @@ class LocationService {
 
   // Save location to localStorage for guests
   saveGuestLocation(location: UserLocation): void {
-    localStorage.setItem(this.LOCATION_STORAGE_KEY, JSON.stringify(location));
+    localStorage.setItem(LocationService.LOCATION_STORAGE_KEY, JSON.stringify(location));
   }
 
   // Load location from localStorage for guests
   loadGuestLocation(): UserLocation | null {
-    const stored = localStorage.getItem(this.LOCATION_STORAGE_KEY);
+    const stored = localStorage.getItem(LocationService.LOCATION_STORAGE_KEY);
     return stored ? JSON.parse(stored) : null;
   }
 
@@ -220,7 +220,7 @@ class LocationService {
     if (guestLocation) {
       await this.saveUserLocation(userId, guestLocation);
       // Clear guest location
-      localStorage.removeItem(this.LOCATION_STORAGE_KEY);
+      localStorage.removeItem(LocationService.LOCATION_STORAGE_KEY);
     }
   }
 }

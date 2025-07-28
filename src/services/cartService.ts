@@ -21,18 +21,18 @@ class CartService {
 
   // Save cart to localStorage for guests
   saveGuestCart(items: CartItem[]): void {
-    localStorage.setItem(this.CART_STORAGE_KEY, JSON.stringify(items));
+    localStorage.setItem(CartService.CART_STORAGE_KEY, JSON.stringify(items));
   }
 
   // Load cart from localStorage for guests
   loadGuestCart(): CartItem[] {
-    const stored = localStorage.getItem(this.CART_STORAGE_KEY);
+    const stored = localStorage.getItem(CartService.CART_STORAGE_KEY);
     return stored ? JSON.parse(stored) : [];
   }
 
   // Clear guest cart
   clearGuestCart(): void {
-    localStorage.removeItem(this.CART_STORAGE_KEY);
+    localStorage.removeItem(CartService.CART_STORAGE_KEY);
   }
 
   // Save cart to database for authenticated users

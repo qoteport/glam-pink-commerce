@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      cart_items: {
+        Row: {
+          created_at: string
+          id: string
+          product_id: string
+          product_image: string | null
+          product_name: string
+          quantity: number
+          selected_color: string | null
+          selected_length: string | null
+          unit_price: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_id: string
+          product_image?: string | null
+          product_name: string
+          quantity?: number
+          selected_color?: string | null
+          selected_length?: string | null
+          unit_price: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_id?: string
+          product_image?: string | null
+          product_name?: string
+          quantity?: number
+          selected_color?: string | null
+          selected_length?: string | null
+          unit_price?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           created_at: string
@@ -979,6 +1021,48 @@ export type Database = {
           updated_at?: string
           user_id?: string
           zip_code?: string
+        }
+        Relationships: []
+      }
+      user_locations: {
+        Row: {
+          city: string | null
+          country: string
+          created_at: string
+          currency: string
+          id: string
+          latitude: number | null
+          longitude: number | null
+          region: string | null
+          timezone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          city?: string | null
+          country: string
+          created_at?: string
+          currency: string
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          region?: string | null
+          timezone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          city?: string | null
+          country?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          region?: string | null
+          timezone?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
