@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -5,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit2, Trash2, Save, X, ExternalLink } from 'lucide-react';
+import { Plus, Edit2, Trash2, Save, X, ExternalLink, Users } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -15,13 +16,19 @@ interface SocialLink {
   url: string;
   is_active: boolean;
   display_order: number;
+  followers_count: number;
 }
 
 const SocialLinksManager = () => {
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [newLink, setNewLink] = useState({ platform: '', url: '', display_order: 0 });
+  const [newLink, setNewLink] = useState({ 
+    platform: '', 
+    url: '', 
+    display_order: 0, 
+    followers_count: 0 
+  });
   const [showAddForm, setShowAddForm] = useState(false);
   const { toast } = useToast();
 
@@ -58,7 +65,7 @@ const SocialLinksManager = () => {
 
       if (error) throw error;
 
-      setNewLink({ platform: '', url: '', display_order: 0 });
+      setNewLink({ platform: '', url: '', display_order: 0, followers_count: 0 });
       setShowAddForm(false);
       fetchSocialLinks();
       toast({
@@ -103,6 +110,8 @@ const SocialLinksManager = () => {
   };
 
   const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this social link?')) return;
+
     try {
       const { error } = await supabase
         .from('social_links')
@@ -128,6 +137,15 @@ const SocialLinksManager = () => {
 
   const toggleActive = async (id: string, is_active: boolean) => {
     await handleUpdate(id, { is_active });
+  };
+
+  const formatFollowerCount = (count: number) => {
+    if (count >= 1000000) {
+      return `${(count / 1000000).toFixed(1)}M`;
+    } else if (count >= 1000) {
+      return `${(count / 1000).toFixed(1)}K`;
+    }
+    return count.toString();
   };
 
   if (loading) {
@@ -166,6 +184,16 @@ const SocialLinksManager = () => {
                 value={newLink.url}
                 onChange={(e) => setNewLink(prev => ({ ...prev, url: e.target.value }))}
                 placeholder="https://..."
+              />
+            </div>
+            <div>
+              <Label htmlFor="followers_count">Followers Count</Label>
+              <Input
+                id="followers_count"
+                type="number"
+                value={newLink.followers_count}
+                onChange={(e) => setNewLink(prev => ({ ...prev, followers_count: parseInt(e.target.value) || 0 }))}
+                placeholder="0"
               />
             </div>
             <div>
@@ -213,6 +241,12 @@ const SocialLinksManager = () => {
                         <Badge variant="outline">
                           Order: {link.display_order}
                         </Badge>
+                        {link.followers_count > 0 && (
+                          <Badge variant="outline" className="flex items-center gap-1">
+                            <Users size={12} />
+                            {formatFollowerCount(link.followers_count)}
+                          </Badge>
+                        )}
                       </div>
                       <a 
                         href={link.url} 
@@ -268,6 +302,7 @@ const EditForm = ({
     platform: link.platform,
     url: link.url,
     display_order: link.display_order,
+    followers_count: link.followers_count,
   });
 
   const handleSave = () => {
@@ -290,6 +325,15 @@ const EditForm = ({
           id="edit-url"
           value={formData.url}
           onChange={(e) => setFormData(prev => ({ ...prev, url: e.target.value }))}
+        />
+      </div>
+      <div>
+        <Label htmlFor="edit-followers">Followers Count</Label>
+        <Input
+          id="edit-followers"
+          type="number"
+          value={formData.followers_count}
+          onChange={(e) => setFormData(prev => ({ ...prev, followers_count: parseInt(e.target.value) || 0 }))}
         />
       </div>
       <div>

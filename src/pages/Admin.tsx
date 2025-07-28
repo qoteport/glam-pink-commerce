@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -16,7 +15,8 @@ import {
   Tags,
   Receipt,
   MessageSquare,
-  Grid3x3
+  Grid3x3,
+  Mail
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import ProductsManager from '@/components/admin/ProductsManager';
@@ -165,6 +165,10 @@ const Admin = () => {
                     <ShoppingCart size={16} />
                     <span>Orders</span>
                   </TabsTrigger>
+                  <TabsTrigger value="subscriptions" className="flex items-center space-x-2">
+                    <Mail size={16} />
+                    <span>Subscriptions</span>
+                  </TabsTrigger>
                   <TabsTrigger value="hero" className="flex items-center space-x-2">
                     <Crown size={16} />
                     <span>Hero</span>
@@ -227,6 +231,10 @@ const Admin = () => {
 
               <TabsContent value="orders" className="space-y-4">
                 <OrdersManagerReal />
+              </TabsContent>
+
+              <TabsContent value="subscriptions" className="space-y-4">
+                <SubscriptionsManager />
               </TabsContent>
 
               <TabsContent value="hero" className="space-y-4">
