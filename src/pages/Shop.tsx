@@ -39,21 +39,11 @@ const Shop = () => {
   const { toast } = useToast();
 
   const [categories, setCategories] = useState([
-    { value: 'all', label: 'All Categories' },
-    { value: 'wigs', label: 'Wigs' },
-    { value: 'bundles', label: 'Bundles' },
-    { value: 'closures', label: 'Closures' },
-    { value: 'frontals', label: 'Frontals' },
+    { value: 'all', label: 'All Categories' }
   ]);
 
   const textures = [
     { value: 'all', label: 'All Textures' },
-    { value: 'straight', label: 'Straight' },
-    { value: 'body_wave', label: 'Body Wave' },
-    { value: 'deep_wave', label: 'Deep Wave' },
-    { value: 'curly', label: 'Curly' },
-    { value: 'loose_wave', label: 'Loose Wave' },
-    { value: 'water_wave', label: 'Water Wave' },
   ];
 
   const lengths = [
