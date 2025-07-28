@@ -11,7 +11,7 @@ import {
   Facebook, 
   Twitter, 
   Youtube,
-  TikTok,
+  Music,
   Linkedin
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -66,7 +66,7 @@ const Footer = () => {
       case 'youtube':
         return Youtube;
       case 'tiktok':
-        return TikTok;
+        return Music; // Using Music icon as substitute for TikTok
       case 'linkedin':
         return Linkedin;
       default:

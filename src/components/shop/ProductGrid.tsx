@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Grid3X3, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,12 +7,12 @@ import { Product } from '@/data/products';
 
 interface ProductGridProps {
   products: Product[];
-  viewMode: 'grid' | 'list';
-  onViewModeChange: (mode: 'grid' | 'list') => void;
+  viewMode?: 'grid' | 'list';
+  onViewModeChange?: (mode: 'grid' | 'list') => void;
   loading?: boolean;
 }
 
-const ProductGrid = ({ products, viewMode, onViewModeChange, loading }: ProductGridProps) => {
+const ProductGrid = ({ products, viewMode = 'grid', onViewModeChange, loading }: ProductGridProps) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -36,11 +37,12 @@ const ProductGrid = ({ products, viewMode, onViewModeChange, loading }: ProductG
         <p className="text-sm text-muted-foreground">
           Showing {products.length} {products.length === 1 ? 'product' : 'products'}
         </p>
+        {/* View mode toggle commented out - can be enabled if needed */}
         {/* <div className="flex items-center gap-1 border border-border rounded-lg p-1">
           <Button 
             variant={viewMode === 'grid' ? 'default' : 'ghost'} 
             size="sm"
-            onClick={() => onViewModeChange('grid')}
+            onClick={() => onViewModeChange?.('grid')}
             className="h-8 w-8 p-0"
           >
             <Grid3X3 className="h-4 w-4" />
@@ -48,7 +50,7 @@ const ProductGrid = ({ products, viewMode, onViewModeChange, loading }: ProductG
           <Button 
             variant={viewMode === 'list' ? 'default' : 'ghost'} 
             size="sm"
-            onClick={() => onViewModeChange('list')}
+            onClick={() => onViewModeChange?.('list')}
             className="h-8 w-8 p-0"
           >
             <List className="h-4 w-4" />

@@ -15,6 +15,7 @@ const Shop = () => {
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [showMobileFilter, setShowMobileFilter] = useState(false);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   // Filter states
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -325,7 +326,12 @@ const Shop = () => {
 
           {/* Product Grid */}
           <div className="flex-1">
-            <ProductGrid products={filteredProducts} loading={loading} />
+            <ProductGrid 
+              products={filteredProducts} 
+              loading={loading}
+              viewMode={viewMode}
+              onViewModeChange={setViewMode}
+            />
           </div>
         </div>
       </div>
