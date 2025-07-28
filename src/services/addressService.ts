@@ -29,7 +29,10 @@ class AddressService {
       return [];
     }
     
-    return data || [];
+    return (data || []).map(item => ({
+      ...item,
+      type: item.type as 'shipping' | 'billing'
+    }));
   }
 
   async getDefaultAddress(userId: string, type: 'shipping' | 'billing' = 'shipping'): Promise<UserAddress | null> {
@@ -46,7 +49,10 @@ class AddressService {
       return null;
     }
     
-    return data;
+    return data ? {
+      ...data,
+      type: data.type as 'shipping' | 'billing'
+    } : null;
   }
 
   async saveAddress(address: UserAddress): Promise<{ success: boolean; data?: UserAddress }> {
@@ -77,7 +83,13 @@ class AddressService {
         return { success: false };
       }
       
-      return { success: true, data };
+      return { 
+        success: true, 
+        data: data ? {
+          ...data,
+          type: data.type as 'shipping' | 'billing'
+        } : undefined
+      };
     } else {
       // Create new address
       const { data, error } = await supabase
@@ -91,7 +103,13 @@ class AddressService {
         return { success: false };
       }
       
-      return { success: true, data };
+      return { 
+        success: true, 
+        data: data ? {
+          ...data,
+          type: data.type as 'shipping' | 'billing'
+        } : undefined
+      };
     }
   }
 

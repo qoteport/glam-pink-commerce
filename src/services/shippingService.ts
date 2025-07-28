@@ -32,7 +32,10 @@ class ShippingService {
       return [];
     }
     
-    return data || [];
+    return (data || []).map(item => ({
+      ...item,
+      rule_type: item.rule_type as 'minimum_amount' | 'product_category' | 'product_specific'
+    }));
   }
 
   async getTaxRules(): Promise<TaxRule[]> {
@@ -46,7 +49,10 @@ class ShippingService {
       return [];
     }
     
-    return data || [];
+    return (data || []).map(item => ({
+      ...item,
+      applies_to: item.applies_to as 'all' | 'category' | 'location'
+    }));
   }
 
   async calculateShipping(orderAmount: number, items: any[]): Promise<number> {
