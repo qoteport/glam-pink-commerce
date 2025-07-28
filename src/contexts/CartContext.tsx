@@ -1,5 +1,7 @@
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { cartService } from '@/services/cartService';
 
 export interface CartItem {
   id: string;
@@ -37,6 +39,53 @@ interface CartProviderProps {
 
 export const CartProvider = ({ children }: CartProviderProps) => {
   const [items, setItems] = useState<CartItem[]>([]);
+  const { user } = useAuth();
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Load cart when component mounts or user changes
+  useEffect(() => {
+    loadCart();
+  }, [user]);
+
+  // Save cart whenever items change
+  useEffect(() => {
+    if (!isLoading) {
+      saveCart();
+    }
+  }, [items, user, isLoading]);
+
+  const loadCart = async () => {
+    setIsLoading(true);
+    try {
+      if (user) {
+        // For authenticated users, try to migrate guest cart first
+        const userCart = await cartService.migrateGuestCartToUser(user.id);
+        setItems(userCart);
+      } else {
+        // For guests, load from localStorage
+        const guestCart = cartService.loadGuestCart();
+        setItems(guestCart);
+      }
+    } catch (error) {
+      console.error('Error loading cart:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const saveCart = async () => {
+    try {
+      if (user) {
+        // Save to database for authenticated users
+        await cartService.saveUserCart(user.id, items);
+      } else {
+        // Save to localStorage for guests
+        cartService.saveGuestCart(items);
+      }
+    } catch (error) {
+      console.error('Error saving cart:', error);
+    }
+  };
 
   const addToCart = (product: any, quantity = 1, selectedColor?: string, selectedLength?: string) => {
     setItems(prevItems => {
@@ -91,8 +140,19 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     );
   };
 
-  const clearCart = () => {
+  const clearCart = async () => {
     setItems([]);
+    
+    // Also clear from persistent storage
+    try {
+      if (user) {
+        await cartService.clearUserCart(user.id);
+      } else {
+        cartService.clearGuestCart();
+      }
+    } catch (error) {
+      console.error('Error clearing cart:', error);
+    }
   };
 
   const getTotalItems = () => {

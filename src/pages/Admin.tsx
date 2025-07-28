@@ -1,15 +1,17 @@
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BarChart, Users, ShoppingCart, Package, MessageSquare, FileText, Instagram, Crown, Percent, Truck, Calculator } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { BarChart, Users, ShoppingCart, Package, MessageSquare, FileText, Instagram, Crown, Percent, Truck, Calculator, ExternalLink, LogOut } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 // Import existing admin components
 import Analytics from '@/components/admin/Analytics';
 import ProductsManager from '@/components/admin/ProductsManager';
-import OrdersManager from '@/components/admin/OrdersManager';
+import OrdersManagerReal from '@/components/admin/OrdersManagerReal';
 import UsersManager from '@/components/admin/UsersManager';
 import TestimonialsManager from '@/components/admin/TestimonialsManager';
 import InstagramManager from '@/components/admin/InstagramManager';
@@ -23,14 +25,22 @@ import CustomWigOrdersManager from '@/components/admin/CustomWigOrdersManager';
 import HeroManager from '@/components/admin/HeroManager';
 import SocialLinksManager from '@/components/admin/SocialLinksManager';
 import SubscriptionsManager from '@/components/admin/SubscriptionsManager';
-
-// Import new components
 import ShippingRulesManager from '@/components/admin/ShippingRulesManager';
 import TaxRulesManager from '@/components/admin/TaxRulesManager';
 
 const Admin = () => {
-  const { isAdmin } = useAuth();
+  const { isAdmin, profile, signOut } = useAuth();
   const [activeTab, setActiveTab] = useState('analytics');
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
+
+  const handleViewStore = () => {
+    navigate('/');
+  };
 
   if (!isAdmin) {
     return (
@@ -46,12 +56,37 @@ const Admin = () => {
   return (
     <ProtectedRoute requireAdmin={true}>
       <div className="min-h-screen bg-gray-50">
-        <div className="container mx-auto px-4 py-8">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">Admin Dashboard</h1>
-            <p className="text-gray-600">Manage your store, products, and settings</p>
+        {/* Admin Header */}
+        <div className="bg-white shadow-sm border-b">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-800">HairyTalesBeauty Admin</h1>
+                <p className="text-gray-600">Welcome back, {profile?.full_name || 'Admin'}</p>
+              </div>
+              <div className="flex items-center space-x-4">
+                <Button
+                  variant="outline"
+                  onClick={handleViewStore}
+                  className="flex items-center space-x-2"
+                >
+                  <ExternalLink size={16} />
+                  <span>View Store</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={handleSignOut}
+                  className="flex items-center space-x-2"
+                >
+                  <LogOut size={16} />
+                  <span>Sign Out</span>
+                </Button>
+              </div>
+            </div>
           </div>
+        </div>
 
+        <div className="container mx-auto px-4 py-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <TabsList className="grid w-full grid-cols-8 lg:grid-cols-16">
               <TabsTrigger value="analytics" className="flex items-center space-x-2">
@@ -129,7 +164,7 @@ const Admin = () => {
             </TabsContent>
 
             <TabsContent value="orders">
-              <OrdersManager />
+              <OrdersManagerReal />
             </TabsContent>
 
             <TabsContent value="users">
