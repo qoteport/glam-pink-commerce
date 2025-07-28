@@ -13,53 +13,39 @@ interface FilterOption {
 
 interface ProductFilterProps {
   categories: FilterOption[];
-  colors: FilterOption[];
+  textures: FilterOption[];
   lengths: FilterOption[];
-  sizes: FilterOption[];
-  hairTypes: FilterOption[];
   priceRanges: { value: number[]; label: string; }[];
   selectedCategory: string;
-  selectedColor: string;
+  selectedTexture: string;
   selectedLength: string;
-  selectedSize: string;
-  selectedHairType: string;
   priceRange: number[];
   onCategoryChange: (category: string) => void;
-  onColorChange: (color: string) => void;
+  onTextureChange: (texture: string) => void;
   onLengthChange: (length: string) => void;
-  onSizeChange: (size: string) => void;
-  onHairTypeChange: (hairType: string) => void;
   onPriceRangeChange: (range: number[]) => void;
   onClearFilters: () => void;
 }
 
 const ProductFilter = ({
   categories,
-  colors,
+  textures,
   lengths,
-  sizes,
-  hairTypes,
   priceRanges,
   selectedCategory,
-  selectedColor,
+  selectedTexture,
   selectedLength,
-  selectedSize,
-  selectedHairType,
   priceRange,
   onCategoryChange,
-  onColorChange,
+  onTextureChange,
   onLengthChange,
-  onSizeChange,
-  onHairTypeChange,
   onPriceRangeChange,
   onClearFilters,
 }: ProductFilterProps) => {
   const hasActiveFilters = 
     selectedCategory !== 'all' || 
-    selectedColor !== 'all' || 
+    selectedTexture !== 'all' || 
     selectedLength !== 'all' || 
-    selectedSize !== 'all' || 
-    selectedHairType !== 'all' || 
     (priceRange[0] !== 0 || priceRange[1] !== 1000);
 
   return (
@@ -90,7 +76,7 @@ const ProductFilter = ({
               Category
             </Label>
             <div className="space-y-2">
-              {categories.map((category) => (
+              {categories?.map((category) => (
                 <div key={category.value} className="flex items-center space-x-2">
                   <Checkbox
                     id={`category-${category.value}`}
@@ -114,27 +100,27 @@ const ProductFilter = ({
             </div>
           </div>
 
-          {/* Color Filter */}
+          {/* Texture Filter */}
           <div>
             <Label className="text-sm font-medium text-foreground mb-3 block">
-              Color
+              Texture
             </Label>
             <div className="space-y-2">
-              {colors.map((color) => (
-                <div key={color.value} className="flex items-center space-x-2">
+              {textures?.map((texture) => (
+                <div key={texture.value} className="flex items-center space-x-2">
                   <Checkbox
-                    id={`color-${color.value}`}
-                    checked={selectedColor === color.value}
-                    onCheckedChange={() => onColorChange(color.value)}
+                    id={`texture-${texture.value}`}
+                    checked={selectedTexture === texture.value}
+                    onCheckedChange={() => onTextureChange(texture.value)}
                     className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                   />
                   <Label 
-                    htmlFor={`color-${color.value}`}
+                    htmlFor={`texture-${texture.value}`}
                     className="text-sm font-normal text-muted-foreground hover:text-foreground cursor-pointer"
                   >
-                    {color.label}
+                    {texture.label}
                   </Label>
-                  {selectedColor === color.value && color.value !== 'all' && (
+                  {selectedTexture === texture.value && texture.value !== 'all' && (
                     <Badge variant="secondary" className="text-xs">
                       Active
                     </Badge>
@@ -150,7 +136,7 @@ const ProductFilter = ({
               Length
             </Label>
             <div className="space-y-2">
-              {lengths.map((length) => (
+              {lengths?.map((length) => (
                 <div key={length.value} className="flex items-center space-x-2">
                   <Checkbox
                     id={`length-${length.value}`}
@@ -174,73 +160,13 @@ const ProductFilter = ({
             </div>
           </div>
 
-          {/* Size Filter */}
-          <div>
-            <Label className="text-sm font-medium text-foreground mb-3 block">
-              Size
-            </Label>
-            <div className="space-y-2">
-              {sizes.map((size) => (
-                <div key={size.value} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`size-${size.value}`}
-                    checked={selectedSize === size.value}
-                    onCheckedChange={() => onSizeChange(size.value)}
-                    className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                  />
-                  <Label 
-                    htmlFor={`size-${size.value}`}
-                    className="text-sm font-normal text-muted-foreground hover:text-foreground cursor-pointer"
-                  >
-                    {size.label}
-                  </Label>
-                  {selectedSize === size.value && size.value !== 'all' && (
-                    <Badge variant="secondary" className="text-xs">
-                      Active
-                    </Badge>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Hair Type Filter */}
-          <div>
-            <Label className="text-sm font-medium text-foreground mb-3 block">
-              Hair Type
-            </Label>
-            <div className="space-y-2">
-              {hairTypes.map((hairType) => (
-                <div key={hairType.value} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`hairType-${hairType.value}`}
-                    checked={selectedHairType === hairType.value}
-                    onCheckedChange={() => onHairTypeChange(hairType.value)}
-                    className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                  />
-                  <Label 
-                    htmlFor={`hairType-${hairType.value}`}
-                    className="text-sm font-normal text-muted-foreground hover:text-foreground cursor-pointer"
-                  >
-                    {hairType.label}
-                  </Label>
-                  {selectedHairType === hairType.value && hairType.value !== 'all' && (
-                    <Badge variant="secondary" className="text-xs">
-                      Active
-                    </Badge>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
           {/* Price Range Filter */}
           <div>
             <Label className="text-sm font-medium text-foreground mb-3 block">
               Price Range
             </Label>
             <div className="space-y-2">
-              {priceRanges.map((range) => (
+              {priceRanges?.map((range) => (
                 <div key={range.value[0]} className="flex items-center space-x-2">
                   <Checkbox
                     id={`price-${range.value[0]}`}
