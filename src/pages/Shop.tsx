@@ -30,6 +30,7 @@ const Shop = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
+  const [selectedProductStatus, setProductStatus] = useState(searchParams.get('status') || null);
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'all');
   const [selectedColor, setSelectedColor] = useState('all');
   const [selectedLength, setSelectedLength] = useState('all');
@@ -90,7 +91,7 @@ const Shop = () => {
         features: product.features || [],
         hairType: product.hair_types?.name,
         hairTypeId: product.hair_type_id,
-        sizes: product.sizes,
+        sizes: product.size || [],
         imageGallery: product.image_gallery || [],
         hairCareInstructions: product.hair_care_instructions,
         type: product.type,
@@ -161,7 +162,7 @@ const Shop = () => {
       if (error) throw error;
       
       const dbCategories = data?.map(cat => ({
-        value: cat.slug,
+        value: cat.name,
         label: cat.name
       })) || [];
 
@@ -200,6 +201,10 @@ const Shop = () => {
   const filteredAndSortedProducts = useMemo(() => {
     let filtered = products;
 
+    if (selectedProductStatus) {
+      filtered = filtered.filter(product => product.isNew === (selectedProductStatus ? true : false));
+    }
+
     if (searchQuery) {
       filtered = filtered.filter(product =>
         product.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -207,7 +212,7 @@ const Shop = () => {
     }
 
     if (selectedCategory !== 'all') {
-      filtered = filtered.filter(product => product.category === selectedCategory);
+      filtered = filtered.filter(product => product.category.trim().toLowerCase() === selectedCategory.trim().toLowerCase());
     }
 
     if (selectedColor !== 'all') {
@@ -219,7 +224,7 @@ const Shop = () => {
     }
 
     if (selectedSize !== 'all') {
-      filtered = filtered.filter(product => product.sizes?.includes(selectedSize));
+      filtered = filtered.filter(product => product.size?.includes(selectedSize));
     }
 
     if (selectedHairType !== 'all') {
@@ -307,7 +312,8 @@ const Shop = () => {
                 setSelectedLength('all');
                 setSelectedSize('all');
                 setSelectedHairType('all');
-                setPriceRange([0, 1000]);
+                setPriceRange([0, 10000]);
+                setProductStatus(null);
               }}
             />
           </div>

@@ -15,7 +15,7 @@ const Index = () => {
         <ProductShowcase />
         <Testimonials />
       </main>
-      {/* <Footer /> */}
+      <Footer />
     </div>
   );
 };

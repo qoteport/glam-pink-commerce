@@ -24,7 +24,7 @@ const Header = ({ onSearch }: HeaderProps) => {
   const navItems = [
     { name: 'Home', href: '/' },
     { name: 'Shop', href: '/shop' },
-    { name: 'Wigs', href: '/shop?category=wigs' },
+    { name: 'Wigs', href: '/shop?status=wigs' },
     { name: 'Wholesale Deals', href: '/wholesale-deals', isSpecial: true },
     { 
       name: 'More', 
@@ -32,7 +32,7 @@ const Header = ({ onSearch }: HeaderProps) => {
       isDropdown: true,
       items: [
         { name: 'Customized Braided Wigs', href: '/custom-braided-wigs' },
-        { name: 'Ready to Ship Wigs', href: '/shop?category=ready-to-ship-wigs' },
+        { name: 'Ready to Ship Wigs', href: '/shop?status=ready-to-ship-wigs' },
         { name: 'Wholesale Deals', href: '/wholesale-deals' }
       ]
     }

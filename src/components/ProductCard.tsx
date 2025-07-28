@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import { Heart, Star, ShoppingCart, Eye } from 'lucide-react';
-import { useCart } from '@/contexts/CartContext';
-import { useFavorites } from '@/contexts/FavoritesContext';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Heart, Star, ShoppingCart, Eye } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
+import { useFavorites } from "@/contexts/FavoritesContext";
 
 interface Product {
   id: string;
@@ -24,17 +24,19 @@ interface Product {
 
 interface ProductCardProps {
   product: Product;
-  viewMode?: 'grid' | 'list';
+  viewMode?: "grid" | "list";
 }
 
-const ProductCard = ({ product, viewMode = 'grid' }: ProductCardProps) => {
+const ProductCard = ({ product, viewMode = "grid" }: ProductCardProps) => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
-  const [selectedColor, setSelectedColor] = useState(product.colors?.[0] || '');
-  
-  const discountPercentage = product.originalPrice 
-    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+  const [selectedColor, setSelectedColor] = useState(product.colors?.[0] || "");
+
+  const discountPercentage = product.originalPrice
+    ? Math.round(
+        ((product.originalPrice - product.price) / product.originalPrice) * 100
+      )
     : 0;
 
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -52,22 +54,22 @@ const ProductCard = ({ product, viewMode = 'grid' }: ProductCardProps) => {
   };
 
   return (
-    <Card 
+    <Card
       className="group relative overflow-hidden border-0 shadow-md hover:shadow-xl transition-all duration-300 hover-lift bg-white cursor-pointer"
       onClick={handleCardClick}
     >
       {/* Product Image */}
       <div className="relative aspect-[4/5] overflow-hidden">
         {/* Product Image */}
-        <img 
-          src={product.image} 
+        <img
+          src={product.image}
           alt={product.name}
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           onError={(e) => {
             // Fallback to placeholder if image fails to load
             const target = e.target as HTMLImageElement;
-            target.style.display = 'none';
-            target.nextElementSibling?.classList.remove('hidden');
+            target.style.display = "none";
+            target.nextElementSibling?.classList.remove("hidden");
           }}
         />
         {/* Fallback Placeholder */}
@@ -116,7 +118,9 @@ const ProductCard = ({ product, viewMode = 'grid' }: ProductCardProps) => {
             <Badge className="bg-rosegold-500 text-white">Best Seller</Badge>
           )}
           {discountPercentage > 0 && (
-            <Badge className="bg-red-500 text-white">-{discountPercentage}%</Badge>
+            <Badge className="bg-red-500 text-white">
+              -{discountPercentage}%
+            </Badge>
           )}
         </div>
 
@@ -134,11 +138,13 @@ const ProductCard = ({ product, viewMode = 'grid' }: ProductCardProps) => {
             }
           }}
         >
-          <Heart 
-            size={16} 
+          <Heart
+            size={16}
             className={`transition-colors ${
-              isFavorite(product.id) ? 'text-primary fill-current' : 'text-gray-600'
-            }`} 
+              isFavorite(product.id)
+                ? "text-primary fill-current"
+                : "text-gray-600"
+            }`}
           />
         </Button>
       </div>
@@ -151,23 +157,28 @@ const ProductCard = ({ product, viewMode = 'grid' }: ProductCardProps) => {
         </h3>
 
         {/* Rating */}
-        <div className="flex items-center space-x-2">
-          <div className="flex items-center">
-            {[...Array(5)].map((_, i) => (
-              <Star
-                key={i}
-                size={14}
-                className={i < Math.floor(product.rating) 
-                  ? 'text-yellow-400 fill-current' 
-                  : 'text-gray-300'
-                }
-              />
-            ))}
+        {product.rating > 0 && (
+          <div className="flex items-center space-x-2">
+            <div className="flex items-center">
+              {[...Array(5)].map((_, i) => (
+                <Star
+                  key={i}
+                  size={14}
+                  className={
+                    i < Math.floor(product.rating)
+                      ? "text-yellow-400 fill-current"
+                      : "text-gray-300"
+                  }
+                />
+              ))}
+            </div>
+            {product.rating > 0 && (
+              <span className="text-sm text-gray-600">
+                {product.rating} ({product.reviewCount})
+              </span>
+            )}
           </div>
-          <span className="text-sm text-gray-600">
-            {product.rating} ({product.reviewCount})
-          </span>
-        </div>
+        )}
 
         {/* Color Options */}
         {product.colors?.length > 0 && (
@@ -178,9 +189,9 @@ const ProductCard = ({ product, viewMode = 'grid' }: ProductCardProps) => {
                 <button
                   key={index}
                   className={`w-6 h-6 rounded-full border-2 transition-all ${
-                    selectedColor === color 
-                      ? 'border-blush-500 scale-110' 
-                      : 'border-gray-200 hover:border-blush-300'
+                    selectedColor === color
+                      ? "border-blush-500 scale-110"
+                      : "border-gray-200 hover:border-blush-300"
                   }`}
                   style={{ backgroundColor: color }}
                   onClick={(e) => {
@@ -193,44 +204,43 @@ const ProductCard = ({ product, viewMode = 'grid' }: ProductCardProps) => {
           </div>
         )}
 
-       <div className="flex flex-row gap-10">
-         {/* Length Options */}
-        {product.lengths?.length > 0 && (
-          <div className="space-y-2">
-            <p className="text-xs text-gray-600 font-medium">Lengths:</p>
-            <div className="flex flex-wrap gap-1">
-              {product.lengths.map((length, index) => (
-                <Badge
-                  key={index}
-                  variant="outline"
-                  className="text-xs border-blush-200 hover:border-blush-300 cursor-pointer"
-                >
-                  {length}"
-                </Badge>
-              ))}
+        <div className="flex flex-row gap-10">
+          {/* Length Options */}
+          {product.lengths?.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-xs text-gray-600 font-medium">Lengths:</p>
+              <div className="flex flex-wrap gap-1">
+                {product.lengths.map((length, index) => (
+                  <Badge
+                    key={index}
+                    variant="outline"
+                    className="text-xs border-blush-200 hover:border-blush-300 cursor-pointer"
+                  >
+                    {length}"
+                  </Badge>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-
-         {/* Sizes Options */}
-        {product.size?.length > 0 && (
-          <div className="space-y-2">
-            <p className="text-xs text-gray-600 font-medium">Sizes:</p>
-            <div className="flex flex-wrap gap-1">
-              {product.size.map((length, index) => (
-                <Badge
-                  key={index}
-                  variant="outline"
-                  className="text-xs border-blush-200 hover:border-blush-300 cursor-pointer"
-                >
-                  {length}
-                </Badge>
-              ))}
+          {/* Sizes Options */}
+          {product.size?.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-xs text-gray-600 font-medium">Sizes:</p>
+              <div className="flex flex-wrap gap-1">
+                {product.size.map((length, index) => (
+                  <Badge
+                    key={index}
+                    variant="outline"
+                    className="text-xs border-blush-200 hover:border-blush-300 cursor-pointer"
+                  >
+                    {length}
+                  </Badge>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
-       </div>
+          )}
+        </div>
 
         {/* Price */}
         <div className="flex items-center justify-between">
@@ -247,7 +257,7 @@ const ProductCard = ({ product, viewMode = 'grid' }: ProductCardProps) => {
         </div>
 
         {/* Add to Cart Button */}
-        <Button 
+        <Button
           className="w-full bg-gradient-to-r from-blush-500 to-rosegold-500 hover:from-blush-600 hover:to-rosegold-600 text-white font-semibold py-2 rounded-lg transition-all duration-300"
           onClick={handleAddToCart}
         >

@@ -205,7 +205,7 @@ const Cart = () => {
             </Card>
 
             {/* Recently Viewed */}
-            <Card>
+            {/* <Card>
               <CardContent className="p-6">
                 <h3 className="font-semibold mb-4">You might also like</h3>
                 <div className="space-y-4">
@@ -220,7 +220,7 @@ const Cart = () => {
                   ))}
                 </div>
               </CardContent>
-            </Card>
+            </Card> */}
           </div>
         </div>
       </div>

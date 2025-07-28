@@ -13,40 +13,79 @@ interface FilterOption {
 
 interface ProductFilterProps {
   categories: FilterOption[];
-  textures: FilterOption[];
+  colors: FilterOption[];
   lengths: FilterOption[];
+  sizes: FilterOption[];
+  hairTypes: FilterOption[];
   priceRanges: { value: number[]; label: string; }[];
   selectedCategory: string;
-  selectedTexture: string;
+  selectedColor: string;
   selectedLength: string;
+  selectedSize: string;
+  selectedHairType: string;
   priceRange: number[];
   onCategoryChange: (category: string) => void;
-  onTextureChange: (texture: string) => void;
+  onColorChange: (color: string) => void;
   onLengthChange: (length: string) => void;
+  onSizeChange: (size: string) => void;
+  onHairTypeChange: (hairType: string) => void;
   onPriceRangeChange: (range: number[]) => void;
   onClearFilters: () => void;
 }
 
 const ProductFilter = ({
   categories,
-  textures,
+  colors,
   lengths,
+  sizes,
+  hairTypes,
   priceRanges,
   selectedCategory,
-  selectedTexture,
+  selectedColor,
   selectedLength,
+  selectedSize,
+  selectedHairType,
   priceRange,
   onCategoryChange,
-  onTextureChange,
+  onColorChange,
   onLengthChange,
+  onSizeChange,
+  onHairTypeChange,
   onPriceRangeChange,
   onClearFilters,
 }: ProductFilterProps) => {
   const hasActiveFilters = 
     selectedCategory !== 'all' || 
-    selectedTexture !== 'all' || 
+    selectedColor !== 'all' || 
     selectedLength !== 'all' || 
+    selectedSize !== 'all' || 
+    selectedHairType !== 'all' || 
     (priceRange[0] !== 0 || priceRange[1] !== 1000);
+
+  // Color name to hex mapping for common colors
+  const colorMap: { [key: string]: string } = {
+    black: '#000000',
+    white: '#FFFFFF',
+    red: '#FF0000',
+    blue: '#0000FF',
+    green: '#008000',
+    brown: '#A52A2A',
+    blonde: '#F5E050',
+    gray: '#808080',
+    purple: '#800080',
+    pink: '#FFC1CC',
+  };
+
+  // Function to get display color (hex or name)
+  const getColorDisplay = (color: string) => {
+    if (color.startsWith('#')) {
+      return { isHex: true, value: color };
+    }
+    const lowercaseColor = color.toLowerCase();
+    return colorMap[lowercaseColor] 
+      ? { isHex: true, value: colorMap[lowercaseColor] }
+      : { isHex: false, value: color };
+  };
 
   return (
     <Card className="bg-white border-border shadow-sm">
@@ -100,33 +139,44 @@ const ProductFilter = ({
             </div>
           </div>
 
-          {/* Texture Filter */}
+          {/* Color Filter */}
           <div>
             <Label className="text-sm font-medium text-foreground mb-3 block">
-              Texture
+              Color
             </Label>
             <div className="space-y-2">
-              {textures?.map((texture) => (
-                <div key={texture.value} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`texture-${texture.value}`}
-                    checked={selectedTexture === texture.value}
-                    onCheckedChange={() => onTextureChange(texture.value)}
-                    className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                  />
-                  <Label 
-                    htmlFor={`texture-${texture.value}`}
-                    className="text-sm font-normal text-muted-foreground hover:text-foreground cursor-pointer"
-                  >
-                    {texture.label}
-                  </Label>
-                  {selectedTexture === texture.value && texture.value !== 'all' && (
-                    <Badge variant="secondary" className="text-xs">
-                      Active
-                    </Badge>
-                  )}
-                </div>
-              ))}
+              {colors?.map((color) => {
+                const colorDisplay = getColorDisplay(color.value);
+                return (
+                  <div key={color.value} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`color-${color.value}`}
+                      checked={selectedColor === color.value}
+                      onCheckedChange={() => onColorChange(color.value)}
+                      className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                    />
+                    <div className="flex items-center gap-2">
+                      {colorDisplay.isHex && color.value !== 'all' && (
+                        <div 
+                          className="w-4 h-4 rounded-full border border-border" 
+                          style={{ backgroundColor: colorDisplay.value }}
+                        />
+                      )}
+                      <Label 
+                        htmlFor={`color-${color.value}`}
+                        className="text-sm font-normal text-muted-foreground hover:text-foreground cursor-pointer"
+                      >
+                        {color.label}
+                      </Label>
+                    </div>
+                    {selectedColor === color.value && color.value !== 'all' && (
+                      <Badge variant="secondary" className="text-xs">
+                        Active
+                      </Badge>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
 
@@ -160,6 +210,66 @@ const ProductFilter = ({
             </div>
           </div>
 
+          {/* Size Filter */}
+          <div>
+            <Label className="text-sm font-medium text-foreground mb-3 block">
+              Cap Size
+            </Label>
+            <div className="space-y-2">
+              {sizes?.map((size) => (
+                <div key={size.value} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`size-${size.value}`}
+                    checked={selectedSize === size.value}
+                    onCheckedChange={() => onSizeChange(size.value)}
+                    className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                  />
+                  <Label 
+                    htmlFor={`size-${size.value}`}
+                    className="text-sm font-normal text-muted-foreground hover:text-foreground cursor-pointer"
+                  >
+                    {size.label}
+                  </Label>
+                  {selectedSize === size.value && size.value !== 'all' && (
+                    <Badge variant="secondary" className="text-xs">
+                      Active
+                    </Badge>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Hair Type Filter */}
+          <div>
+            <Label className="text-sm font-medium text-foreground mb-3 block">
+              Hair Type
+            </Label>
+            <div className="space-y-2">
+              {hairTypes?.map((hairType) => (
+                <div key={hairType.value} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`hairType-${hairType.value}`}
+                    checked={selectedHairType === hairType.value}
+                    onCheckedChange={() => onHairTypeChange(hairType.value)}
+                    className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                  />
+                  <Label 
+                    htmlFor={`hairType-${hairType.value}`}
+                    className="text-sm font-normal text-muted-foreground hover:text-foreground cursor-pointer"
+                  >
+                    {hairType.label}
+                  </Label>
+                  {selectedHairType === hairType.value && hairType.value !== 'all' && (
+                    <Badge variant="secondary" className="text-xs">
+                      Active
+                    </Badge>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* Price Range Filter */}
           <div>
             <Label className="text-sm font-medium text-foreground mb-3 block">
@@ -167,7 +277,7 @@ const ProductFilter = ({
             </Label>
             <div className="space-y-2">
               {priceRanges?.map((range) => (
-                <div key={range.value[0]} className="flex items-center space-x-2">
+                <div key={range?.value[0]} className="flex items-center space-x-2">
                   <Checkbox
                     id={`price-${range.value[0]}`}
                     checked={priceRange[0] === range.value[0] && priceRange[1] === range.value[1]}

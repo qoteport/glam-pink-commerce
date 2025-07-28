@@ -36,7 +36,7 @@ const ProductGrid = ({ products, viewMode, onViewModeChange, loading }: ProductG
         <p className="text-sm text-muted-foreground">
           Showing {products.length} {products.length === 1 ? 'product' : 'products'}
         </p>
-        <div className="flex items-center gap-1 border border-border rounded-lg p-1">
+        {/* <div className="flex items-center gap-1 border border-border rounded-lg p-1">
           <Button 
             variant={viewMode === 'grid' ? 'default' : 'ghost'} 
             size="sm"
@@ -53,7 +53,7 @@ const ProductGrid = ({ products, viewMode, onViewModeChange, loading }: ProductG
           >
             <List className="h-4 w-4" />
           </Button>
-        </div>
+        </div> */}
       </div>
 
       {/* Products Grid/List */}

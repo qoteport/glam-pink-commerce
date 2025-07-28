@@ -96,6 +96,9 @@ const ProductDetail = () => {
       setSelectedColor(transformedProduct.colors?.[0] || "");
       setSelectedLength(transformedProduct.lengths?.[0] || "");
       setSelectedSize(transformedProduct.size?.[0] || "");
+
+      // Fetch similar products
+      fetchSimilarProducts(data.category);
     } catch (error) {
       console.error("Error fetching product:", error);
       toast({
@@ -105,6 +108,41 @@ const ProductDetail = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+
+
+    const fetchSimilarProducts = async (category: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('category', category)
+        .neq('id', id)
+        .limit(4);
+
+      if (error) throw error;
+
+      const transformedProducts = data?.map(product => ({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        originalPrice: product.original_price,
+        rating: product.rating || 0,
+        reviewCount: product.review_count || 0,
+        image: product.image_gallery?.[0] || product.image,
+        category: product.category,
+        subcategory: product.subcategory,
+        isNew: product.is_new,
+        isBestSeller: product.is_best_seller,
+        colors: product.colors || [],
+        lengths: product.lengths || []
+      })) || [];
+
+      setSimilarProducts(transformedProducts);
+    } catch (error) {
+      console.error('Error fetching similar products:', error);
     }
   };
 
@@ -426,26 +464,27 @@ const ProductDetail = () => {
                 {product.name}
               </h1>
 
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      size={18}
-                      className={
-                        i < Math.floor(product.rating)
-                          ? "text-yellow-400 fill-current"
-                          : "text-gray-300"
-                      }
-                    />
-                  ))}
+              {product.rating > 0 && (
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        size={18}
+                        className={
+                          i < Math.floor(product.rating)
+                            ? "text-yellow-400 fill-current"
+                            : "text-gray-300"
+                        }
+                      />
+                    ))}
+                  </div>
+                  <span className="text-gray-600 text-sm">
+                    {product.rating} ({product.reviewCount} reviews)
+                  </span>
                 </div>
-                <span className="text-gray-600 text-sm">
-                  {product.rating} ({product.reviewCount} reviews)
-                </span>
-              </div>
+              )}
             </div>
-
             {/* Price */}
             <div className="flex items-center space-x-4 py-2">
               <span className="text-3xl font-bold text-primary">
@@ -853,41 +892,11 @@ const ProductDetail = () => {
                       <h3 className="font-semibold text-lg mb-4 text-gray-900">
                         Hair Care Instructions
                       </h3>
-                      {product.hairCareInstructions ? (
+                      {product.hairCareInstructions && (
                         <div className="prose prose-sm max-w-none text-gray-700">
                           <p className="whitespace-pre-wrap">
                             {product.hairCareInstructions}
                           </p>
-                        </div>
-                      ) : (
-                        <div className="space-y-4">
-                          <div className="bg-gray-50 p-4 rounded-lg">
-                            <h4 className="font-medium text-primary mb-2">
-                              Washing:
-                            </h4>
-                            <p className="text-gray-700">
-                              Wash with cold water and sulfate-free shampoo.
-                              Condition regularly.
-                            </p>
-                          </div>
-                          <div className="bg-gray-50 p-4 rounded-lg">
-                            <h4 className="font-medium text-primary mb-2">
-                              Styling:
-                            </h4>
-                            <p className="text-gray-700">
-                              Use heat protectant before styling. Keep heat
-                              settings below 350°F.
-                            </p>
-                          </div>
-                          <div className="bg-gray-50 p-4 rounded-lg">
-                            <h4 className="font-medium text-primary mb-2">
-                              Storage:
-                            </h4>
-                            <p className="text-gray-700">
-                              Store on a wig stand or mannequin head when not in
-                              use.
-                            </p>
-                          </div>
                         </div>
                       )}
                     </div>
