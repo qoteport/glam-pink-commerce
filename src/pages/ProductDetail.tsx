@@ -21,9 +21,12 @@ import {
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
+import PriceDisplay from "@/components/PriceDisplay";
+import PaystackPayment from "@/components/PaystackPayment";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/contexts/CartContext";
 import { useFavorites } from "@/contexts/FavoritesContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 
 const ProductDetail = () => {
@@ -31,6 +34,7 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
+  const { user } = useAuth();
   const { toast } = useToast();
 
   const [product, setProduct] = useState<any>(null);
@@ -40,7 +44,9 @@ const ProductDetail = () => {
   const [selectedLength, setSelectedLength] = useState("");
   const [selectedSize, setSelectedSize] = useState("");
   const [quantity, setQuantity] = useState(1);
-  const [selectedMediaIndex, setSelectedMediaIndex] = useState(0); // 0 = main image
+  const [selectedMediaIndex, setSelectedMediaIndex] = useState(0);
+  const [playingVideoIndex, setPlayingVideoIndex] = useState<number | null>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (id) {
@@ -100,7 +106,6 @@ const ProductDetail = () => {
       setSelectedLength(transformedProduct.lengths?.[0] || "");
       setSelectedSize(transformedProduct.size?.[0] || "");
 
-      // Fetch similar products
       fetchSimilarProducts(data.category);
     } catch (error) {
       console.error("Error fetching product:", error);
@@ -114,9 +119,7 @@ const ProductDetail = () => {
     }
   };
 
-
-
-    const fetchSimilarProducts = async (category: string) => {
+  const fetchSimilarProducts = async (category: string) => {
     try {
       const { data, error } = await supabase
         .from('products')
@@ -149,13 +152,7 @@ const ProductDetail = () => {
     }
   };
 
-  const [playingVideoIndex, setPlayingVideoIndex] = useState<number | null>(
-    null
-  );
-  const dialogRef = useRef<HTMLDivElement>(null);
-
   const handleMediaSelect = (index: number) => {
-    // If clicking on a video that's already playing, pause it
     if (playingVideoIndex === index) {
       setPlayingVideoIndex(null);
       return;
@@ -163,7 +160,6 @@ const ProductDetail = () => {
 
     setSelectedMediaIndex(index);
 
-    // If clicking on a video, play it (others will automatically pause)
     if (mediaItems[index].type === "video") {
       setPlayingVideoIndex(index);
     } else {
@@ -171,10 +167,28 @@ const ProductDetail = () => {
     }
   };
 
-  const pauseVideo = () => {
-    // This is a limitation with iframes - we can't directly control YouTube/vimeo videos
-    // So we'll just track the state and update the UI accordingly
-    setPlayingVideoIndex(null);
+  const handleAddToCart = () => {
+    addToCart(product, quantity, selectedColor, selectedLength);
+    toast({
+      title: "Added to cart",
+      description: `${product.name} has been added to your cart`,
+    });
+  };
+
+  const handlePaystackSuccess = (reference: string) => {
+    toast({
+      title: "Payment Successful",
+      description: `Payment completed! Reference: ${reference}`,
+    });
+    navigate('/');
+  };
+
+  const handlePaystackError = (error: string) => {
+    toast({
+      title: "Payment Failed",
+      description: error,
+      variant: "destructive",
+    });
   };
 
   if (loading) {
@@ -204,24 +218,8 @@ const ProductDetail = () => {
     );
   }
 
-  const discountPercentage = product.originalPrice
-    ? Math.round(
-        ((product.originalPrice - product.price) / product.originalPrice) * 100
-      )
-    : 0;
-
-  const handleAddToCart = () => {
-    addToCart(product, quantity, selectedColor, selectedLength);
-    toast({
-      title: "Added to cart",
-      description: `${product.name} has been added to your cart`,
-    });
-  };
-
   // Create media array with main image + video (if exists) + gallery images
-  const mediaItems = [
-    // { type: 'image', url: product.image, alt: product.name }
-  ];
+  const mediaItems = [];
 
   if (product.liveVideoUrl) {
     mediaItems.push({
@@ -246,7 +244,6 @@ const ProductDetail = () => {
       <Header />
 
       <div className="container mx-auto px-4 py-8 max-w-7xl">
-        {/* Breadcrumb and Back Button */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
           <div className="flex items-center space-x-2 text-sm text-gray-600">
             <button
@@ -284,16 +281,13 @@ const ProductDetail = () => {
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8 xl:gap-12">
-          {/* Media Section - Images and Video */}
           <div className="space-y-4">
-            {/* Main Image or Video Display - Now Larger */}
             <div className="relative rounded-xl overflow-hidden bg-gray-50 min-h-[100px]">
               <Dialog>
                 <DialogTrigger asChild>
                   <div className="w-full h-[400px] cursor-pointer relative group">
-                    {mediaItems[selectedMediaIndex].type === "video" ? (
+                    {mediaItems[selectedMediaIndex]?.type === "video" ? (
                       <div className="w-full h-full bg-black flex items-center justify-center">
-                        {/* Video thumbnail with play/pause indicator */}
                         <div className="absolute inset-0 flex items-center justify-center">
                           <div
                             className={`w-24 h-24 ${
@@ -339,8 +333,8 @@ const ProductDetail = () => {
                       </div>
                     ) : (
                       <img
-                        src={mediaItems[selectedMediaIndex].url}
-                        alt={mediaItems[selectedMediaIndex].alt}
+                        src={mediaItems[selectedMediaIndex]?.url || product.image}
+                        alt={mediaItems[selectedMediaIndex]?.alt || product.name}
                         className="w-full h-full object-cover transition-transform group-hover:scale-105"
                       />
                     )}
@@ -357,7 +351,7 @@ const ProductDetail = () => {
                   ref={dialogRef}
                 >
                   <div className="w-full h-full">
-                    {mediaItems[selectedMediaIndex].type === "video" ? (
+                    {mediaItems[selectedMediaIndex]?.type === "video" ? (
                       <iframe
                         src={`${mediaItems[selectedMediaIndex].url}?autoplay=1&mute=1`}
                         className="w-full h-full"
@@ -367,8 +361,8 @@ const ProductDetail = () => {
                       ></iframe>
                     ) : (
                       <img
-                        src={mediaItems[selectedMediaIndex].url}
-                        alt={mediaItems[selectedMediaIndex].alt}
+                        src={mediaItems[selectedMediaIndex]?.url || product.image}
+                        alt={mediaItems[selectedMediaIndex]?.alt || product.name}
                         className="w-full h-[auto] max-h-[503px] object-contain"
                       />
                     )}
@@ -377,7 +371,6 @@ const ProductDetail = () => {
               </Dialog>
             </div>
 
-            {/* Media Thumbnail Grid - Now with larger click area */}
             <div className="grid grid-cols-5 gap-3">
               {mediaItems.slice(0, 5).map((media, index) => (
                 <button
@@ -441,9 +434,7 @@ const ProductDetail = () => {
             </div>
           </div>
 
-          {/* Product Info Section */}
           <div className="space-y-6">
-            {/* Title and Badges */}
             <div className="space-y-3">
               <div className="flex flex-wrap gap-2">
                 {product.isNew && (
@@ -454,11 +445,6 @@ const ProductDetail = () => {
                 {product.isBestSeller && (
                   <Badge className="bg-rosegold-500 hover:bg-rosegold-600 text-white">
                     Best Seller
-                  </Badge>
-                )}
-                {discountPercentage > 0 && (
-                  <Badge className="bg-red-500 hover:bg-red-600 text-white">
-                    -{discountPercentage}% OFF
                   </Badge>
                 )}
               </div>
@@ -488,24 +474,17 @@ const ProductDetail = () => {
                 </div>
               )}
             </div>
-            {/* Price */}
-            <div className="flex items-center space-x-4 py-2">
-              <span className="text-3xl font-bold text-primary">
-                ${product.price.toFixed(2)}
-              </span>
-              {product.originalPrice && (
-                <span className="text-lg text-gray-500 line-through">
-                  ${product.originalPrice.toFixed(2)}
-                </span>
-              )}
-            </div>
 
-            {/* Description */}
+            <PriceDisplay
+              price={product.price}
+              originalPrice={product.originalPrice}
+              className="py-2"
+            />
+
             <p className="text-gray-700 leading-relaxed">
               {product.description}
             </p>
 
-            {/* Features */}
             {product.features?.length > 0 && (
               <div className="bg-gray-50 p-4 rounded-lg">
                 <h3 className="font-semibold mb-3 text-gray-900">
@@ -538,10 +517,7 @@ const ProductDetail = () => {
               </div>
             )}
 
-            {/* Variants */}
             <div className="space-y-5">
-              {/* Color Selection */}
-
               {product.colors?.length > 0 && (
                 <div>
                   <h3 className="font-semibold mb-2 text-gray-900">
@@ -564,8 +540,8 @@ const ProductDetail = () => {
                   </div>
                 </div>
               )}
+
               <div className="flex flex-row gap-10">
-                {/* Length Selection */}
                 {product.lengths?.length > 0 && (
                   <div>
                     <h3 className="font-semibold mb-2 text-gray-900">
@@ -590,7 +566,6 @@ const ProductDetail = () => {
                   </div>
                 )}
 
-                {/* Size Selection */}
                 {product.size?.length > 0 && (
                   <div>
                     <h3 className="font-semibold mb-2 text-gray-900">
@@ -614,7 +589,7 @@ const ProductDetail = () => {
                   </div>
                 )}
               </div>
-              {/* Quantity */}
+
               <div>
                 <h3 className="font-semibold mb-2 text-gray-900">Quantity</h3>
                 <div className="flex items-center space-x-3 w-fit border rounded-lg p-1">
@@ -641,7 +616,6 @@ const ProductDetail = () => {
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="space-y-3 pt-2">
               <div className="flex gap-3">
                 <Button
@@ -671,12 +645,37 @@ const ProductDetail = () => {
                 </Button>
               </div>
 
-              <Button
-                variant="outline"
-                className="w-full h-12 border-primary text-primary hover:bg-primary/10"
-              >
-                Buy Now - Express Checkout
-              </Button>
+              {user && (
+                <PaystackPayment
+                  amount={product.price * quantity}
+                  currency="GHS"
+                  customerEmail={user.email}
+                  customerName={user.user_metadata?.full_name || user.email}
+                  onSuccess={handlePaystackSuccess}
+                  onError={handlePaystackError}
+                  className="w-full h-12 border-primary text-primary hover:bg-primary/10"
+                  metadata={{
+                    product_id: product.id,
+                    product_name: product.name,
+                    quantity,
+                    selected_color: selectedColor,
+                    selected_length: selectedLength,
+                    selected_size: selectedSize
+                  }}
+                >
+                  Buy Now - Express Checkout
+                </PaystackPayment>
+              )}
+
+              {!user && (
+                <Button
+                  variant="outline"
+                  className="w-full h-12 border-primary text-primary hover:bg-primary/10"
+                  onClick={() => navigate('/auth')}
+                >
+                  Sign in to Buy Now
+                </Button>
+              )}
 
               <Button
                 variant="ghost"
@@ -703,13 +702,7 @@ const ProductDetail = () => {
               </Button>
             </div>
 
-            {/* Product Highlights */}
-            <div className="grid grid-cols-2 gap-3 pt-4 border-t">
-             
-         
-            </div>
-
-               <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <div className="text-center">
                 <Truck className="w-6 h-6 text-blush-500 mx-auto mb-2" />
                 <p className="text-sm text-gray-600">Free Shipping Available</p>
@@ -726,7 +719,6 @@ const ProductDetail = () => {
           </div>
         </div>
 
-        {/* Product Details Tabs */}
         <div className="mt-16">
           <Tabs defaultValue="details" className="w-full">
             <TabsList className="w-full bg-gray-100 rounded-lg p-1 h-auto">
@@ -781,36 +773,6 @@ const ProductDetail = () => {
                         )}
                       </dl>
                     </div>
-
-                    <div>
-                      {/* <h3 className="font-semibold text-lg mb-4 text-gray-900">What's Included</h3>
-                      <ul className="space-y-3">
-                        <li className="flex items-start py-2 border-b">
-                          <svg className="w-5 h-5 text-blush-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                          </svg>
-                          <span>1x {product.name}</span>
-                        </li>
-                        <li className="flex items-start py-2 border-b">
-                          <svg className="w-5 h-5 text-blush-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                          </svg>
-                          <span>Care instruction card</span>
-                        </li>
-                        <li className="flex items-start py-2 border-b">
-                          <svg className="w-5 h-5 text-blush-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                          </svg>
-                          <span>Protective packaging</span>
-                        </li>
-                        <li className="flex items-start py-2">
-                          <svg className="w-5 h-5 text-blush-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                          </svg>
-                          <span>Quality guarantee certificate</span>
-                        </li>
-                      </ul> */}
-                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -859,7 +821,6 @@ const ProductDetail = () => {
           </Tabs>
         </div>
 
-        {/* Similar Products */}
         {similarProducts.length > 0 && (
           <div className="mt-16">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">

@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -6,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Heart, Star, ShoppingCart, Eye } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useFavorites } from "@/contexts/FavoritesContext";
+import PriceDisplay from "./PriceDisplay";
 
 interface Product {
   id: string;
@@ -60,13 +62,11 @@ const ProductCard = ({ product, viewMode = "grid" }: ProductCardProps) => {
     >
       {/* Product Image */}
       <div className="relative aspect-[4/5] overflow-hidden">
-        {/* Product Image */}
         <img
           src={product.image}
           alt={product.name}
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           onError={(e) => {
-            // Fallback to placeholder if image fails to load
             const target = e.target as HTMLImageElement;
             target.style.display = "none";
             target.nextElementSibling?.classList.remove("hidden");
@@ -228,13 +228,13 @@ const ProductCard = ({ product, viewMode = "grid" }: ProductCardProps) => {
             <div className="space-y-2">
               <p className="text-xs text-gray-600 font-medium">Sizes:</p>
               <div className="flex flex-wrap gap-1">
-                {product.size.map((length, index) => (
+                {product.size.map((size, index) => (
                   <Badge
                     key={index}
                     variant="outline"
                     className="text-xs border-blush-200 hover:border-blush-300 cursor-pointer"
                   >
-                    {length}
+                    {size}
                   </Badge>
                 ))}
               </div>
@@ -243,18 +243,11 @@ const ProductCard = ({ product, viewMode = "grid" }: ProductCardProps) => {
         </div>
 
         {/* Price */}
-        <div className="flex items-center justify-between">
-          <div className="space-x-2">
-            <span className="text-lg font-bold text-blush-600">
-              ${product.price}
-            </span>
-            {product.originalPrice && (
-              <span className="text-sm text-gray-500 line-through">
-                ${product.originalPrice}
-              </span>
-            )}
-          </div>
-        </div>
+        <PriceDisplay
+          price={product.price}
+          originalPrice={product.originalPrice}
+          className="justify-between"
+        />
 
         {/* Add to Cart Button */}
         <Button
