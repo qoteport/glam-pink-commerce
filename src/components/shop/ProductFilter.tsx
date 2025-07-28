@@ -13,39 +13,53 @@ interface FilterOption {
 
 interface ProductFilterProps {
   categories: FilterOption[];
-  textures: FilterOption[];
+  colors: FilterOption[];
   lengths: FilterOption[];
+  sizes: FilterOption[];
+  hairTypes: FilterOption[];
   priceRanges: { value: number[]; label: string; }[];
   selectedCategory: string;
-  selectedTexture: string;
+  selectedColor: string;
   selectedLength: string;
+  selectedSize: string;
+  selectedHairType: string;
   priceRange: number[];
   onCategoryChange: (category: string) => void;
-  onTextureChange: (texture: string) => void;
+  onColorChange: (color: string) => void;
   onLengthChange: (length: string) => void;
+  onSizeChange: (size: string) => void;
+  onHairTypeChange: (hairType: string) => void;
   onPriceRangeChange: (range: number[]) => void;
   onClearFilters: () => void;
 }
 
 const ProductFilter = ({
   categories,
-  textures,
+  colors,
   lengths,
+  sizes,
+  hairTypes,
   priceRanges,
   selectedCategory,
-  selectedTexture,
+  selectedColor,
   selectedLength,
+  selectedSize,
+  selectedHairType,
   priceRange,
   onCategoryChange,
-  onTextureChange,
+  onColorChange,
   onLengthChange,
+  onSizeChange,
+  onHairTypeChange,
   onPriceRangeChange,
   onClearFilters,
 }: ProductFilterProps) => {
   const hasActiveFilters = 
     selectedCategory !== 'all' || 
-    selectedTexture !== 'all' || 
+    selectedColor !== 'all' || 
     selectedLength !== 'all' || 
+    selectedSize !== 'all' || 
+    selectedHairType !== 'all' || 
     (priceRange[0] !== 0 || priceRange[1] !== 1000);
 
   return (
@@ -100,27 +114,27 @@ const ProductFilter = ({
             </div>
           </div>
 
-          {/* Texture Filter */}
+          {/* Color Filter */}
           <div>
             <Label className="text-sm font-medium text-foreground mb-3 block">
-              Texture
+              Color
             </Label>
             <div className="space-y-2">
-              {textures.map((texture) => (
-                <div key={texture.value} className="flex items-center space-x-2">
+              {colors.map((color) => (
+                <div key={color.value} className="flex items-center space-x-2">
                   <Checkbox
-                    id={`texture-${texture.value}`}
-                    checked={selectedTexture === texture.value}
-                    onCheckedChange={() => onTextureChange(texture.value)}
+                    id={`color-${color.value}`}
+                    checked={selectedColor === color.value}
+                    onCheckedChange={() => onColorChange(color.value)}
                     className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                   />
                   <Label 
-                    htmlFor={`texture-${texture.value}`}
+                    htmlFor={`color-${color.value}`}
                     className="text-sm font-normal text-muted-foreground hover:text-foreground cursor-pointer"
                   >
-                    {texture.label}
+                    {color.label}
                   </Label>
-                  {selectedTexture === texture.value && texture.value !== 'all' && (
+                  {selectedColor === color.value && color.value !== 'all' && (
                     <Badge variant="secondary" className="text-xs">
                       Active
                     </Badge>
@@ -151,6 +165,66 @@ const ProductFilter = ({
                     {length.label}
                   </Label>
                   {selectedLength === length.value && length.value !== 'all' && (
+                    <Badge variant="secondary" className="text-xs">
+                      Active
+                    </Badge>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Size Filter */}
+          <div>
+            <Label className="text-sm font-medium text-foreground mb-3 block">
+              Size
+            </Label>
+            <div className="space-y-2">
+              {sizes.map((size) => (
+                <div key={size.value} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`size-${size.value}`}
+                    checked={selectedSize === size.value}
+                    onCheckedChange={() => onSizeChange(size.value)}
+                    className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                  />
+                  <Label 
+                    htmlFor={`size-${size.value}`}
+                    className="text-sm font-normal text-muted-foreground hover:text-foreground cursor-pointer"
+                  >
+                    {size.label}
+                  </Label>
+                  {selectedSize === size.value && size.value !== 'all' && (
+                    <Badge variant="secondary" className="text-xs">
+                      Active
+                    </Badge>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Hair Type Filter */}
+          <div>
+            <Label className="text-sm font-medium text-foreground mb-3 block">
+              Hair Type
+            </Label>
+            <div className="space-y-2">
+              {hairTypes.map((hairType) => (
+                <div key={hairType.value} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`hairType-${hairType.value}`}
+                    checked={selectedHairType === hairType.value}
+                    onCheckedChange={() => onHairTypeChange(hairType.value)}
+                    className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                  />
+                  <Label 
+                    htmlFor={`hairType-${hairType.value}`}
+                    className="text-sm font-normal text-muted-foreground hover:text-foreground cursor-pointer"
+                  >
+                    {hairType.label}
+                  </Label>
+                  {selectedHairType === hairType.value && hairType.value !== 'all' && (
                     <Badge variant="secondary" className="text-xs">
                       Active
                     </Badge>
