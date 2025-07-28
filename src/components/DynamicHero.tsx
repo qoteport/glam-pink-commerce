@@ -8,7 +8,7 @@ import Hero4 from './Hero4';
 import Hero5 from './Hero5';
 
 const DynamicHero = () => {
-  const [heroDesign, setHeroDesign] = useState('hero1');
+  const [heroDesign, setHeroDesign] = useState('hero');
 
   useEffect(() => {
     const fetchActiveHeroDesign = async () => {

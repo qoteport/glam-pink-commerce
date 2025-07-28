@@ -212,7 +212,7 @@ const Shop = () => {
     }
 
     if (selectedCategory !== 'all') {
-      filtered = filtered.filter(product => product.category.trim().toLowerCase() === selectedCategory.trim().toLowerCase());
+      filtered = filtered.filter(product => product.category.trim().toLowerCase().replace(/\s+/g, '-') === selectedCategory.trim().toLowerCase().replace(/\s+/g, '-'));
     }
 
     if (selectedColor !== 'all') {

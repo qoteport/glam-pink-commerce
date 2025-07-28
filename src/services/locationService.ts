@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 
 export interface UserLocation {
@@ -14,71 +13,54 @@ export interface UserLocation {
 class LocationService {
   private static LOCATION_STORAGE_KEY = 'hairytalesbeauty_location';
 
-  // Save location to localStorage for guests
+  private isSecureContext(): boolean {
+    return window.location.protocol === 'https:' || window.location.hostname === 'localhost';
+  }
+
   saveGuestLocation(location: UserLocation): void {
     localStorage.setItem(LocationService.LOCATION_STORAGE_KEY, JSON.stringify(location));
   }
 
-  // Load location from localStorage for guests
   loadGuestLocation(): UserLocation | null {
     const stored = localStorage.getItem(LocationService.LOCATION_STORAGE_KEY);
     return stored ? JSON.parse(stored) : null;
   }
 
-  // Save location to database for authenticated users
-  async saveUserLocation(userId: string, location: UserLocation): Promise<void> {
+  async saveUserLocation(userId: string, location: UserLocation, retries = 3): Promise<void> {
     try {
-      // Check if location already exists
       const { data: existingLocation } = await supabase
         .from('user_locations')
         .select('*')
         .eq('user_id', userId)
         .single();
 
-      if (existingLocation) {
-        // Update existing location
-        const { error } = await supabase
-          .from('user_locations')
-          .update({
-            country: location.country,
-            city: location.city,
-            region: location.region,
-            currency: location.currency,
-            timezone: location.timezone,
-            latitude: location.latitude,
-            longitude: location.longitude,
-            updated_at: new Date().toISOString()
-          })
-          .eq('user_id', userId);
+      const operation = existingLocation
+        ? supabase
+            .from('user_locations')
+            .update({
+              ...location,
+              updated_at: new Date().toISOString()
+            })
+            .eq('user_id', userId)
+        : supabase
+            .from('user_locations')
+            .insert({ user_id: userId, ...location });
 
-        if (error) {
-          console.error('Error updating user location:', error);
-        }
-      } else {
-        // Insert new location
-        const { error } = await supabase
-          .from('user_locations')
-          .insert({
-            user_id: userId,
-            country: location.country,
-            city: location.city,
-            region: location.region,
-            currency: location.currency,
-            timezone: location.timezone,
-            latitude: location.latitude,
-            longitude: location.longitude
-          });
+      const { error } = await operation;
 
-        if (error) {
-          console.error('Error saving user location:', error);
+      if (error) {
+        if (retries > 0) {
+          console.warn(`Retrying saveUserLocation (${retries} attempts left)...`);
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          return this.saveUserLocation(userId, location, retries - 1);
         }
+        throw error;
       }
     } catch (error) {
-      console.error('Error in saveUserLocation:', error);
+      console.error('Error saving user location:', error);
     }
   }
 
-  // Load location from database for authenticated users
   async loadUserLocation(userId: string): Promise<UserLocation | null> {
     try {
       const { data, error } = await supabase
@@ -106,46 +88,10 @@ class LocationService {
     }
   }
 
-  // Get user's current location using IP geolocation
-  async detectUserLocation(): Promise<UserLocation | null> {
-    try {
-      // Try to get location from browser geolocation first
-      const position = await this.getBrowserLocation();
-      
-      // Use IP geolocation as fallback
-      const response = await fetch('https://ipapi.co/json/');
-      const data = await response.json();
-      
-      if (data.error) {
-        throw new Error(data.reason || 'Failed to detect location');
-      }
-
-      const location: UserLocation = {
-        country: data.country_name || 'Unknown',
-        city: data.city,
-        region: data.region,
-        currency: this.getCurrencyFromCountry(data.country_code),
-        timezone: data.timezone,
-        latitude: position?.coords.latitude || data.latitude,
-        longitude: position?.coords.longitude || data.longitude
-      };
-
-      return location;
-    } catch (error) {
-      console.error('Error detecting location:', error);
-      
-      // Return default location
-      return {
-        country: 'Ghana',
-        currency: 'USD' // Default to USD as specified
-      };
-    }
-  }
-
-  // Get browser geolocation
   private getBrowserLocation(): Promise<GeolocationPosition | null> {
     return new Promise((resolve) => {
-      if (!navigator.geolocation) {
+      if (!navigator.geolocation || !this.isSecureContext()) {
+        console.debug('Geolocation unavailable or non-secure context');
         resolve(null);
         return;
       }
@@ -153,12 +99,11 @@ class LocationService {
       navigator.geolocation.getCurrentPosition(
         (position) => resolve(position),
         () => resolve(null),
-        { timeout: 5000 }
+        { timeout: 5000, maximumAge: 60000 }
       );
     });
   }
 
-  // Map country code to currency
   private getCurrencyFromCountry(countryCode: string): string {
     const currencyMap: { [key: string]: string } = {
       'GH': 'GHS',
@@ -168,16 +113,57 @@ class LocationService {
       'NG': 'NGN',
       'CA': 'CAD',
       'AU': 'AUD',
-      // Add more mappings as needed
+      'KE': 'KES',
+      'ZA': 'ZAR'
     };
-
-    return currencyMap[countryCode] || 'USD'; // Default to USD
+    return currencyMap[countryCode] || 'USD';
   }
 
-  // Get or detect user location
+  private getDefaultLocation(): UserLocation {
+    return {
+      country: 'USA',
+      currency: 'USD'
+    };
+  }
+
+  async detectUserLocation(): Promise<UserLocation | null> {
+    try {
+      // const position = await this.getBrowserLocation();
+
+      const apiKey = import.meta.env.VITE_IP_GEOLOCATION_API_KEY;
+      const url = apiKey
+        ? `https://api.ipgeolocation.io/ipgeo?apiKey=${apiKey}`
+        : 'https://ipapi.co/json/';
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.error || !data.country_name){
+        if (data.reason === 'RateLimited') {
+          console.warn('IP API rate limit exceeded');
+          return this.getDefaultLocation();
+        }
+        throw new Error(data.reason || 'Invalid IP API response');
+      }
+
+      const location: UserLocation = {
+        country: data.country_name || 'Unknown',
+        city: data.city || undefined,
+        region: data.region || undefined,
+        currency: this.getCurrencyFromCountry(data.country_code),
+        timezone: data.timezone || undefined,
+        // latitude: position?.coords.latitude || data.latitude || undefined,
+        // longitude: position?.coords.longitude || data.longitude || undefined
+      };
+
+      return location;
+    } catch (error) {
+      console.error('Error detecting location:', error);
+      return this.getDefaultLocation();
+    }
+  }
+
   async getUserLocation(userId?: string): Promise<UserLocation> {
     try {
-      // First try to load from storage
       let location: UserLocation | null = null;
 
       if (userId) {
@@ -186,12 +172,9 @@ class LocationService {
         location = this.loadGuestLocation();
       }
 
-      // If no stored location, detect it
       if (!location) {
         location = await this.detectUserLocation();
-        
         if (location) {
-          // Save detected location
           if (userId) {
             await this.saveUserLocation(userId, location);
           } else {
@@ -200,27 +183,19 @@ class LocationService {
         }
       }
 
-      return location || {
-        country: 'Ghana',
-        currency: 'USD'
-      };
+      return location || this.getDefaultLocation();
     } catch (error) {
       console.error('Error getting user location:', error);
-      return {
-        country: 'Ghana',
-        currency: 'USD'
-      };
+      return this.getDefaultLocation();
     }
   }
 
-  // Migrate guest location to user location when user logs in
   async migrateGuestLocationToUser(userId: string): Promise<void> {
     const guestLocation = this.loadGuestLocation();
-    
     if (guestLocation) {
       await this.saveUserLocation(userId, guestLocation);
-      // Clear guest location
       localStorage.removeItem(LocationService.LOCATION_STORAGE_KEY);
+      console.debug('Migrated guest location to user:', guestLocation);
     }
   }
 }

@@ -29,8 +29,8 @@ class PaystackService {
 
   constructor() {
     this.config = {
-      publicKey: 'pk_live_your_public_key', // This will be replaced with actual env variable
-      secretKey: 'sk_live_your_secret_key', // This will be replaced with actual env variable
+      publicKey: import.meta.env.VITE_PAYSTACK_LIVE_PUBLIC_KEY, // This will be replaced with actual env variable
+      secretKey: import.meta.env.VITE_PAYSTACK_LIVE_SECRET_KEY, // This will be replaced with actual env variable
       baseUrl: 'https://api.paystack.co'
     };
   }
@@ -63,6 +63,7 @@ class PaystackService {
           cancel_action: `${window.location.origin}/checkout`
         }
       };
+
 
       const response = await fetch(`${this.config.baseUrl}/transaction/initialize`, {
         method: 'POST',

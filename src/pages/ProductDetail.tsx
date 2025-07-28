@@ -653,7 +653,7 @@ const ProductDetail = () => {
                   customerName={user.user_metadata?.full_name || user.email}
                   onSuccess={handlePaystackSuccess}
                   onError={handlePaystackError}
-                  className="w-full h-12 border-primary text-primary hover:bg-primary/10"
+                  className="w-full h-12 border-primary text-white hover:text-primary hover:bg-primary/10"
                   metadata={{
                     product_id: product.id,
                     product_name: product.name,

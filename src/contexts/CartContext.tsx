@@ -42,6 +42,8 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
 
+  let [deleteItem, setDeleteItem]= useState(false);
+
   // Load cart when component mounts or user changes
   useEffect(() => {
     loadCart();
@@ -51,6 +53,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   useEffect(() => {
     if (!isLoading) {
       saveCart();
+      setDeleteItem(false);
     }
   }, [items, user, isLoading]);
 
@@ -77,7 +80,8 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     try {
       if (user) {
         // Save to database for authenticated users
-        await cartService.saveUserCart(user.id, items);
+        console.log('Saving cart to database:', items);
+        await cartService.saveUserCart(user.id, items, deleteItem);
       } else {
         // Save to localStorage for guests
         cartService.saveGuestCart(items);
@@ -118,6 +122,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   };
 
   const removeFromCart = (id: string) => {
+    setDeleteItem(true);
     setItems(prevItems => prevItems.filter(item => {
       // Handle both simple id and composite key (id-color-length)
       const itemKey = `${item.id}-${item.selectedColor}-${item.selectedLength}`;
@@ -141,6 +146,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   };
 
   const clearCart = async () => {
+    setDeleteItem(true);
     setItems([]);
     
     // Also clear from persistent storage

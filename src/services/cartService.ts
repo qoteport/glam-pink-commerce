@@ -1,6 +1,5 @@
-
-import { supabase } from '@/integrations/supabase/client';
-import { CartItem } from '@/contexts/CartContext';
+import { supabase } from "@/integrations/supabase/client";
+import { CartItem } from "@/contexts/CartContext";
 
 export interface PersistentCartItem {
   id: string;
@@ -17,7 +16,7 @@ export interface PersistentCartItem {
 }
 
 class CartService {
-  private static CART_STORAGE_KEY = 'hairytalesbeauty_cart';
+  private static CART_STORAGE_KEY = "hairytalesbeauty_cart";
 
   // Save cart to localStorage for guests
   saveGuestCart(items: CartItem[]): void {
@@ -36,17 +35,22 @@ class CartService {
   }
 
   // Save cart to database for authenticated users
-  async saveUserCart(userId: string, items: CartItem[]): Promise<void> {
+  async saveUserCart(
+    userId: string,
+    items: CartItem[],
+    deleteItem: boolean = false
+  ): Promise<void> {
     try {
       // First, clear existing cart items for this user
-      await supabase
-        .from('cart_items')
-        .delete()
-        .eq('user_id', userId);
+      if (items.length > 0 || deleteItem) {
+        console.log("Clearing existing cart items for user:");
+        await supabase.from("cart_items").delete().eq("user_id", userId);
+      }
 
       // Then insert new items
       if (items.length > 0) {
-        const cartItems = items.map(item => ({
+        const cartItems = items.map((item) => ({
+          id: item.id ? item.id : null,
           user_id: userId,
           product_id: item.id,
           product_name: item.name,
@@ -54,19 +58,19 @@ class CartService {
           quantity: item.quantity,
           unit_price: item.price,
           selected_color: item.selectedColor,
-          selected_length: item.selectedLength
+          selected_length: item.selectedLength,
         }));
 
-        const { error } = await supabase
-          .from('cart_items')
-          .insert(cartItems);
+        if (items.length > 0 && deleteItem === false) {
+          const { error } = await supabase.from("cart_items").upsert(cartItems);
 
-        if (error) {
-          console.error('Error saving cart to database:', error);
+          if (error) {
+            console.error("Error saving cart to database:", error);
+          }
         }
       }
     } catch (error) {
-      console.error('Error in saveUserCart:', error);
+      console.error("Error in saveUserCart:", error);
     }
   }
 
@@ -74,26 +78,26 @@ class CartService {
   async loadUserCart(userId: string): Promise<CartItem[]> {
     try {
       const { data, error } = await supabase
-        .from('cart_items')
-        .select('*')
-        .eq('user_id', userId);
+        .from("cart_items")
+        .select("*")
+        .eq("user_id", userId);
 
       if (error) {
-        console.error('Error loading cart from database:', error);
+        console.error("Error loading cart from database:", error);
         return [];
       }
 
-      return (data || []).map(item => ({
+      return (data || []).map((item) => ({
         id: item.product_id,
         name: item.product_name,
         price: item.unit_price,
         image: item.product_image,
         quantity: item.quantity,
         selectedColor: item.selected_color,
-        selectedLength: item.selected_length
+        selectedLength: item.selected_length,
       }));
     } catch (error) {
-      console.error('Error in loadUserCart:', error);
+      console.error("Error in loadUserCart:", error);
       return [];
     }
   }
@@ -102,52 +106,56 @@ class CartService {
   async clearUserCart(userId: string): Promise<void> {
     try {
       const { error } = await supabase
-        .from('cart_items')
+        .from("cart_items")
         .delete()
-        .eq('user_id', userId);
+        .eq("user_id", userId);
 
       if (error) {
-        console.error('Error clearing cart from database:', error);
+        console.error("Error clearing cart from database:", error);
       }
     } catch (error) {
-      console.error('Error in clearUserCart:', error);
+      console.error("Error in clearUserCart:", error);
     }
   }
 
   // Migrate guest cart to user cart when user logs in
   async migrateGuestCartToUser(userId: string): Promise<CartItem[]> {
     const guestCart = this.loadGuestCart();
-    
+
     if (guestCart.length > 0) {
       // Load existing user cart
       const userCart = await this.loadUserCart(userId);
-      
+
       // Merge guest cart with user cart
       const mergedCart = this.mergeCartItems(userCart, guestCart);
-      
+
       // Save merged cart
       await this.saveUserCart(userId, mergedCart);
-      
+
       // Clear guest cart
       this.clearGuestCart();
-      
+
       return mergedCart;
     }
-    
+
     return await this.loadUserCart(userId);
   }
 
   // Helper to merge cart items
-  private mergeCartItems(userCart: CartItem[], guestCart: CartItem[]): CartItem[] {
+  private mergeCartItems(
+    userCart: CartItem[],
+    guestCart: CartItem[]
+  ): CartItem[] {
     const merged = [...userCart];
-    
-    guestCart.forEach(guestItem => {
-      const existingIndex = merged.findIndex(item => 
-        item.id === guestItem.id && 
-        item.selectedColor === guestItem.selectedColor && 
-        item.selectedLength === guestItem.selectedLength
+
+    guestCart.forEach((guestItem) => {
+      const existingIndex = merged.findIndex(
+        (item) =>
+          item.id === guestItem.id &&
+          item.selectedColor === guestItem.selectedColor &&
+          item.selectedLength === guestItem.selectedLength
       );
-      
+
       if (existingIndex >= 0) {
         // Add quantities if item exists
         merged[existingIndex].quantity += guestItem.quantity;
@@ -156,7 +164,7 @@ class CartService {
         merged.push(guestItem);
       }
     });
-    
+
     return merged;
   }
 }

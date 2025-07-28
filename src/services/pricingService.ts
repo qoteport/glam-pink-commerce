@@ -1,3 +1,4 @@
+import { locationService, UserLocation } from "./locationService";
 
 interface PricingConfig {
   baseCurrency: 'GHS';
@@ -24,14 +25,15 @@ class PricingService {
     baseCurrency: 'GHS',
     defaultCurrency: 'USD',
     exchangeRates: {
-      USD: 0.080, // 1 GHS = 0.080 USD (approximate)
-      EUR: 0.070, // 1 GHS = 0.070 EUR (approximate)
+      USD: 0.080, // Fallback rate
+      EUR: 0.070, // Fallback rate
       GHS: 1.0
     },
     locationRules: {
       'Europe': 'EUR',
       'Ghana': 'GHS',
-      'default': 'USD' // Changed from GHS to USD
+      'United States': 'USD',
+      'default': 'USD'
     }
   };
 
@@ -41,32 +43,46 @@ class PricingService {
     EUR: '€'
   };
 
-  // Get user's location (simplified - in production, use proper geolocation)
+  private apiKey = import.meta.env.VITE_EXCHANGE_RATE_API_KEY; // Replace with your API key
+  private apiUrl = 'https://v6.exchangerate-api.com/v6';
+
+  constructor() {
+    // Fetch exchange rates when the class is instantiated
+    this.fetchExchangeRates();
+  }
+
+  // Fetch exchange rates from ExchangeRate-API
+  private async fetchExchangeRates(): Promise<void> {
+    try {
+      const response = await fetch(`${this.apiUrl}/${this.apiKey}/latest/GHS`);
+      const data = await response.json();
+
+      if (data.result === 'success') {
+        this.config.exchangeRates = {
+          USD: data.conversion_rates.USD || this.config.exchangeRates.USD,
+          EUR: data.conversion_rates.EUR || this.config.exchangeRates.EUR,
+          GHS: 1.0
+        };
+        console.log('Exchange rates updated:', this.config.exchangeRates);
+      } else {
+        console.error('API error:', data.error || 'Unknown error');
+      }
+    } catch (error) {
+      console.error('Failed to fetch exchange rates:', error);
+      // Fallback to hardcoded rates (already set in config)
+    }
+  }
+
+  // Get user's location using the imported locationService
   private async getUserLocation(): Promise<string> {
     try {
-      // Try to get location from browser API
-      if (navigator.geolocation) {
-        return new Promise((resolve) => {
-          navigator.geolocation.getCurrentPosition(
-            (position) => {
-              // In a real implementation, you'd use a reverse geocoding service
-              // For now, we'll use a simplified approach
-              resolve('default');
-            },
-            () => resolve('default')
-          );
-        });
+      const userLocation: UserLocation | null = await locationService.getUserLocation();
+      if (userLocation && userLocation.country) {
+        if (['France', 'Germany', 'Italy', 'Spain', 'Belgium'].includes(userLocation.country)) {
+          return 'Europe';
+        }
+        return userLocation.country ? userLocation.country : 'default';
       }
-      
-      // Fallback: try to detect from timezone
-      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      if (timezone.includes('Europe')) {
-        return 'Europe';
-      }
-      if (timezone.includes('Africa/Accra')) {
-        return 'Ghana';
-      }
-      
       return 'default';
     } catch (error) {
       console.error('Error getting user location:', error);
@@ -78,7 +94,6 @@ class PricingService {
   private convertPrice(priceInGHS: number, targetCurrency: string): number {
     const rate = this.config.exchangeRates[targetCurrency as keyof typeof this.config.exchangeRates];
     if (!rate) return priceInGHS;
-    
     return Math.round((priceInGHS * rate) * 100) / 100; // Round to 2 decimal places
   }
 
@@ -98,7 +113,7 @@ class PricingService {
     const userLocation = await this.getUserLocation();
     const targetCurrency = this.getCurrencyForLocation(userLocation);
     const convertedAmount = this.convertPrice(priceInGHS, targetCurrency);
-    
+
     return {
       amount: convertedAmount,
       currency: targetCurrency,
@@ -114,25 +129,29 @@ class PricingService {
   }> {
     const price = await this.getDisplayPrice(priceInGHS);
     let originalPrice;
-    
+
     if (originalPriceInGHS) {
       originalPrice = await this.getDisplayPrice(originalPriceInGHS);
     }
-    
+
     return { price, originalPrice };
   }
 
   // Update exchange rates (for admin or periodic updates)
-  updateExchangeRates(rates: Partial<PricingConfig['exchangeRates']>) {
-    this.config.exchangeRates = { ...this.config.exchangeRates, ...rates };
+  async updateExchangeRates(rates?: Partial<PricingConfig['exchangeRates']>): Promise<void> {
+    if (rates) {
+      this.config.exchangeRates = { ...this.config.exchangeRates, ...rates };
+    } else {
+      await this.fetchExchangeRates(); // Fetch from API if no rates provided
+    }
   }
 
-  // Get base currency (what admins enter prices in)
+  // Get base currency
   getBaseCurrency(): string {
     return this.config.baseCurrency;
   }
 
-  // Get default currency (what users see before location detection)
+  // Get default currency
   getDefaultCurrency(): string {
     return this.config.defaultCurrency;
   }
