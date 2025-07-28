@@ -90,7 +90,7 @@ const Shop = () => {
         lengths: product.lengths,
         description: product.description,
         features: product.features || [],
-        // hairType: product.hair_type,
+        hairType: product.hair_type,
         texture: product.texture,
         imageGallery: product.image_gallery || [],
         hairCareInstructions: product.hair_care_instructions,
