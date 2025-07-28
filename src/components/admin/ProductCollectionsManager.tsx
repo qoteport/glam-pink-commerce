@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,8 +25,14 @@ interface ProductCollection {
   created_at: string;
 }
 
+interface Category {
+  slug: string;
+  name: string;
+}
+
 const ProductCollectionsManager = () => {
   const [collections, setCollections] = useState<ProductCollection[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCollection, setEditingCollection] = useState<ProductCollection | null>(null);
@@ -45,6 +50,7 @@ const ProductCollectionsManager = () => {
 
   useEffect(() => {
     fetchCollections();
+    fetchCategories();
   }, []);
 
   const fetchCollections = async () => {
@@ -65,6 +71,26 @@ const ProductCollectionsManager = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('categories')
+        .select('slug, name')
+        .eq('is_active', true)
+        .order('sort_order');
+
+      if (error) throw error;
+      setCategories(data || []);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to fetch categories',
+        variant: 'destructive',
+      });
     }
   };
 
@@ -203,7 +229,7 @@ const ProductCollectionsManager = () => {
           <DialogTrigger asChild>
             <Button 
               onClick={() => { resetForm(); setIsDialogOpen(true); }}
-              className="bg-gradient-pink-vibrant text-white hover:opacity-90"
+              className="text-white hover:opacity-90"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Collection
@@ -236,10 +262,11 @@ const ProductCollectionsManager = () => {
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="wigs">Wigs</SelectItem>
-                      <SelectItem value="bundles">Bundles</SelectItem>
-                      <SelectItem value="closures">Closures</SelectItem>
-                      <SelectItem value="frontals">Frontals</SelectItem>
+                      {categories.map((category) => (
+                        <SelectItem key={category.slug} value={category.slug}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -321,7 +348,7 @@ const ProductCollectionsManager = () => {
                 <Button 
                   type="submit" 
                   disabled={loading}
-                  className="bg-gradient-pink-vibrant text-white hover:opacity-90"
+                  className="text-white hover:opacity-90"
                 >
                   {loading ? 'Saving...' : (editingCollection ? 'Update' : 'Create')}
                 </Button>

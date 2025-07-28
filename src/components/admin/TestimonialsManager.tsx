@@ -201,7 +201,7 @@ const TestimonialsManager = () => {
           <DialogTrigger asChild>
             <Button 
               onClick={() => { resetForm(); setIsDialogOpen(true); }}
-              className="bg-gradient-pink-vibrant text-white hover:opacity-90"
+              className="text-white hover:opacity-90"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Testimonial
@@ -338,7 +338,7 @@ const TestimonialsManager = () => {
                 <Button 
                   type="submit" 
                   disabled={loading}
-                  className="bg-gradient-pink-vibrant text-white hover:opacity-90"
+                  className="text-white hover:opacity-90"
                 >
                   {loading ? 'Saving...' : (editingTestimonial ? 'Update' : 'Create')}
                 </Button>
