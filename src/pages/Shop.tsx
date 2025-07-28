@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -51,18 +50,6 @@ const Shop = () => {
   const [sizes, setSizes] = useState([{ value: 'all', label: 'All Sizes' }]);
   const [hairTypes, setHairTypes] = useState([{ value: 'all', label: 'All Hair Types' }]);
   const [priceRanges, setPriceRanges] = useState([]);
-
-  // Filter state for the new ProductFilter component
-  const [filters, setFilters] = useState({
-    category: '',
-    priceRange: [0, 1000] as [number, number],
-    colors: [] as string[],
-    lengths: [] as string[],
-    hairTypes: [] as string[],
-    textures: [] as string[],
-    sortBy: 'name' as 'name' | 'price' | 'rating' | 'newest',
-    sortOrder: 'asc' as 'asc' | 'desc'
-  });
 
   useEffect(() => {
     fetchProducts();
@@ -281,14 +268,10 @@ const Shop = () => {
     setSearchParams(newSearchParams);
   };
 
-  const handleFilterChange = (newFilters: typeof filters) => {
-    setFilters(newFilters);
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-white">
-        <Header />
+        <Header onSearch={handleSearch} />
         <div className="flex items-center justify-center py-20">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
@@ -299,20 +282,39 @@ const Shop = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <Header />
+      <Header onSearch={handleSearch} />
       
       <main className="container mx-auto px-4 py-8">
         <div className="flex gap-8">
           <div className="hidden lg:block w-80 flex-shrink-0">
             <ProductFilter
-              filters={filters}
-              onFilterChange={handleFilterChange}
-              categories={categories.map(c => c.value)}
-              colors={colors.map(c => c.value)}
-              lengths={lengths.map(l => l.value)}
-              hairTypes={hairTypes.map(h => h.value)}
-              textures={[]}
-              onSearch={handleSearch}
+              categories={categories}
+              colors={colors}
+              lengths={lengths}
+              sizes={sizes}
+              hairTypes={hairTypes}
+              priceRanges={priceRanges}
+              selectedCategory={selectedCategory}
+              selectedColor={selectedColor}
+              selectedLength={selectedLength}
+              selectedSize={selectedSize}
+              selectedHairType={selectedHairType}
+              priceRange={priceRange}
+              onCategoryChange={handleCategoryChange}
+              onColorChange={setSelectedColor}
+              onLengthChange={setSelectedLength}
+              onSizeChange={setSelectedSize}
+              onHairTypeChange={setSelectedHairType}
+              onPriceRangeChange={setPriceRange}
+              onClearFilters={() => {
+                setSelectedCategory('all');
+                setSelectedColor('all');
+                setSelectedLength('all');
+                setSelectedSize('all');
+                setSelectedHairType('all');
+                setPriceRange([0, 10000]);
+                setProductStatus(null);
+              }}
             />
           </div>
 
