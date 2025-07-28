@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -33,6 +34,7 @@ import TestimonialsManager from '@/components/admin/TestimonialsManager';
 import WholesaleDealsManager from '@/components/admin/WholesaleDealsManager';
 import CustomWigOrdersManager from '@/components/admin/CustomWigOrdersManager';
 import ProductCollectionsManager from '@/components/admin/ProductCollectionsManager';
+import SubscriptionsManager from '@/components/admin/SubscriptionsManager';
 import Analytics from '@/components/admin/Analytics';
 
 const Admin = () => {
