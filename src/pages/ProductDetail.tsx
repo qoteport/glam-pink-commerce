@@ -150,7 +150,7 @@ const ProductDetail = () => {
         description: `${product.name} has been removed from your favorites.`,
       });
     } else {
-      addToFavorites(product);
+      addToFavorites(product.id);
       toast({
         title: 'Added to favorites',
         description: `${product.name} has been added to your favorites.`,
