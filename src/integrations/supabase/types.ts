@@ -438,6 +438,82 @@ export type Database = {
           },
         ]
       }
+      order_notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          order_id: string
+          title: string
+          type: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message: string
+          order_id: string
+          title: string
+          type: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          order_id?: string
+          title?: string
+          type?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_notifications_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_status_history: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string | null
+          order_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          order_id: string
+          status: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          order_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_status_history_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           billing_address: Json | null
@@ -446,15 +522,19 @@ export type Database = {
           customer_id: string | null
           customer_name: string
           customer_phone: string | null
+          estimated_delivery_date: string | null
+          failure_reason: string | null
           id: string
           notes: string | null
           order_status: string
+          payment_reference: string | null
           payment_status: string
           shipping_address: Json | null
           shipping_amount: number | null
           subtotal: number
           tax_amount: number | null
           total_amount: number
+          tracking_number: string | null
           updated_at: string
         }
         Insert: {
@@ -464,15 +544,19 @@ export type Database = {
           customer_id?: string | null
           customer_name: string
           customer_phone?: string | null
+          estimated_delivery_date?: string | null
+          failure_reason?: string | null
           id?: string
           notes?: string | null
           order_status?: string
+          payment_reference?: string | null
           payment_status?: string
           shipping_address?: Json | null
           shipping_amount?: number | null
           subtotal: number
           tax_amount?: number | null
           total_amount: number
+          tracking_number?: string | null
           updated_at?: string
         }
         Update: {
@@ -482,15 +566,19 @@ export type Database = {
           customer_id?: string | null
           customer_name?: string
           customer_phone?: string | null
+          estimated_delivery_date?: string | null
+          failure_reason?: string | null
           id?: string
           notes?: string | null
           order_status?: string
+          payment_reference?: string | null
           payment_status?: string
           shipping_address?: Json | null
           shipping_amount?: number | null
           subtotal?: number
           tax_amount?: number | null
           total_amount?: number
+          tracking_number?: string | null
           updated_at?: string
         }
         Relationships: []

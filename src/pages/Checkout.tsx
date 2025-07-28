@@ -1,13 +1,14 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { ArrowLeft, CreditCard, Truck, Shield } from 'lucide-react';
+import { ArrowLeft, CreditCard, Truck, Shield, AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import PriceDisplay from '@/components/PriceDisplay';
@@ -17,12 +18,15 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { addressService, UserAddress } from '@/services/addressService';
 import { shippingService } from '@/services/shippingService';
+import { orderService } from '@/services/orderService';
 
 const Checkout = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { items, getTotalItems, getTotalPrice, clearCart } = useCart();
   const { user } = useAuth();
   const { toast } = useToast();
+  const retryOrderId = searchParams.get('retry');
 
   const [formData, setFormData] = useState({
     email: user?.email || '',
@@ -43,6 +47,8 @@ const Checkout = () => {
   const [shipping, setShipping] = useState(9.99);
   const [tax, setTax] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
+  const [retryOrder, setRetryOrder] = useState<any>(null);
 
   const subtotal = getTotalPrice();
   const total = subtotal + tax + shipping;
@@ -56,6 +62,43 @@ const Checkout = () => {
   useEffect(() => {
     calculateShippingAndTax();
   }, [subtotal, items, formData.country]);
+
+  useEffect(() => {
+    if (retryOrderId) {
+      loadRetryOrder();
+    }
+  }, [retryOrderId]);
+
+  const loadRetryOrder = async () => {
+    if (!retryOrderId) return;
+
+    try {
+      const order = await orderService.getOrderById(retryOrderId);
+      if (order && order.payment_status === 'failed') {
+        setRetryOrder(order);
+        setPaymentError(order.failure_reason || 'Payment failed. Please try again.');
+        
+        // Pre-fill form with order data
+        if (order.shipping_address) {
+          setFormData({
+            email: order.customer_email,
+            firstName: order.shipping_address.firstName || '',
+            lastName: order.shipping_address.lastName || '',
+            phone: order.shipping_address.phone || '',
+            address: order.shipping_address.address || '',
+            city: order.shipping_address.city || '',
+            state: order.shipping_address.state || '',
+            zipCode: order.shipping_address.zipCode || '',
+            country: order.shipping_address.country || 'Ghana',
+            notes: order.notes || '',
+            saveAddress: false
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error loading retry order:', error);
+    }
+  };
 
   const loadSavedAddresses = async () => {
     if (!user) return;
@@ -123,33 +166,101 @@ const Checkout = () => {
   };
 
   const handlePaystackSuccess = async (reference: string) => {
-    // Save address if requested
-    if (formData.saveAddress && user) {
-      const addressData: UserAddress = {
-        type: 'shipping',
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-        phone: formData.phone,
-        address: formData.address,
-        city: formData.city,
-        state: formData.state,
-        zip_code: formData.zipCode,
-        country: formData.country,
-        is_default: savedAddresses.length === 0 // Make first address default
+    try {
+      setLoading(true);
+      
+      // Create order in database
+      const orderData = {
+        customer_id: user?.id,
+        customer_name: `${formData.firstName} ${formData.lastName}`,
+        customer_email: formData.email,
+        customer_phone: formData.phone,
+        total_amount: total,
+        subtotal: subtotal,
+        tax_amount: tax,
+        shipping_amount: shipping,
+        shipping_address: formData,
+        billing_address: formData,
+        notes: formData.notes,
+        payment_reference: reference,
+        items: items
       };
 
-      await addressService.saveAddress(addressData);
-    }
+      const order = await orderService.createOrder(orderData);
 
-    toast({
-      title: "Payment Successful",
-      description: `Order placed successfully! Reference: ${reference}`,
-    });
-    clearCart();
-    navigate('/');
+      // Update payment status
+      await orderService.updatePaymentStatus(order.id, 'completed', reference);
+
+      // Create notification
+      if (user) {
+        await orderService.createNotification({
+          order_id: order.id,
+          user_id: user.id,
+          type: 'payment_success',
+          title: 'Payment Successful',
+          message: `Your payment of ${total.toFixed(2)} has been processed successfully.`
+        });
+      }
+
+      // Save address if requested
+      if (formData.saveAddress && user) {
+        const addressData: UserAddress = {
+          type: 'shipping',
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          phone: formData.phone,
+          address: formData.address,
+          city: formData.city,
+          state: formData.state,
+          zip_code: formData.zipCode,
+          country: formData.country,
+          is_default: savedAddresses.length === 0
+        };
+
+        await addressService.saveAddress(addressData);
+      }
+
+      toast({
+        title: "Order Placed Successfully",
+        description: `Order #${order.id.substring(0, 8)} has been placed successfully!`,
+      });
+
+      clearCart();
+      navigate('/my-orders');
+    } catch (error) {
+      console.error('Error creating order:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create order. Please contact support.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handlePaystackError = (error: string) => {
+  const handlePaystackError = async (error: string) => {
+    setPaymentError(error);
+    
+    // If this is a retry, update the order with failure reason
+    if (retryOrder) {
+      try {
+        await orderService.updatePaymentStatus(retryOrder.id, 'failed', undefined, error);
+        
+        if (user) {
+          await orderService.createNotification({
+            order_id: retryOrder.id,
+            user_id: user.id,
+            type: 'payment_failed',
+            title: 'Payment Failed',
+            message: `Payment failed: ${error}. Please try again.`
+          });
+        }
+      } catch (notificationError) {
+        console.error('Error creating failure notification:', notificationError);
+      }
+    }
+
     toast({
       title: "Payment Failed",
       description: error,
@@ -157,7 +268,7 @@ const Checkout = () => {
     });
   };
 
-  if (items.length === 0) {
+  if (items.length === 0 && !retryOrder) {
     return (
       <div className="min-h-screen bg-white">
         <Header />
@@ -181,12 +292,31 @@ const Checkout = () => {
       <div className="container mx-auto px-4 py-8">
         <Button 
           variant="ghost" 
-          onClick={() => navigate('/cart')}
+          onClick={() => navigate(retryOrder ? '/my-orders' : '/cart')}
           className="mb-6"
         >
           <ArrowLeft size={16} className="mr-2" />
-          Back to Cart
+          {retryOrder ? 'Back to Orders' : 'Back to Cart'}
         </Button>
+
+        {retryOrder && (
+          <Alert className="mb-6 border-orange-200 bg-orange-50">
+            <AlertCircle className="h-4 w-4 text-orange-600" />
+            <AlertDescription className="text-orange-800">
+              Retrying payment for Order #{retryOrder.id.substring(0, 8)}. 
+              Your order details have been preserved.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {paymentError && (
+          <Alert className="mb-6 border-red-200 bg-red-50">
+            <AlertCircle className="h-4 w-4 text-red-600" />
+            <AlertDescription className="text-red-800">
+              {paymentError}
+            </AlertDescription>
+          </Alert>
+        )}
 
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Checkout Form */}
@@ -374,29 +504,29 @@ const Checkout = () => {
               <CardContent className="space-y-4">
                 {/* Items */}
                 <div className="space-y-3">
-                  {items.map((item) => (
-                    <div key={`${item.id}-${item.selectedColor}-${item.selectedLength}`} className="flex justify-between items-center">
+                  {(retryOrder ? retryOrder.order_items : items).map((item: any) => (
+                    <div key={retryOrder ? item.id : `${item.id}-${item.selectedColor}-${item.selectedLength}`} className="flex justify-between items-center">
                       <div className="flex items-center space-x-3">
                         <div className="w-12 h-12 bg-gradient-to-br from-blush-100 to-cream-100 rounded overflow-hidden flex-shrink-0">
-                          {item.image && (
+                          {(retryOrder ? item.product_image : item.image) && (
                             <img 
-                              src={item.image} 
-                              alt={item.name} 
+                              src={retryOrder ? item.product_image : item.image} 
+                              alt={retryOrder ? item.product_name : item.name} 
                               className="w-full h-full object-cover"
                             />
                           )}
                         </div>
                         <div>
-                          <p className="font-medium text-sm">{item.name}</p>
+                          <p className="font-medium text-sm">{retryOrder ? item.product_name : item.name}</p>
                           <p className="text-xs text-gray-600">
                             Qty: {item.quantity}
-                            {item.selectedColor && ` • Color: ${item.selectedColor}`}
-                            {item.selectedLength && ` • Length: ${item.selectedLength}"`}
+                            {(retryOrder ? item.selected_color : item.selectedColor) && ` • Color: ${retryOrder ? item.selected_color : item.selectedColor}`}
+                            {(retryOrder ? item.selected_length : item.selectedLength) && ` • Length: ${retryOrder ? item.selected_length : item.selectedLength}"`}
                           </p>
                         </div>
                       </div>
                       <PriceDisplay 
-                        price={item.price * item.quantity} 
+                        price={retryOrder ? item.total_price : (item.price * item.quantity)} 
                         showOriginalPrice={false}
                         className="text-sm"
                       />
@@ -407,23 +537,23 @@ const Checkout = () => {
                 {/* Totals */}
                 <div className="border-t pt-4 space-y-2">
                   <div className="flex justify-between">
-                    <span>Subtotal ({getTotalItems()} items)</span>
-                    <PriceDisplay price={subtotal} showOriginalPrice={false} />
+                    <span>Subtotal ({retryOrder ? retryOrder.order_items?.length : getTotalItems()} items)</span>
+                    <PriceDisplay price={retryOrder ? retryOrder.subtotal : subtotal} showOriginalPrice={false} />
                   </div>
                   <div className="flex justify-between">
                     <span>Shipping</span>
-                    <span className={shipping === 0 ? 'text-green-600' : ''}>
-                      {shipping === 0 ? 'Free' : <PriceDisplay price={shipping} showOriginalPrice={false} />}
+                    <span className={(retryOrder ? retryOrder.shipping_amount : shipping) === 0 ? 'text-green-600' : ''}>
+                      {(retryOrder ? retryOrder.shipping_amount : shipping) === 0 ? 'Free' : <PriceDisplay price={retryOrder ? retryOrder.shipping_amount : shipping} showOriginalPrice={false} />}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span>Tax</span>
-                    <PriceDisplay price={tax} showOriginalPrice={false} />
+                    <PriceDisplay price={retryOrder ? retryOrder.tax_amount : tax} showOriginalPrice={false} />
                   </div>
                   <div className="border-t pt-2">
                     <div className="flex justify-between text-lg font-semibold">
                       <span>Total</span>
-                      <PriceDisplay price={total} showOriginalPrice={false} className="text-blush-600" />
+                      <PriceDisplay price={retryOrder ? retryOrder.total_amount : total} showOriginalPrice={false} className="text-blush-600" />
                     </div>
                   </div>
                 </div>
@@ -431,26 +561,28 @@ const Checkout = () => {
                 {/* Payment Button */}
                 {isFormValid && user ? (
                   <PaystackPayment
-                    amount={total}
+                    amount={retryOrder ? retryOrder.total_amount : total}
                     currency="GHS"
                     customerEmail={formData.email}
                     customerName={`${formData.firstName} ${formData.lastName}`}
                     onSuccess={handlePaystackSuccess}
                     onError={handlePaystackError}
                     className="w-full bg-gradient-to-r from-blush-500 to-rosegold-500 hover:from-blush-600 hover:to-rosegold-600 text-white font-semibold py-3"
+                    disabled={loading}
                     metadata={{
                       shipping_address: formData,
-                      items: items.map(item => ({
+                      items: retryOrder ? retryOrder.order_items : items.map(item => ({
                         id: item.id,
                         name: item.name,
                         quantity: item.quantity,
                         price: item.price,
                         selectedColor: item.selectedColor,
                         selectedLength: item.selectedLength
-                      }))
+                      })),
+                      retry_order_id: retryOrder?.id
                     }}
                   >
-                    Complete Order with Paystack
+                    {loading ? 'Processing...' : (retryOrder ? 'Retry Payment' : 'Complete Order with Paystack')}
                   </PaystackPayment>
                 ) : (
                   <Button 
