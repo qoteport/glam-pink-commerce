@@ -31,8 +31,10 @@ const Shop = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'all');
-  const [selectedTexture, setSelectedTexture] = useState('all');
+  const [selectedColor, setSelectedColor] = useState('all');
   const [selectedLength, setSelectedLength] = useState('all');
+  const [selectedSize, setSelectedSize] = useState('all');
+  const [selectedHairType, setSelectedHairType] = useState('all');
   const [priceRange, setPriceRange] = useState([0, 1000]);
   const [sortBy, setSortBy] = useState('featured');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -41,34 +43,17 @@ const Shop = () => {
   const [categories, setCategories] = useState([
     { value: 'all', label: 'All Categories' }
   ]);
-
-  const textures = [
-    { value: 'all', label: 'All Textures' },
-  ];
-
-  const lengths = [
-    { value: 'all', label: 'All Lengths' },
-    { value: '12', label: '12"' },
-    { value: '14', label: '14"' },
-    { value: '16', label: '16"' },
-    { value: '18', label: '18"' },
-    { value: '20', label: '20"' },
-    { value: '22', label: '22"' },
-    { value: '24', label: '24"' },
-    { value: '26', label: '26"' },
-  ];
-
-  const priceRanges = [
-    { value: [0, 50], label: '$0 - $50' },
-    { value: [50, 100], label: '$50 - $100' },
-    { value: [100, 200], label: '$100 - $200' },
-    { value: [200, 500], label: '$200 - $500' },
-    { value: [500, 1000], label: '$500+' },
-  ];
+  
+  const [colors, setColors] = useState([{ value: 'all', label: 'All Colors' }]);
+  const [lengths, setLengths] = useState([{ value: 'all', label: 'All Lengths' }]);
+  const [sizes, setSizes] = useState([{ value: 'all', label: 'All Sizes' }]);
+  const [hairTypes, setHairTypes] = useState([{ value: 'all', label: 'All Hair Types' }]);
+  const [priceRanges, setPriceRanges] = useState([]);
 
   useEffect(() => {
     fetchProducts();
     fetchCategories();
+    fetchHairTypes();
   }, []);
 
   const fetchProducts = async () => {
@@ -80,7 +65,8 @@ const Shop = () => {
           *,
           categories!category_id (name, slug),
           subcategories!subcategory_id (name, slug),
-          discounts!discount_id (name, type, value)
+          discounts!discount_id (name, type, value),
+          hair_types!hair_type_id (id, name)
         `)
         .order('created_at', { ascending: false });
 
@@ -102,8 +88,9 @@ const Shop = () => {
         lengths: product.lengths,
         description: product.description,
         features: product.features || [],
-        hairType: product.hair_type,
-        texture: product.texture,
+        hairType: product.hair_types?.name,
+        hairTypeId: product.hair_type_id,
+        sizes: product.sizes,
         imageGallery: product.image_gallery || [],
         hairCareInstructions: product.hair_care_instructions,
         type: product.type,
@@ -111,6 +98,46 @@ const Shop = () => {
       })) || [];
 
       setProducts(transformedProducts);
+
+      // Generate dynamic filter options
+      const uniqueColors = [...new Set(transformedProducts.flatMap(p => p.colors || []))].map(color => ({
+        value: color,
+        label: color.startsWith('#') ? color : color.charAt(0).toUpperCase() + color.slice(1)
+      }));
+      
+      const uniqueLengths = [...new Set(transformedProducts.flatMap(p => p.lengths || []))].map(length => ({
+        value: length,
+        label: length
+      }));
+
+      const uniqueSizes = [...new Set(transformedProducts.flatMap(p => p.size || []))].map(size => ({
+        value: size,
+        label: size
+      }));
+
+      // Generate dynamic price ranges
+      const prices = transformedProducts.map(p => p.price).filter(p => p != null);
+      const minPrice = Math.floor(Math.min(...prices) / 10) * 10;
+      const maxPrice = Math.ceil(Math.max(...prices) / 10) * 10;
+      const rangeStep = Math.ceil((maxPrice - minPrice) / 5);
+      const dynamicPriceRanges = [];
+      for (let i = minPrice; i < maxPrice; i += rangeStep) {
+        const rangeEnd = Math.min(i + rangeStep, maxPrice);
+        dynamicPriceRanges.push({
+          value: [i, rangeEnd],
+          label: `$${i} - $${rangeEnd}`
+        });
+      }
+      dynamicPriceRanges.push({
+        value: [maxPrice, Infinity],
+        label: `$${maxPrice}+`
+      });
+
+      setColors([{ value: 'all', label: 'All Colors' }, ...uniqueColors]);
+      setLengths([{ value: 'all', label: 'All Lengths' }, ...uniqueLengths]);
+      setSizes([{ value: 'all', label: 'All Sizes' }, ...uniqueSizes]);
+      setPriceRanges(dynamicPriceRanges);
+      setPriceRange([minPrice, maxPrice]);
     } catch (error) {
       console.error('Error fetching products:', error);
       toast({
@@ -147,6 +174,29 @@ const Shop = () => {
     }
   };
 
+  const fetchHairTypes = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('hair_types')
+        .select('id, name')
+        .order('name');
+
+      if (error) throw error;
+
+      const dbHairTypes = data?.map(hairType => ({
+        value: hairType.name,
+        label: hairType.name
+      })) || [];
+
+      setHairTypes([
+        { value: 'all', label: 'All Hair Types' },
+        ...dbHairTypes
+      ]);
+    } catch (error) {
+      console.error('Error fetching hair types:', error);
+    }
+  };
+
   const filteredAndSortedProducts = useMemo(() => {
     let filtered = products;
 
@@ -160,12 +210,20 @@ const Shop = () => {
       filtered = filtered.filter(product => product.category === selectedCategory);
     }
 
-    if (selectedTexture !== 'all') {
-      filtered = filtered.filter(product => product.texture === selectedTexture);
+    if (selectedColor !== 'all') {
+      filtered = filtered.filter(product => product.colors?.includes(selectedColor));
     }
 
     if (selectedLength !== 'all') {
       filtered = filtered.filter(product => product.lengths?.includes(selectedLength));
+    }
+
+    if (selectedSize !== 'all') {
+      filtered = filtered.filter(product => product.sizes?.includes(selectedSize));
+    }
+
+    if (selectedHairType !== 'all') {
+      filtered = filtered.filter(product => product.hairType === selectedHairType);
     }
 
     filtered = filtered.filter(product =>
@@ -181,7 +239,7 @@ const Shop = () => {
     }
 
     return filtered;
-  }, [products, searchQuery, selectedCategory, selectedTexture, selectedLength, priceRange, sortBy]);
+  }, [products, searchQuery, selectedCategory, selectedColor, selectedLength, selectedSize, selectedHairType, priceRange, sortBy]);
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
@@ -226,21 +284,29 @@ const Shop = () => {
           <div className="hidden lg:block w-80 flex-shrink-0">
             <ProductFilter
               categories={categories}
-              textures={textures}
+              colors={colors}
               lengths={lengths}
+              sizes={sizes}
+              hairTypes={hairTypes}
               priceRanges={priceRanges}
               selectedCategory={selectedCategory}
-              selectedTexture={selectedTexture}
+              selectedColor={selectedColor}
               selectedLength={selectedLength}
+              selectedSize={selectedSize}
+              selectedHairType={selectedHairType}
               priceRange={priceRange}
               onCategoryChange={handleCategoryChange}
-              onTextureChange={setSelectedTexture}
+              onColorChange={setSelectedColor}
               onLengthChange={setSelectedLength}
+              onSizeChange={setSelectedSize}
+              onHairTypeChange={setSelectedHairType}
               onPriceRangeChange={setPriceRange}
               onClearFilters={() => {
                 setSelectedCategory('all');
-                setSelectedTexture('all');
+                setSelectedColor('all');
                 setSelectedLength('all');
+                setSelectedSize('all');
+                setSelectedHairType('all');
                 setPriceRange([0, 1000]);
               }}
             />
