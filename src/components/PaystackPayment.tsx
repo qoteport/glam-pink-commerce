@@ -14,6 +14,7 @@ interface PaystackPaymentProps {
   className?: string;
   children?: React.ReactNode;
   metadata?: Record<string, any>;
+  disabled?: boolean;
 }
 
 const PaystackPayment: React.FC<PaystackPaymentProps> = ({
@@ -25,7 +26,8 @@ const PaystackPayment: React.FC<PaystackPaymentProps> = ({
   onError,
   className = '',
   children,
-  metadata = {}
+  metadata = {},
+  disabled = false
 }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const { toast } = useToast();
@@ -79,7 +81,7 @@ const PaystackPayment: React.FC<PaystackPaymentProps> = ({
   return (
     <Button
       onClick={handlePayment}
-      disabled={isProcessing}
+      disabled={isProcessing || disabled}
       className={className}
     >
       {isProcessing ? 'Processing...' : (children || 'Pay with Paystack')}

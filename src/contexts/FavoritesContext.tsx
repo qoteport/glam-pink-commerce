@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './AuthContext';
@@ -8,6 +9,7 @@ interface FavoritesContextType {
   addToFavorites: (productId: string) => Promise<void>;
   removeFromFavorites: (productId: string) => Promise<void>;
   isFavorite: (productId: string) => boolean;
+  getTotalFavorites: () => number;
   loading: boolean;
 }
 
@@ -22,6 +24,7 @@ export const useFavorites = () => {
       addToFavorites: async () => {},
       removeFromFavorites: async () => {},
       isFavorite: () => false,
+      getTotalFavorites: () => 0,
       loading: false
     };
   }
@@ -129,12 +132,17 @@ export const FavoritesProvider = ({ children }: FavoritesProviderProps) => {
     return favorites.includes(productId);
   };
 
+  const getTotalFavorites = () => {
+    return favorites.length;
+  };
+
   return (
     <FavoritesContext.Provider value={{
       favorites,
       addToFavorites,
       removeFromFavorites,
       isFavorite,
+      getTotalFavorites,
       loading
     }}>
       {children}

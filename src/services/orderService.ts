@@ -117,7 +117,11 @@ class OrderService {
 
     if (itemsError) throw itemsError;
 
-    return order;
+    return {
+      ...order,
+      order_status: order.order_status as Order['order_status'],
+      payment_status: order.payment_status as Order['payment_status']
+    };
   }
 
   async updateOrderStatus(orderId: string, status: string, notes?: string): Promise<void> {
@@ -155,7 +159,12 @@ class OrderService {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return data || [];
+    
+    return (data || []).map(order => ({
+      ...order,
+      order_status: order.order_status as Order['order_status'],
+      payment_status: order.payment_status as Order['payment_status']
+    }));
   }
 
   async getAllOrders(): Promise<Order[]> {
@@ -169,7 +178,12 @@ class OrderService {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return data || [];
+    
+    return (data || []).map(order => ({
+      ...order,
+      order_status: order.order_status as Order['order_status'],
+      payment_status: order.payment_status as Order['payment_status']
+    }));
   }
 
   async getOrderById(orderId: string): Promise<Order | null> {
@@ -184,7 +198,12 @@ class OrderService {
       .single();
 
     if (error) throw error;
-    return data;
+    
+    return data ? {
+      ...data,
+      order_status: data.order_status as Order['order_status'],
+      payment_status: data.payment_status as Order['payment_status']
+    } : null;
   }
 
   async createNotification(notification: {
@@ -209,7 +228,11 @@ class OrderService {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return data || [];
+    
+    return (data || []).map(notification => ({
+      ...notification,
+      type: notification.type as OrderNotification['type']
+    }));
   }
 
   async markNotificationAsRead(notificationId: string): Promise<void> {
