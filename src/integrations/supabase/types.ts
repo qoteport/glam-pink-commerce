@@ -453,6 +453,30 @@ export type Database = {
         }
         Relationships: []
       }
+      platform_settings: {
+        Row: {
+          description: string | null
+          id: string
+          setting_key: string
+          setting_value: string
+          updated_at: string
+        }
+        Insert: {
+          description?: string | null
+          id?: string
+          setting_key: string
+          setting_value: string
+          updated_at?: string
+        }
+        Update: {
+          description?: string | null
+          id?: string
+          setting_key?: string
+          setting_value?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       product_collections: {
         Row: {
           category: string
@@ -650,6 +674,39 @@ export type Database = {
         }
         Relationships: []
       }
+      shipping_rules: {
+        Row: {
+          condition_value: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          rule_type: string
+          updated_at: string
+        }
+        Insert: {
+          condition_value: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          rule_type: string
+          updated_at?: string
+        }
+        Update: {
+          condition_value?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          rule_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       social_links: {
         Row: {
           created_at: string
@@ -760,6 +817,42 @@ export type Database = {
         }
         Relationships: []
       }
+      tax_rules: {
+        Row: {
+          applies_to: string
+          condition_value: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          tax_rate: number
+          updated_at: string
+        }
+        Insert: {
+          applies_to: string
+          condition_value?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          tax_rate: number
+          updated_at?: string
+        }
+        Update: {
+          applies_to?: string
+          condition_value?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          tax_rate?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       testimonials: {
         Row: {
           comment: string
@@ -835,6 +928,57 @@ export type Database = {
           slug?: string
           sort_order?: number | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      user_addresses: {
+        Row: {
+          address: string
+          city: string
+          country: string
+          created_at: string
+          first_name: string
+          id: string
+          is_default: boolean | null
+          last_name: string
+          phone: string | null
+          state: string
+          type: string
+          updated_at: string
+          user_id: string
+          zip_code: string
+        }
+        Insert: {
+          address: string
+          city: string
+          country?: string
+          created_at?: string
+          first_name: string
+          id?: string
+          is_default?: boolean | null
+          last_name: string
+          phone?: string | null
+          state: string
+          type?: string
+          updated_at?: string
+          user_id: string
+          zip_code: string
+        }
+        Update: {
+          address?: string
+          city?: string
+          country?: string
+          created_at?: string
+          first_name?: string
+          id?: string
+          is_default?: boolean | null
+          last_name?: string
+          phone?: string | null
+          state?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+          zip_code?: string
         }
         Relationships: []
       }

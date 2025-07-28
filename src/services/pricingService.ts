@@ -1,7 +1,9 @@
 
 interface PricingConfig {
   baseCurrency: 'GHS';
+  defaultCurrency: 'USD';
   exchangeRates: {
+    USD: number;
     EUR: number;
     GHS: number;
   };
@@ -20,18 +22,21 @@ interface PriceDisplay {
 class PricingService {
   private config: PricingConfig = {
     baseCurrency: 'GHS',
+    defaultCurrency: 'USD',
     exchangeRates: {
-      EUR: 0.080, // 1 GHS = 0.080 EUR (approximate)
+      USD: 0.080, // 1 GHS = 0.080 USD (approximate)
+      EUR: 0.070, // 1 GHS = 0.070 EUR (approximate)
       GHS: 1.0
     },
     locationRules: {
       'Europe': 'EUR',
       'Ghana': 'GHS',
-      'default': 'GHS'
+      'default': 'USD' // Changed from GHS to USD
     }
   };
 
   private currencySymbols = {
+    USD: '$',
     GHS: '₵',
     EUR: '€'
   };
@@ -120,6 +125,16 @@ class PricingService {
   // Update exchange rates (for admin or periodic updates)
   updateExchangeRates(rates: Partial<PricingConfig['exchangeRates']>) {
     this.config.exchangeRates = { ...this.config.exchangeRates, ...rates };
+  }
+
+  // Get base currency (what admins enter prices in)
+  getBaseCurrency(): string {
+    return this.config.baseCurrency;
+  }
+
+  // Get default currency (what users see before location detection)
+  getDefaultCurrency(): string {
+    return this.config.defaultCurrency;
   }
 }
 
