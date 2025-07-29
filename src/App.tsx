@@ -41,7 +41,7 @@ function App() {
                   <Route path="/favorites" element={<Favorites />} />
                   <Route path="/custom-braided-wigs" element={<CustomBraidedWigs />} />
                   <Route path="/wholesale-deals" element={<WholesaleDeals />} />
-                  <Route path="/payment-callback" element={<PaymentCallback />} />
+                  <Route path="/payment/callback" element={<PaymentCallback />} />
                   <Route path="/my-orders" element={<MyOrders />} />
                   <Route path="/admin" element={
                     <ProtectedRoute requireAdmin={true}>

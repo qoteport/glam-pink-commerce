@@ -1,58 +1,134 @@
-
-import React, { useEffect, useState } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
-import { paystackService } from '@/services/paystackService';
-import { useToast } from '@/hooks/use-toast';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import React, { useEffect, useState } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { paystackService } from "@/services/paystackService";
+import { orderService } from "@/services/orderService";
+import { addressService, UserAddress } from "@/services/addressService";
+import { useToast } from "@/hooks/use-toast";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { CheckCircle, XCircle, Loader2 } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 const PaymentCallback: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [status, setStatus] = useState<'verifying' | 'success' | 'failed'>('verifying');
+
+  const { clearCart } = useCart();
+  const { user } = useAuth();
+  const [status, setStatus] = useState<"verifying" | "success" | "failed">(
+    "verifying"
+  );
   const [paymentData, setPaymentData] = useState<any>(null);
 
   useEffect(() => {
     const verifyPayment = async () => {
-      const reference = searchParams.get('reference');
-      
+      const reference = searchParams.get("reference");
+
       if (!reference) {
-        setStatus('failed');
+        setStatus("failed");
         toast({
-          title: 'Payment Error',
-          description: 'No payment reference found',
-          variant: 'destructive',
+          title: "Payment Error",
+          description: "No payment reference found",
+          variant: "destructive",
         });
         return;
       }
 
       try {
         const response = await paystackService.verifyPayment(reference);
-        
-        if (response.status && response.data?.status === 'success') {
-          setStatus('success');
+
+        if (response.status && response.data?.status === "success") {
+          setStatus("success");
           setPaymentData(response.data);
           toast({
-            title: 'Payment Successful',
-            description: 'Your payment has been processed successfully',
+            title: "Payment Successful",
+            description: "Your payment has been processed successfully",
           });
+
+          try {
+              // Retrieve stored payment data
+              const storedData = localStorage.getItem("paystack_payment_data");
+              if (!storedData) {
+                throw new Error("Payment data not found");
+              }
+
+              const metadata = JSON.parse(storedData);
+              const shippingAddress = metadata.metadata.shipping_address;
+              const orderData = metadata.metadata.order_data || {};
+              const items = metadata.metadata.items || [];
+
+              // Create order in database
+              orderData.payment_reference = reference;
+              const order = await orderService.createOrder(orderData);
+
+              // Update payment status
+              await orderService.updatePaymentStatus(
+                order.id,
+                "completed",
+                reference
+              );
+
+              // Create notification
+              if (orderData.customer_id) {
+                await orderService.createNotification({
+                  order_id: order.id,
+                  user_id: orderData.customer_id,
+                  type: "payment_success",
+                  title: "Payment Successful",
+                  message: `Your payment of ${(orderData.total_amount / 100).toFixed(
+                    2
+                  )} has been processed successfully.`,
+                });
+              }
+
+              // Save address if requested
+               console.log(shippingAddress?.saveAddress, orderData.customer_id)
+              if (shippingAddress?.saveAddress && orderData.customer_id) {
+                const addressData = {
+                  type: "shipping",
+                  first_name: shippingAddress.firstName,
+                  last_name: shippingAddress.lastName,
+                  phone: shippingAddress.phone,
+                  address: shippingAddress.address,
+                  city: shippingAddress.city,
+                  state: shippingAddress.state,
+                  zip_code: shippingAddress.zipCode,
+                  country: shippingAddress.country,
+                  is_default: false,
+                  user_id: orderData.customer_id,
+                } as UserAddress;
+
+                await addressService.saveAddress(addressData);
+              }
+            
+
+            clearCart();
+            localStorage.removeItem("paystack_payment_reference");
+            localStorage.removeItem("paystack_payment_data");
+            navigate("/my-orders");
+          } catch (error) {
+            console.error("Error Occured Storing Errro data:", error)
+          }
         } else {
-          setStatus('failed');
+          setStatus("failed");
           toast({
-            title: 'Payment Failed',
-            description: response.message || 'Payment verification failed',
-            variant: 'destructive',
+            title: "Payment Failed",
+            description: response.message || "Payment verification failed",
+            variant: "destructive",
           });
         }
       } catch (error) {
-        setStatus('failed');
-        const errorMessage = error instanceof Error ? error.message : 'Payment verification failed';
+        setStatus("failed");
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "Payment verification failed";
         toast({
-          title: 'Payment Error',
+          title: "Payment Error",
           description: errorMessage,
-          variant: 'destructive',
+          variant: "destructive",
         });
       }
     };
@@ -61,10 +137,10 @@ const PaymentCallback: React.FC = () => {
   }, [searchParams, toast]);
 
   const handleContinue = () => {
-    if (status === 'success') {
-      navigate('/');
+    if (status === "success") {
+      navigate("/my-orders");
     } else {
-      navigate('/checkout');
+      navigate("/checkout");
     }
   };
 
@@ -73,47 +149,59 @@ const PaymentCallback: React.FC = () => {
       <Card className="max-w-md w-full">
         <CardHeader className="text-center">
           <CardTitle className="flex items-center justify-center space-x-2">
-            {status === 'verifying' && <Loader2 className="animate-spin" size={24} />}
-            {status === 'success' && <CheckCircle className="text-green-500" size={24} />}
-            {status === 'failed' && <XCircle className="text-red-500" size={24} />}
+            {status === "verifying" && (
+              <Loader2 className="animate-spin" size={24} />
+            )}
+            {status === "success" && (
+              <CheckCircle className="text-green-500" size={24} />
+            )}
+            {status === "failed" && (
+              <XCircle className="text-red-500" size={24} />
+            )}
             <span>
-              {status === 'verifying' && 'Verifying Payment...'}
-              {status === 'success' && 'Payment Successful!'}
-              {status === 'failed' && 'Payment Failed'}
+              {status === "verifying" && "Verifying Payment..."}
+              {status === "success" && "Payment Successful!"}
+              {status === "failed" && "Payment Failed"}
             </span>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {status === 'verifying' && (
+          {status === "verifying" && (
             <p className="text-center text-gray-600">
               Please wait while we verify your payment...
             </p>
           )}
-          
-          {status === 'success' && paymentData && (
+
+          {status === "success" && paymentData && (
             <div className="space-y-2">
               <p className="text-center text-gray-600">
                 Thank you for your purchase! Your order is being processed.
               </p>
               <div className="bg-green-50 p-3 rounded-lg">
-                <p className="text-sm"><strong>Reference:</strong> {paymentData.reference}</p>
-                <p className="text-sm"><strong>Amount:</strong> {paymentData.currency} {(paymentData.amount / 100).toFixed(2)}</p>
+                <p className="text-sm">
+                  <strong>Reference:</strong> {paymentData.reference}
+                </p>
+                <p className="text-sm">
+                  <strong>Amount:</strong> {paymentData.currency}{" "}
+                  {(paymentData.amount / 100).toFixed(2)}
+                </p>
               </div>
             </div>
           )}
-          
-          {status === 'failed' && (
+
+          {status === "failed" && (
             <p className="text-center text-gray-600">
-              Your payment could not be processed. Please try again or contact support.
+              Your payment could not be processed. Please try again or contact
+              support.
             </p>
           )}
-          
-          <Button 
+
+          <Button
             onClick={handleContinue}
             className="w-full"
-            disabled={status === 'verifying'}
+            disabled={status === "verifying"}
           >
-            {status === 'success' ? 'Continue Shopping' : 'Try Again'}
+            {status === "success" ? "Continue Shopping" : "Try Again"}
           </Button>
         </CardContent>
       </Card>

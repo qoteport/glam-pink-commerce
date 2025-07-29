@@ -1,177 +1,343 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingBag, Heart, User, Menu, X, Search, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Search, ShoppingCart, Heart, Menu, X, User, Crown, LogOut, ChevronDown, Package } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useFavorites } from '@/contexts/FavoritesContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
-const Header = () => {
+interface HeaderProps {
+  onSearch?: (query: string) => void;
+}
+
+const Header = ({ onSearch }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const { getTotalItems } = useCart();
-  const { getTotalFavorites } = useFavorites();
-  const { user, signOut, isAdmin } = useAuth();
+  const { favorites } = useFavorites();
+  const { user, profile, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
+
+  const navItems = [
+    { name: 'Home', href: '/' },
+    { name: 'Shop', href: '/shop' },
+    { name: 'Wigs', href: '/shop?status=wigs' },
+    { name: 'Wholesale Deals', href: '/wholesale-deals', isSpecial: true },
+    { 
+      name: 'More', 
+      href: '#',
+      isDropdown: true,
+      items: [
+        { name: 'Customized Braided Wigs', href: '/custom-braided-wigs' },
+        { name: 'Ready to Ship Wigs', href: '/shop?status=ready-to-ship-wigs' },
+        { name: 'Wholesale Deals', href: '/wholesale-deals' }
+      ]
+    }
+  ];
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      if (onSearch) {
+        onSearch(searchQuery);
+      } else {
+        navigate(`/shop?search=${encodeURIComponent(searchQuery)}`);
+      }
+    }
+  };
+
+  const handleNavClick = (href: string) => {
+    navigate(href);
+    setIsMenuOpen(false);
+  };
 
   const handleSignOut = async () => {
     await signOut();
     navigate('/');
   };
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
   return (
-    <header className="bg-white shadow-sm sticky top-0 z-50">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-blush-100 shadow-sm">
+      {/* Top Bar */}
+      <div className="bg-gradient-to-r from-blush-50 to-cream-50 py-2">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-center text-sm text-blush-600">
+            <span>🚚 Free shipping on orders $75+ | 💎 100% Virgin Hair Guarantee</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Navigation */}
+      <div className="container mx-auto px-4 py-4">
+        <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-blush-400 to-rosegold-400 rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-sm">HT</span>
-            </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-blush-600 to-rosegold-600 bg-clip-text text-transparent">
-              Hairy Tales Beauty
-            </span>
-          </Link>
+          <div 
+            className="flex items-center cursor-pointer"
+            onClick={() => navigate('/')}
+          >
+            <h1 className="text-2xl md:text-3xl font-bold text-gradient">
+              HairyTalesBeauty
+            </h1>
+          </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            <Link to="/" className="text-gray-700 hover:text-blush-600 transition-colors">
-              Home
-            </Link>
-            <Link to="/shop" className="text-gray-700 hover:text-blush-600 transition-colors">
-              Shop
-            </Link>
-            <Link to="/custom-braided-wigs" className="text-gray-700 hover:text-blush-600 transition-colors">
-              Custom Wigs
-            </Link>
-            <Link to="/wholesale-deals" className="text-gray-700 hover:text-blush-600 transition-colors">
-              Wholesale
-            </Link>
+          <nav className="hidden lg:flex items-center space-x-8">
+            {navItems.map((item) => (
+              item.isDropdown ? (
+                <DropdownMenu key={item.name}>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="chip"
+                      className="font-medium"
+                    >
+                      {item.name}
+                      <ChevronDown size={16} className="ml-1" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56 bg-white border border-blush-100 shadow-lg">
+                    {item.items?.map((subItem) => (
+                      <DropdownMenuItem
+                        key={subItem.name}
+                        onClick={() => handleNavClick(subItem.href)}
+                        className="hover:bg-blush-50 hover:text-blush-600 cursor-pointer text-foreground"
+                      >
+                        {subItem.name}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <button
+                  key={item.name}
+                  onClick={() => handleNavClick(item.href)}
+                  className={`font-medium transition-colors duration-200 hover:text-blush-500 ${
+                    item.isSpecial 
+                      ? 'text-rosegold-500 bg-rosegold-50 px-3 py-1 rounded-full' 
+                      : 'text-gray-700'
+                  }`}
+                >
+                  {item.name}
+                </button>
+              )
+            ))}
           </nav>
 
-          {/* Desktop Actions */}
-          <div className="hidden md:flex items-center space-x-4">
-            <Button variant="ghost" size="sm" className="relative">
-              <Search className="w-5 h-5" />
-            </Button>
-            
-            <Link to="/favorites">
-              <Button variant="ghost" size="sm" className="relative">
-                <Heart className="w-5 h-5" />
-                {getTotalFavorites() > 0 && (
-                  <Badge className="absolute -top-2 -right-2 bg-rosegold-500 text-white text-xs px-1 py-0 min-w-[18px] h-[18px] rounded-full flex items-center justify-center">
-                    {getTotalFavorites()}
-                  </Badge>
-                )}
-              </Button>
-            </Link>
+          {/* Search & Actions */}
+          <div className="flex items-center space-x-4">
+            {/* Search */}
+            <form onSubmit={handleSearch} className="hidden md:flex relative">
+              <Input
+                type="text"
+                placeholder="Search wigs, bundles..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-64 pl-4 pr-10 border-blush-200 focus:border-blush-400"
+              />
+              <button 
+                type="submit"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-blush-400 hover:text-blush-600"
+              >
+                <Search size={18} />
+              </button>
+            </form>
 
-            <Link to="/cart">
-              <Button variant="ghost" size="sm" className="relative">
-                <ShoppingBag className="w-5 h-5" />
-                {getTotalItems() > 0 && (
-                  <Badge className="absolute -top-2 -right-2 bg-blush-500 text-white text-xs px-1 py-0 min-w-[18px] h-[18px] rounded-full flex items-center justify-center">
-                    {getTotalItems()}
-                  </Badge>
-                )}
-              </Button>
-            </Link>
-
+            {/* User Account */}
             {user ? (
-              <div className="flex items-center space-x-2">
-                <Link to="/my-orders">
-                  <Button variant="ghost" size="sm" className="relative">
-                    <Package className="w-5 h-5" />
-                    <span className="ml-1 hidden lg:inline">Orders</span>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="relative hover:bg-blush-50">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-8 h-8 bg-gradient-to-br from-rosegold-400 to-blush-400 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                        {profile?.full_name ? profile.full_name.charAt(0).toUpperCase() : user.email?.charAt(0).toUpperCase()}
+                      </div>
+                      {isAdmin && <Crown size={16} className="text-rosegold-500" />}
+                    </div>
                   </Button>
-                </Link>
-                {isAdmin && (
-                  <Link to="/admin">
-                    <Button variant="ghost" size="sm">
-                      Admin
-                    </Button>
-                  </Link>
-                )}
-                <Button variant="ghost" size="sm" onClick={handleSignOut}>
-                  Sign Out
-                </Button>
-              </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 bg-white border border-blush-100 shadow-lg">
+                  <div className="flex items-center justify-start gap-2 p-2">
+                    <div className="flex flex-col space-y-1 leading-none">
+                      <p className="font-medium">{profile?.full_name || 'User'}</p>
+                      <p className="w-[200px] truncate text-sm text-muted-foreground">
+                        {user.email}
+                      </p>
+                    </div>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    onClick={() => {
+                      navigate('/my-orders');
+                      setIsMenuOpen(false);
+                    }} 
+                    className="hover:bg-blush-50 hover:text-blush-600 cursor-pointer text-foreground"
+                  >
+                    <Package className="mr-2 h-4 w-4" />
+                    My Orders
+                  </DropdownMenuItem>
+                  {isAdmin && (
+                    <>
+                      <DropdownMenuItem onClick={() => navigate('/admin')} className="hover:bg-blush-50 hover:text-blush-600 cursor-pointer text-foreground">
+                        <Crown className="mr-2 h-4 w-4" />
+                        Admin Dashboard
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                    </>
+                  )}
+                  <DropdownMenuItem onClick={handleSignOut} className="hover:bg-blush-50 hover:text-blush-600 cursor-pointer text-foreground">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
-              <Link to="/auth">
-                <Button variant="default" size="sm" className="bg-gradient-to-r from-blush-500 to-rosegold-500 hover:from-blush-600 hover:to-rosegold-600">
-                  <User className="w-4 h-4 mr-1" />
-                  Sign In
-                </Button>
-              </Link>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="relative hover:bg-blush-50"
+                onClick={() => navigate('/auth')}
+              >
+                <User size={20} className="text-blush-600" />
+              </Button>
             )}
-          </div>
+            
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="relative hover:bg-blush-50 hidden md:flex group"
+              onClick={() => navigate('/favorites')}
+            >
+              <Heart size={20} className="text-blush-600 group-hover:text-blush-700 transition-colors" />
+              {favorites.length > 0 && (
+                <Badge className="absolute -top-2 -right-2 bg-rosegold-500 text-white text-xs min-w-[20px] h-5 flex items-center justify-center">
+                  {favorites.length}
+                </Badge>
+              )}
+            </Button>
 
-          {/* Mobile menu button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="md:hidden"
-            onClick={toggleMenu}
-          >
-            {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="relative hover:bg-blush-50 group"
+              onClick={() => navigate('/cart')}
+            >
+              <ShoppingCart size={20} className="text-blush-600 group-hover:text-blush-700 transition-colors" />
+              {getTotalItems() > 0 && (
+                <Badge className="absolute -top-2 -right-2 bg-rosegold-500 text-white text-xs min-w-[20px] h-5 flex items-center justify-center">
+                  {getTotalItems()}
+                </Badge>
+              )}
+            </Button>
+
+            {/* Mobile Menu Button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="lg:hidden"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </Button>
+          </div>
         </div>
 
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden py-4 border-t">
-            <nav className="flex flex-col space-y-4">
-              <Link to="/" className="text-gray-700 hover:text-blush-600 transition-colors" onClick={toggleMenu}>
-                Home
-              </Link>
-              <Link to="/shop" className="text-gray-700 hover:text-blush-600 transition-colors" onClick={toggleMenu}>
-                Shop
-              </Link>
-              <Link to="/custom-braided-wigs" className="text-gray-700 hover:text-blush-600 transition-colors" onClick={toggleMenu}>
-                Custom Wigs
-              </Link>
-              <Link to="/wholesale-deals" className="text-gray-700 hover:text-blush-600 transition-colors" onClick={toggleMenu}>
-                Wholesale
-              </Link>
-              <Link to="/favorites" className="text-gray-700 hover:text-blush-600 transition-colors flex items-center" onClick={toggleMenu}>
-                <Heart className="w-4 h-4 mr-2" />
-                Favorites ({getTotalFavorites()})
-              </Link>
-              <Link to="/cart" className="text-gray-700 hover:text-blush-600 transition-colors flex items-center" onClick={toggleMenu}>
-                <ShoppingBag className="w-4 h-4 mr-2" />
-                Cart ({getTotalItems()})
-              </Link>
-              {user ? (
-                <>
-                  <Link to="/my-orders" className="text-gray-700 hover:text-blush-600 transition-colors flex items-center" onClick={toggleMenu}>
-                    <Package className="w-4 h-4 mr-2" />
-                    My Orders
-                  </Link>
-                  {isAdmin && (
-                    <Link to="/admin" className="text-gray-700 hover:text-blush-600 transition-colors" onClick={toggleMenu}>
-                      Admin
-                    </Link>
-                  )}
-                  <Button variant="ghost" size="sm" onClick={() => { handleSignOut(); toggleMenu(); }} className="justify-start">
-                    Sign Out
-                  </Button>
-                </>
-              ) : (
-                <Link to="/auth" onClick={toggleMenu}>
-                  <Button variant="default" size="sm" className="bg-gradient-to-r from-blush-500 to-rosegold-500 hover:from-blush-600 hover:to-rosegold-600">
-                    <User className="w-4 h-4 mr-1" />
-                    Sign In
-                  </Button>
-                </Link>
-              )}
-            </nav>
+        {/* Mobile Search */}
+        <form onSubmit={handleSearch} className="md:hidden mt-4">
+          <div className="relative">
+            <Input
+              type="text"
+              placeholder="Search wigs, bundles..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-4 pr-10 border-blush-200 focus:border-blush-400"
+            />
+            <button 
+              type="submit"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-blush-400"
+            >
+              <Search size={18} />
+            </button>
           </div>
-        )}
+        </form>
       </div>
+
+      {/* Mobile Menu */}
+      {isMenuOpen && (
+        <div className="lg:hidden bg-white border-t border-blush-100 animate-slide-up">
+          <nav className="container mx-auto px-4 py-4">
+            <div className="flex flex-col space-y-4">
+              {navItems.map((item) => (
+                item.isDropdown ? (
+                  <div key={item.name} className="space-y-2">
+                    <div className="font-medium py-2 text-gray-700 border-b border-gray-200">
+                      {item.name}
+                    </div>
+                    {item.items?.map((subItem) => (
+                      <button
+                        key={subItem.name}
+                        onClick={() => handleNavClick(subItem.href)}
+                        className="font-medium py-2 pl-4 transition-colors duration-200 hover:text-blush-500 text-left text-gray-600 block w-full"
+                      >
+                        {subItem.name}
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <button
+                    key={item.name}
+                    onClick={() => handleNavClick(item.href)}
+                    className={`font-medium py-2 transition-colors duration-200 hover:text-blush-500 text-left ${
+                      item.isSpecial 
+                        ? 'text-rosegold-500 bg-rosegold-50 px-3 py-2 rounded-lg' 
+                        : 'text-gray-700'
+                    }`}
+                  >
+                    {item.name}
+                  </button>
+                )
+              ))}
+               
+              {/* Mobile-only menu items */}
+              <div className="border-t border-gray-200 pt-4 mt-4 space-y-2">
+                <button 
+                  onClick={() => {
+                    navigate('/favorites');
+                    setIsMenuOpen(false);
+                  }}
+                  className="flex items-center w-full font-medium py-2 text-left text-gray-600 hover:text-blush-500"
+                >
+                  <Heart size={16} className="mr-2" />
+                  Favorites ({favorites.length})
+                </button>
+                <button 
+                  onClick={() => {
+                    navigate('/my-orders');
+                    setIsMenuOpen(false);
+                  }}
+                  className="flex items-center w-full font-medium py-2 text-left text-gray-600 hover:text-blush-500"
+                >
+                  <Package size={16} className="mr-2" />
+                  My Orders
+                </button>
+                {user && isAdmin && (
+                  <button
+                    onClick={() => {
+                      navigate('/admin');
+                      setIsMenuOpen(false);
+                    }}
+                    className="flex items-center w-full font-medium py-2 text-left text-rosegold-600 bg-rosegold-50 px-3 py-2 rounded-lg"
+                  >
+                    <Crown className="mr-2 w-4 h-4" />
+                    Admin Dashboard
+                  </button>
+                )}
+              </div>
+            </div>
+          </nav>
+        </div>
+      )}
     </header>
   );
 };

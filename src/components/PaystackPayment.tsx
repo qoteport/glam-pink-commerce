@@ -1,8 +1,7 @@
-
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { paystackService, PaymentData } from '@/services/paystackService';
-import { useToast } from '@/hooks/use-toast';
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { paystackService, PaymentData } from "@/services/paystackService";
+import { useToast } from "@/hooks/use-toast";
 
 interface PaystackPaymentProps {
   amount: number;
@@ -24,10 +23,10 @@ const PaystackPayment: React.FC<PaystackPaymentProps> = ({
   customerName,
   onSuccess,
   onError,
-  className = '',
+  className = "",
   children,
   metadata = {},
-  disabled = false
+  disabled = false,
 }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const { toast } = useToast();
@@ -37,9 +36,9 @@ const PaystackPayment: React.FC<PaystackPaymentProps> = ({
       const error = `Currency ${currency} is not supported by Paystack`;
       onError?.(error);
       toast({
-        title: 'Payment Error',
+        title: "Payment Error",
         description: error,
-        variant: 'destructive',
+        variant: "destructive",
       });
       return;
     }
@@ -53,25 +52,38 @@ const PaystackPayment: React.FC<PaystackPaymentProps> = ({
         currency,
         metadata: {
           customer_name: customerName,
-          ...metadata
-        }
+          ...metadata,
+        },
       };
 
       const response = await paystackService.initializePayment(paymentData);
 
       if (response.status && response.data?.authorization_url) {
+        localStorage.setItem(
+          "paystack_payment_reference",
+          response.data.reference
+        );
+        localStorage.setItem(
+          "paystack_payment_data",
+          JSON.stringify({
+            metadata
+          })
+        );
         // Redirect to Paystack payment page
         window.location.href = response.data.authorization_url;
       } else {
-        throw new Error(response.message || 'Failed to initialize payment');
+        throw new Error(response.message || "Failed to initialize payment");
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Payment initialization failed';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Payment initialization failed";
       onError?.(errorMessage);
       toast({
-        title: 'Payment Error',
+        title: "Payment Error",
         description: errorMessage,
-        variant: 'destructive',
+        variant: "destructive",
       });
     } finally {
       setIsProcessing(false);
@@ -84,7 +96,7 @@ const PaystackPayment: React.FC<PaystackPaymentProps> = ({
       disabled={isProcessing || disabled}
       className={className}
     >
-      {isProcessing ? 'Processing...' : (children || 'Pay with Paystack')}
+      {isProcessing ? "Processing..." : children || "Pay with Paystack"}
     </Button>
   );
 };

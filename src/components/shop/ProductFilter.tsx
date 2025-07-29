@@ -1,289 +1,307 @@
-
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import React from 'react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { X, Filter, Search } from 'lucide-react';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { SlidersHorizontal, X } from 'lucide-react';
 
-export interface FilterOptions {
-  category: string;
-  priceRange: [number, number];
-  colors: string[];
-  lengths: string[];
-  hairTypes: string[];
-  textures: string[];
-  sortBy: 'name' | 'price' | 'rating' | 'newest';
-  sortOrder: 'asc' | 'desc';
+interface FilterOption {
+  value: string;
+  label: string;
 }
 
 interface ProductFilterProps {
-  filters: FilterOptions;
-  onFilterChange: (filters: FilterOptions) => void;
-  categories: string[];
-  colors: string[];
-  lengths: string[];
-  hairTypes: string[];
-  textures: string[];
-  onSearch?: (query: string) => void;
+  categories: FilterOption[];
+  colors: FilterOption[];
+  lengths: FilterOption[];
+  sizes: FilterOption[];
+  hairTypes: FilterOption[];
+  priceRanges: { value: number[]; label: string; }[];
+  selectedCategory: string;
+  selectedColor: string;
+  selectedLength: string;
+  selectedSize: string;
+  selectedHairType: string;
+  priceRange: number[];
+  onCategoryChange: (category: string) => void;
+  onColorChange: (color: string) => void;
+  onLengthChange: (length: string) => void;
+  onSizeChange: (size: string) => void;
+  onHairTypeChange: (hairType: string) => void;
+  onPriceRangeChange: (range: number[]) => void;
+  onClearFilters: () => void;
 }
 
-const ProductFilter = ({ 
-  filters, 
-  onFilterChange, 
-  categories, 
-  colors, 
-  lengths, 
-  hairTypes, 
-  textures,
-  onSearch 
+const ProductFilter = ({
+  categories,
+  colors,
+  lengths,
+  sizes,
+  hairTypes,
+  priceRanges,
+  selectedCategory,
+  selectedColor,
+  selectedLength,
+  selectedSize,
+  selectedHairType,
+  priceRange,
+  onCategoryChange,
+  onColorChange,
+  onLengthChange,
+  onSizeChange,
+  onHairTypeChange,
+  onPriceRangeChange,
+  onClearFilters,
 }: ProductFilterProps) => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const hasActiveFilters = 
+    selectedCategory !== 'all' || 
+    selectedColor !== 'all' || 
+    selectedLength !== 'all' || 
+    selectedSize !== 'all' || 
+    selectedHairType !== 'all' || 
+    (priceRange[0] !== 0 || priceRange[1] !== 1000);
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSearch?.(searchQuery);
+  // Color name to hex mapping for common colors
+  const colorMap: { [key: string]: string } = {
+    black: '#000000',
+    white: '#FFFFFF',
+    red: '#FF0000',
+    blue: '#0000FF',
+    green: '#008000',
+    brown: '#A52A2A',
+    blonde: '#F5E050',
+    gray: '#808080',
+    purple: '#800080',
+    pink: '#FFC1CC',
   };
 
-  const updateFilter = (key: keyof FilterOptions, value: any) => {
-    onFilterChange({
-      ...filters,
-      [key]: value
-    });
-  };
-
-  const addToArrayFilter = (key: keyof FilterOptions, value: string) => {
-    const currentArray = filters[key] as string[];
-    if (!currentArray.includes(value)) {
-      updateFilter(key, [...currentArray, value]);
+  // Function to get display color (hex or name)
+  const getColorDisplay = (color: string) => {
+    if (color.startsWith('#')) {
+      return { isHex: true, value: color };
     }
+    const lowercaseColor = color.toLowerCase();
+    return colorMap[lowercaseColor] 
+      ? { isHex: true, value: colorMap[lowercaseColor] }
+      : { isHex: false, value: color };
   };
-
-  const removeFromArrayFilter = (key: keyof FilterOptions, value: string) => {
-    const currentArray = filters[key] as string[];
-    updateFilter(key, currentArray.filter(item => item !== value));
-  };
-
-  const clearAllFilters = () => {
-    onFilterChange({
-      category: '',
-      priceRange: [0, 1000],
-      colors: [],
-      lengths: [],
-      hairTypes: [],
-      textures: [],
-      sortBy: 'name',
-      sortOrder: 'asc'
-    });
-    setSearchQuery('');
-  };
-
-  const getActiveFiltersCount = () => {
-    let count = 0;
-    if (filters.category) count++;
-    if (filters.colors.length > 0) count += filters.colors.length;
-    if (filters.lengths.length > 0) count += filters.lengths.length;
-    if (filters.hairTypes.length > 0) count += filters.hairTypes.length;
-    if (filters.textures.length > 0) count += filters.textures.length;
-    return count;
-  };
-
-  const FilterContent = () => (
-    <div className="space-y-6">
-      {/* Search */}
-      <div className="space-y-2">
-        <Label htmlFor="search">Search Products</Label>
-        <form onSubmit={handleSearchSubmit} className="flex gap-2">
-          <Input
-            id="search"
-            type="text"
-            placeholder="Search by name, description..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1"
-          />
-          <Button type="submit" size="sm">
-            <Search className="h-4 w-4" />
-          </Button>
-        </form>
-      </div>
-
-      {/* Category Filter */}
-      <div className="space-y-2">
-        <Label>Category</Label>
-        <Select value={filters.category} onValueChange={(value) => updateFilter('category', value)}>
-          <SelectTrigger>
-            <SelectValue placeholder="All Categories" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="">All Categories</SelectItem>
-            {categories.map(category => (
-              <SelectItem key={category} value={category}>{category}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Price Range */}
-      <div className="space-y-2">
-        <Label>Price Range</Label>
-        <div className="flex gap-2">
-          <Input
-            type="number"
-            placeholder="Min"
-            value={filters.priceRange[0]}
-            onChange={(e) => updateFilter('priceRange', [Number(e.target.value), filters.priceRange[1]])}
-          />
-          <Input
-            type="number"
-            placeholder="Max"
-            value={filters.priceRange[1]}
-            onChange={(e) => updateFilter('priceRange', [filters.priceRange[0], Number(e.target.value)])}
-          />
-        </div>
-      </div>
-
-      {/* Colors */}
-      <div className="space-y-2">
-        <Label>Colors</Label>
-        <div className="flex flex-wrap gap-2">
-          {colors.map(color => (
-            <Badge
-              key={color}
-              variant={filters.colors.includes(color) ? "default" : "outline"}
-              className="cursor-pointer"
-              onClick={() => filters.colors.includes(color) ? removeFromArrayFilter('colors', color) : addToArrayFilter('colors', color)}
-            >
-              {color}
-              {filters.colors.includes(color) && <X className="h-3 w-3 ml-1" />}
-            </Badge>
-          ))}
-        </div>
-      </div>
-
-      {/* Lengths */}
-      <div className="space-y-2">
-        <Label>Lengths</Label>
-        <div className="flex flex-wrap gap-2">
-          {lengths.map(length => (
-            <Badge
-              key={length}
-              variant={filters.lengths.includes(length) ? "default" : "outline"}
-              className="cursor-pointer"
-              onClick={() => filters.lengths.includes(length) ? removeFromArrayFilter('lengths', length) : addToArrayFilter('lengths', length)}
-            >
-              {length}
-              {filters.lengths.includes(length) && <X className="h-3 w-3 ml-1" />}
-            </Badge>
-          ))}
-        </div>
-      </div>
-
-      {/* Hair Types */}
-      <div className="space-y-2">
-        <Label>Hair Types</Label>
-        <div className="flex flex-wrap gap-2">
-          {hairTypes.map(hairType => (
-            <Badge
-              key={hairType}
-              variant={filters.hairTypes.includes(hairType) ? "default" : "outline"}
-              className="cursor-pointer"
-              onClick={() => filters.hairTypes.includes(hairType) ? removeFromArrayFilter('hairTypes', hairType) : addToArrayFilter('hairTypes', hairType)}
-            >
-              {hairType}
-              {filters.hairTypes.includes(hairType) && <X className="h-3 w-3 ml-1" />}
-            </Badge>
-          ))}
-        </div>
-      </div>
-
-      {/* Textures */}
-      <div className="space-y-2">
-        <Label>Textures</Label>
-        <div className="flex flex-wrap gap-2">
-          {textures.map(texture => (
-            <Badge
-              key={texture}
-              variant={filters.textures.includes(texture) ? "default" : "outline"}
-              className="cursor-pointer"
-              onClick={() => filters.textures.includes(texture) ? removeFromArrayFilter('textures', texture) : addToArrayFilter('textures', texture)}
-            >
-              {texture}
-              {filters.textures.includes(texture) && <X className="h-3 w-3 ml-1" />}
-            </Badge>
-          ))}
-        </div>
-      </div>
-
-      {/* Sort Options */}
-      <div className="space-y-2">
-        <Label>Sort By</Label>
-        <div className="flex gap-2">
-          <Select value={filters.sortBy} onValueChange={(value) => updateFilter('sortBy', value)}>
-            <SelectTrigger className="flex-1">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="name">Name</SelectItem>
-              <SelectItem value="price">Price</SelectItem>
-              <SelectItem value="rating">Rating</SelectItem>
-              <SelectItem value="newest">Newest</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={filters.sortOrder} onValueChange={(value) => updateFilter('sortOrder', value)}>
-            <SelectTrigger className="flex-1">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="asc">Ascending</SelectItem>
-              <SelectItem value="desc">Descending</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      {/* Clear Filters */}
-      <Button variant="outline" onClick={clearAllFilters} className="w-full">
-        Clear All Filters
-      </Button>
-    </div>
-  );
 
   return (
-    <div className="w-full">
-      {/* Mobile Filter */}
-      <div className="lg:hidden mb-4">
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="outline" className="w-full">
-              <Filter className="h-4 w-4 mr-2" />
-              Filters ({getActiveFiltersCount()})
+    <Card className="bg-white border-border shadow-sm">
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="font-semibold text-foreground flex items-center gap-2">
+            <SlidersHorizontal className="w-5 h-5 text-muted-foreground" />
+            Filters
+          </h3>
+          {hasActiveFilters && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={onClearFilters}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <X className="w-4 h-4 mr-1" />
+              Clear All
             </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-80">
-            <SheetHeader>
-              <SheetTitle>Filter Products</SheetTitle>
-            </SheetHeader>
-            <div className="mt-6">
-              <FilterContent />
-            </div>
-          </SheetContent>
-        </Sheet>
-      </div>
-
-      {/* Desktop Filter */}
-      <div className="hidden lg:block">
-        <div className="bg-background border rounded-lg p-4">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold">Filters</h3>
-            <Badge variant="secondary">{getActiveFiltersCount()} active</Badge>
-          </div>
-          <FilterContent />
+          )}
         </div>
-      </div>
-    </div>
+
+        <div className="space-y-6 text-left">
+          {/* Category Filter */}
+          <div>
+            <Label className="text-sm font-medium text-foreground mb-3 block">
+              Category
+            </Label>
+            <div className="space-y-2">
+              {categories?.map((category) => (
+                <div key={category.value} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`category-${category.value}`}
+                    checked={selectedCategory === category.value}
+                    onCheckedChange={() => onCategoryChange(category.value)}
+                    className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                  />
+                  <Label 
+                    htmlFor={`category-${category.value}`}
+                    className="text-sm font-normal text-muted-foreground hover:text-foreground cursor-pointer"
+                  >
+                    {category.label}
+                  </Label>
+                  {selectedCategory === category.value && category.value !== 'all' && (
+                    <Badge variant="secondary" className="text-xs">
+                      Active
+                    </Badge>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Color Filter */}
+          <div>
+            <Label className="text-sm font-medium text-foreground mb-3 block">
+              Color
+            </Label>
+            <div className="space-y-2">
+              {colors?.map((color) => {
+                const colorDisplay = getColorDisplay(color.value);
+                return (
+                  <div key={color.value} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`color-${color.value}`}
+                      checked={selectedColor === color.value}
+                      onCheckedChange={() => onColorChange(color.value)}
+                      className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                    />
+                    <div className="flex items-center gap-2">
+                      {colorDisplay.isHex && color.value !== 'all' && (
+                        <div 
+                          className="w-4 h-4 rounded-full border border-border" 
+                          style={{ backgroundColor: colorDisplay.value }}
+                        />
+                      )}
+                      <Label 
+                        htmlFor={`color-${color.value}`}
+                        className="text-sm font-normal text-muted-foreground hover:text-foreground cursor-pointer"
+                      >
+                        {color.label}
+                      </Label>
+                    </div>
+                    {selectedColor === color.value && color.value !== 'all' && (
+                      <Badge variant="secondary" className="text-xs">
+                        Active
+                      </Badge>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Length Filter */}
+          <div>
+            <Label className="text-sm font-medium text-foreground mb-3 block">
+              Length
+            </Label>
+            <div className="space-y-2">
+              {lengths?.map((length) => (
+                <div key={length.value} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`length-${length.value}`}
+                    checked={selectedLength === length.value}
+                    onCheckedChange={() => onLengthChange(length.value)}
+                    className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                  />
+                  <Label 
+                    htmlFor={`length-${length.value}`}
+                    className="text-sm font-normal text-muted-foreground hover:text-foreground cursor-pointer"
+                  >
+                    {length.label}
+                  </Label>
+                  {selectedLength === length.value && length.value !== 'all' && (
+                    <Badge variant="secondary" className="text-xs">
+                      Active
+                    </Badge>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Size Filter */}
+          <div>
+            <Label className="text-sm font-medium text-foreground mb-3 block">
+              Cap Size
+            </Label>
+            <div className="space-y-2">
+              {sizes?.map((size) => (
+                <div key={size.value} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`size-${size.value}`}
+                    checked={selectedSize === size.value}
+                    onCheckedChange={() => onSizeChange(size.value)}
+                    className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                  />
+                  <Label 
+                    htmlFor={`size-${size.value}`}
+                    className="text-sm font-normal text-muted-foreground hover:text-foreground cursor-pointer"
+                  >
+                    {size.label}
+                  </Label>
+                  {selectedSize === size.value && size.value !== 'all' && (
+                    <Badge variant="secondary" className="text-xs">
+                      Active
+                    </Badge>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Hair Type Filter */}
+          <div>
+            <Label className="text-sm font-medium text-foreground mb-3 block">
+              Hair Type
+            </Label>
+            <div className="space-y-2">
+              {hairTypes?.map((hairType) => (
+                <div key={hairType.value} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`hairType-${hairType.value}`}
+                    checked={selectedHairType === hairType.value}
+                    onCheckedChange={() => onHairTypeChange(hairType.value)}
+                    className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                  />
+                  <Label 
+                    htmlFor={`hairType-${hairType.value}`}
+                    className="text-sm font-normal text-muted-foreground hover:text-foreground cursor-pointer"
+                  >
+                    {hairType.label}
+                  </Label>
+                  {selectedHairType === hairType.value && hairType.value !== 'all' && (
+                    <Badge variant="secondary" className="text-xs">
+                      Active
+                    </Badge>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Price Range Filter */}
+          <div>
+            <Label className="text-sm font-medium text-foreground mb-3 block">
+              Price Range
+            </Label>
+            <div className="space-y-2">
+              {priceRanges?.map((range) => (
+                <div key={range?.value[0]} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`price-${range.value[0]}`}
+                    checked={priceRange[0] === range.value[0] && priceRange[1] === range.value[1]}
+                    onCheckedChange={() => onPriceRangeChange(range.value)}
+                    className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                  />
+                  <Label 
+                    htmlFor={`price-${range.value[0]}`}
+                    className="text-sm font-normal text-muted-foreground hover:text-foreground cursor-pointer"
+                  >
+                    {range.label}
+                  </Label>
+                  {priceRange[0] === range.value[0] && priceRange[1] === range.value[1] && (
+                    <Badge variant="secondary" className="text-xs">
+                      Active
+                    </Badge>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
