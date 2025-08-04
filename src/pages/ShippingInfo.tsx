@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Truck, Clock, MapPin, Package } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import PriceDisplay from '@/components/PriceDisplay';
 
 const ShippingInfo = () => {
   return (
@@ -71,7 +72,7 @@ const ShippingInfo = () => {
           </Card>
 
           {/* Shipping Costs */}
-          <Card>
+          {/* <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Package className="w-5 h-5" />
@@ -114,11 +115,15 @@ const ShippingInfo = () => {
               </div>
               <div className="mt-4 p-3 bg-blush-50 rounded-lg">
                 <p className="text-sm text-blush-800">
-                  <strong>Free Shipping:</strong> Orders over ₵200 within Ghana qualify for free standard shipping!
+                  <strong>Free Shipping:</strong> Orders over  <PriceDisplay
+                        price={1000}
+                        designCSS=""
+                        className="py-0"
+                      /> within Ghana qualify for free standard shipping!
                 </p>
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
 
           {/* International Shipping */}
           <Card>
@@ -131,12 +136,12 @@ const ShippingInfo = () => {
             <CardContent className="space-y-4">
               <div>
                 <h3 className="font-semibold">Available Countries</h3>
-                <p className="text-gray-600">We ship to over 50+ countries worldwide including:</p>
+                <p className="text-gray-600">We ship to over 10+ countries worldwide including:</p>
                 <ul className="list-disc list-inside text-sm text-gray-600 mt-2 space-y-1">
                   <li>United States & Canada</li>
                   <li>United Kingdom & Europe</li>
-                  <li>Nigeria, Kenya, South Africa</li>
                   <li>Australia & New Zealand</li>
+                  <li>Europe</li>
                 </ul>
               </div>
               <div>
