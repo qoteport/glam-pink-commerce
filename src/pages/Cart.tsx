@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
@@ -75,6 +76,10 @@ const Cart = () => {
 
   const total = subtotal + shippingCost + taxAmount;
 
+  const getItemKey = (item: any) => {
+    return `${item.id}-${item.selectedColor}-${item.selectedLength}`;
+  };
+
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-rose-50 to-pink-50 flex items-center justify-center">
@@ -108,7 +113,7 @@ const Cart = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 {items.map((item) => (
-                  <div key={`${item.id}-${item.selectedColor}-${item.selectedLength}`} className="flex gap-4 p-4 border rounded-lg">
+                  <div key={getItemKey(item)} className="flex gap-4 p-4 border rounded-lg">
                     <img 
                       src={item.image} 
                       alt={item.name}
@@ -134,7 +139,7 @@ const Cart = () => {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => removeFromCart(item.id, item.selectedColor, item.selectedLength)}
+                        onClick={() => removeFromCart(getItemKey(item))}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -143,7 +148,7 @@ const Cart = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => updateQuantity(item.id, item.quantity - 1, item.selectedColor, item.selectedLength)}
+                          onClick={() => updateQuantity(getItemKey(item), item.quantity - 1)}
                           disabled={item.quantity <= 1}
                         >
                           <Minus className="h-4 w-4" />
@@ -152,7 +157,7 @@ const Cart = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => updateQuantity(item.id, item.quantity + 1, item.selectedColor, item.selectedLength)}
+                          onClick={() => updateQuantity(getItemKey(item), item.quantity + 1)}
                         >
                           <Plus className="h-4 w-4" />
                         </Button>
