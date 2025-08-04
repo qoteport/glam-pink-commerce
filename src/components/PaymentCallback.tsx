@@ -84,7 +84,6 @@ const PaymentCallback: React.FC = () => {
               }
 
               // Save address if requested
-               console.log(shippingAddress?.saveAddress, orderData.customer_id)
               if (shippingAddress?.saveAddress && orderData.customer_id) {
                 const addressData = {
                   type: "shipping",

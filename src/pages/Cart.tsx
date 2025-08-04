@@ -205,19 +205,20 @@ const Cart = () => {
                     className="py-0"
                   />
                 </div>
-
-                <div className="flex justify-between">
-                  <span>Shipping</span>
-                  {loading ? (
-                    <span>Calculating...</span>
-                  ) : (
-                    <PriceDisplay
-                      price={shippingCost}
-                      designCSS=""
-                      className="py-0"
-                    />
-                  )}
-                </div>
+                {shippingCost > 0 && (
+                  <div className="flex justify-between">
+                    <span>Shipping</span>
+                    {loading ? (
+                      <span>Calculating...</span>
+                    ) : (
+                      <PriceDisplay
+                        price={shippingCost}
+                        designCSS=""
+                        className="py-0"
+                      />
+                    )}
+                  </div>
+                )}
 
                 {/* Tax Breakdown */}
                 {taxAmount > 0 && (

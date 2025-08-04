@@ -234,10 +234,10 @@ const MyOrders = () => {
                         <span>Subtotal:</span>
                         <PriceDisplay price={order.subtotal} showOriginalPrice={false} />
                       </div>
-                      <div className="flex justify-between">
+                     {order.shipping_amount > 0 && ( <div className="flex justify-between">
                         <span>Shipping:</span>
                         <PriceDisplay price={order.shipping_amount} showOriginalPrice={false} />
-                      </div>
+                      </div>)}
                       <div className="space-y-1">
                         <div className="flex justify-between">
                           <span>Tax:</span>

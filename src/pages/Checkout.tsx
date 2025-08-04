@@ -24,6 +24,7 @@ import { useToast } from "@/hooks/use-toast";
 import { addressService, UserAddress } from "@/services/addressService";
 import { shippingService } from "@/services/shippingService";
 import { orderService } from "@/services/orderService";
+import PayOnDelevery from "@/components/PayonDelevery";
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -180,7 +181,7 @@ const Checkout = () => {
     }));
   };
 
-  const handlePaystackSuccess = async (reference: string) => {
+  const handlePaystackSuccess = async (reference?: string) => {
     try {
       setLoading(true);
 
@@ -197,7 +198,7 @@ const Checkout = () => {
         shipping_address: formData,
         billing_address: formData,
         notes: formData.notes,
-        payment_reference: reference,
+        payment_reference: reference || "",
         items: items,
       };
 
@@ -220,7 +221,7 @@ const Checkout = () => {
       }
 
       // Save address if requested
-     
+
       if (formData.saveAddress && user) {
         const addressData: UserAddress = {
           type: "shipping",
@@ -295,6 +296,84 @@ const Checkout = () => {
       description: error,
       variant: "destructive",
     });
+  };
+
+  const handlePayLaterSuccess = async (reference?: string) => {
+    try {
+      setLoading(true);
+
+      // Create order in database
+      const orderData = {
+        customer_id: user?.id,
+        customer_name: `${formData.firstName} ${formData.lastName}`,
+        customer_email: formData.email,
+        customer_phone: formData.phone,
+        total_amount: total,
+        subtotal: subtotal,
+        tax_amount: tax,
+        shipping_amount: shipping,
+        shipping_address: formData,
+        billing_address: formData,
+        notes: formData.notes,
+        payment_reference: reference || "",
+        items: items,
+      };
+
+      const order = await orderService.createOrder(orderData);
+
+      // Update payment status
+      await orderService.updatePaymentStatus(order.id, "pay later", reference);
+
+      // Create notification
+      if (user) {
+        await orderService.createNotification({
+          order_id: order.id,
+          user_id: user.id,
+          type: "order_confirmation",
+          title: "Order Placed Successful",
+          message: `Your order has been placed successfully. You will be contacted for payment details.`,
+        });
+      }
+
+      // Save address if requested
+
+      if (formData.saveAddress && user) {
+        const addressData: UserAddress = {
+          type: "shipping",
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          phone: formData.phone,
+          address: formData.address,
+          city: formData.city,
+          state: formData.state,
+          zip_code: formData.zipCode,
+          country: formData.country,
+          is_default: savedAddresses.length === 0,
+        };
+
+        await addressService.saveAddress(addressData);
+      }
+
+      toast({
+        title: "Order Placed Successfully",
+        description: `Order #${order.id.substring(
+          0,
+          8
+        )} has been placed successfully!, You will be contacted for payment details.`,
+      });
+
+      clearCart();
+      navigate("/my-orders");
+    } catch (error) {
+      console.error("Error creating order:", error);
+      toast({
+        title: "Error",
+        description: "Failed to create order. Please contact support.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (items.length === 0 && !retryOrder) {
@@ -638,29 +717,33 @@ const Checkout = () => {
                       showOriginalPrice={false}
                     />
                   </div>
-                  <div className="flex justify-between">
-                    <span>Shipping</span>
-                    <span
-                      className={
-                        (retryOrder ? retryOrder.shipping_amount : shipping) ===
-                        0
-                          ? "text-green-600"
-                          : ""
-                      }
-                    >
-                      {(retryOrder ? retryOrder.shipping_amount : shipping) ===
-                      0 ? (
-                        "Free"
-                      ) : (
-                        <PriceDisplay
-                          price={
-                            retryOrder ? retryOrder.shipping_amount : shipping
-                          }
-                          showOriginalPrice={false}
-                        />
-                      )}
-                    </span>
-                  </div>
+                  {(shipping > 0 || retryOrder) && (
+                    <div className="flex justify-between">
+                      <span>Shipping</span>
+                      <span
+                        className={
+                          (retryOrder
+                            ? retryOrder.shipping_amount
+                            : shipping) === 0
+                            ? "text-green-600"
+                            : ""
+                        }
+                      >
+                        {(retryOrder
+                          ? retryOrder.shipping_amount
+                          : shipping) === 0 ? (
+                          "Free"
+                        ) : (
+                          <PriceDisplay
+                            price={
+                              retryOrder ? retryOrder.shipping_amount : shipping
+                            }
+                            showOriginalPrice={false}
+                          />
+                        )}
+                      </span>
+                    </div>
+                  )}
                   <div className="flex justify-between">
                     <span>Tax</span>
                     <PriceDisplay
@@ -682,51 +765,99 @@ const Checkout = () => {
 
                 {/* Payment Button */}
                 {isFormValid && user ? (
-                  <PaystackPayment
-                    amount={retryOrder ? retryOrder.total_amount : total}
-                    currency="GHS"
-                    customerEmail={formData.email}
-                    customerName={`${formData.firstName} ${formData.lastName}`}
-                    onSuccess={handlePaystackSuccess}
-                    onError={handlePaystackError}
-                    className="w-full bg-gradient-to-r from-blush-500 to-rosegold-500 hover:from-blush-600 hover:to-rosegold-600 text-white font-semibold py-3"
-                    disabled={loading}
-                    metadata={{
-                      shipping_address: formData,
-                      order_data: {
-                        customer_id: user?.id,
-                        customer_name: `${formData.firstName} ${formData.lastName}`,
-                        customer_email: formData.email,
-                        customer_phone: formData.phone,
-                        total_amount: total,
-                        subtotal: subtotal,
-                        tax_amount: tax,
-                        shipping_amount: shipping,
+                  <div className="items-center text-center flex flex-row gap-2">
+                    <PaystackPayment
+                      amount={retryOrder ? retryOrder.total_amount : total}
+                      currency="GHS"
+                      customerEmail={formData.email}
+                      customerName={`${formData.firstName} ${formData.lastName}`}
+                      onSuccess={handlePaystackSuccess}
+                      onError={handlePaystackError}
+                      className="w-full bg-gradient-to-r from-blush-500 to-rosegold-500 hover:from-blush-600 hover:to-rosegold-600 text-white font-semibold py-3"
+                      disabled={loading}
+                      metadata={{
                         shipping_address: formData,
-                        billing_address: formData,
-                        payment_reference: '',
-                        notes: formData.notes,
-                        items: items,
-                      },
-                      items: retryOrder
-                        ? retryOrder.order_items
-                        : items.map((item) => ({
-                            id: item.id,
-                            name: item.name,
-                            quantity: item.quantity,
-                            price: item.price,
-                            selectedColor: item.selectedColor,
-                            selectedLength: item.selectedLength,
-                          })),
-                      retry_order_id: retryOrder?.id,
-                    }}
-                  >
-                    {loading
-                      ? "Processing..."
-                      : retryOrder
-                      ? "Retry Payment"
-                      : "Complete Order with Paystack"}
-                  </PaystackPayment>
+                        order_data: {
+                          customer_id: user?.id,
+                          customer_name: `${formData.firstName} ${formData.lastName}`,
+                          customer_email: formData.email,
+                          customer_phone: formData.phone,
+                          total_amount: total,
+                          subtotal: subtotal,
+                          tax_amount: tax,
+                          shipping_amount: shipping,
+                          shipping_address: formData,
+                          billing_address: formData,
+                          payment_reference: "",
+                          notes: formData.notes,
+                          items: items,
+                        },
+                        items: retryOrder
+                          ? retryOrder.order_items
+                          : items.map((item) => ({
+                              id: item.id,
+                              name: item.name,
+                              quantity: item.quantity,
+                              price: item.price,
+                              selectedColor: item.selectedColor,
+                              selectedLength: item.selectedLength,
+                            })),
+                        retry_order_id: retryOrder?.id,
+                      }}
+                    >
+                      {loading
+                        ? "Processing..."
+                        : retryOrder
+                        ? "Retry Payment"
+                        : "Complete Order with Paystack"}
+                    </PaystackPayment>
+                    <div className="items-center">OR</div>
+                    <PayOnDelevery
+                      amount={retryOrder ? retryOrder.total_amount : total}
+                      currency="GHS"
+                      customerEmail={formData.email}
+                      customerName={`${formData.firstName} ${formData.lastName}`}
+                      onSuccess={handlePayLaterSuccess}
+                      onError={handlePaystackError}
+                      className="w-full bg-gradient-to-r from-blush-500 to-rosegold-500 hover:from-blush-600 hover:to-rosegold-600 text-white font-semibold py-3"
+                      disabled={loading}
+                      metadata={{
+                        shipping_address: formData,
+                        order_data: {
+                          customer_id: user?.id,
+                          customer_name: `${formData.firstName} ${formData.lastName}`,
+                          customer_email: formData.email,
+                          customer_phone: formData.phone,
+                          total_amount: total,
+                          subtotal: subtotal,
+                          tax_amount: tax,
+                          shipping_amount: shipping,
+                          shipping_address: formData,
+                          billing_address: formData,
+                          payment_reference: "",
+                          notes: formData.notes,
+                          items: items,
+                        },
+                        items: retryOrder
+                          ? retryOrder.order_items
+                          : items.map((item) => ({
+                              id: item.id,
+                              name: item.name,
+                              quantity: item.quantity,
+                              price: item.price,
+                              selectedColor: item.selectedColor,
+                              selectedLength: item.selectedLength,
+                            })),
+                        retry_order_id: retryOrder?.id,
+                      }}
+                    >
+                      {loading
+                        ? "Processing..."
+                        : retryOrder
+                        ? "Retry Payment"
+                        : "Pay on Delivery"}
+                    </PayOnDelevery>
+                  </div>
                 ) : (
                   <Button
                     disabled

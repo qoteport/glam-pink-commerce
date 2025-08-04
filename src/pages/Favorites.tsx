@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Heart, ShoppingCart, ArrowLeft, Star } from 'lucide-react';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import { useCart } from '@/contexts/CartContext';
-import { useFavorites } from '@/contexts/FavoritesContext';
-import { supabase } from '@/integrations/supabase/client';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Heart, ShoppingCart, ArrowLeft, Star } from "lucide-react";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import { useCart } from "@/contexts/CartContext";
+import { useFavorites } from "@/contexts/FavoritesContext";
+import { supabase } from "@/integrations/supabase/client";
+import PriceDisplay from "@/components/PriceDisplay";
 
 const Favorites = () => {
   const navigate = useNavigate();
@@ -28,27 +29,28 @@ const Favorites = () => {
 
     try {
       const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .in('id', favorites);
+        .from("products")
+        .select("*")
+        .in("id", favorites);
 
       if (error) throw error;
 
-      const transformedProducts = data?.map(product => ({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        originalPrice: product.original_price,
-        image: product.image,
-        rating: product.rating || 0,
-        reviewCount: product.review_count || 0,
-        colors: product.colors || [],
-        lengths: product.lengths || []
-      })) || [];
+      const transformedProducts =
+        data?.map((product) => ({
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          originalPrice: product.original_price,
+          image: product.image,
+          rating: product.rating || 0,
+          reviewCount: product.review_count || 0,
+          colors: product.colors || [],
+          lengths: product.lengths || [],
+        })) || [];
 
       setFavoriteProducts(transformedProducts);
     } catch (error) {
-      console.error('Error fetching favorite products:', error);
+      console.error("Error fetching favorite products:", error);
     }
   };
 
@@ -75,12 +77,14 @@ const Favorites = () => {
         <div className="container mx-auto px-4 py-16">
           <div className="text-center max-w-md mx-auto">
             <Heart size={64} className="mx-auto text-blush-300 mb-6" />
-            <h1 className="text-2xl font-bold text-gray-800 mb-4">No favorites yet</h1>
+            <h1 className="text-2xl font-bold text-gray-800 mb-4">
+              No favorites yet
+            </h1>
             <p className="text-gray-600 mb-8">
               Save your favorite wigs and bundles here for easy access later.
             </p>
-            <Button 
-              onClick={() => navigate('/shop')}
+            <Button
+              onClick={() => navigate("/shop")}
               className="bg-gradient-to-r from-blush-500 to-rosegold-500 hover:from-blush-600 hover:to-rosegold-600 text-white"
             >
               Start Shopping
@@ -95,13 +99,13 @@ const Favorites = () => {
   return (
     <div className="min-h-screen bg-white">
       <Header />
-      
+
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               onClick={() => navigate(-1)}
               className="mb-4 text-blush-600 hover:text-blush-700 hover:bg-blush-50"
             >
@@ -111,25 +115,30 @@ const Favorites = () => {
             <h1 className="text-3xl font-bold text-gray-800">
               My Favorites ({favoriteProducts.length} items)
             </h1>
-            <p className="text-gray-600 mt-2">Your saved wigs and hair bundles</p>
+            <p className="text-gray-600 mt-2">
+              Your saved wigs and hair bundles
+            </p>
           </div>
         </div>
 
         {/* Favorites Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {favoriteProducts.map((product) => (
-            <Card key={product.id} className="group hover:shadow-lg transition-all duration-300 border-blush-100">
+            <Card
+              key={product.id}
+              className="group hover:shadow-lg transition-all duration-300 border-blush-100"
+            >
               <CardContent className="p-4">
                 {/* Product Image */}
                 <div className="relative mb-4">
                   <div className="aspect-square bg-gradient-to-br from-blush-100 to-cream-100 rounded-lg overflow-hidden">
-                    <img 
-                      src={product.image} 
+                    <img
+                      src={product.image}
                       alt={product.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>
-                  
+
                   {/* Favorite Button */}
                   <Button
                     variant="ghost"
@@ -155,26 +164,35 @@ const Favorites = () => {
                   </h3>
 
                   {/* Rating */}
+                  {product.rating > 0 && (
                   <div className="flex items-center space-x-2">
                     <div className="flex items-center">
                       {[...Array(5)].map((_, i) => (
-                        <Star 
-                          key={i} 
-                          size={14} 
-                          className={i < Math.floor(product.rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'} 
+                        <Star
+                          key={i}
+                          size={14}
+                          className={
+                            i < Math.floor(product.rating)
+                              ? "text-yellow-400 fill-current"
+                              : "text-gray-300"
+                          }
                         />
                       ))}
                     </div>
-                    <span className="text-sm text-gray-600">
-                      {product.rating} ({product.reviewCount})
-                    </span>
-                  </div>
+                    
+                      <span className="text-sm text-gray-600">
+                        {product.rating} ({product.reviewCount})
+                      </span>
+                 
+                  </div>   )}
 
                   {/* Price */}
                   <div className="flex items-center space-x-2">
-                    <span className="text-lg font-bold text-blush-600">
-                      ${product.price}
-                    </span>
+                    <PriceDisplay
+                      price={product.price}
+                      originalPrice={product.originalPrice}
+                      className="justify-between"
+                    />
                     {product.originalPrice && (
                       <span className="text-sm text-gray-500 line-through">
                         ${product.originalPrice}
@@ -183,11 +201,11 @@ const Favorites = () => {
                   </div>
 
                   {/* Colors */}
-                  <div className="flex items-center space-x-2">
+                   {product.colors.length > 0 && (<div className="flex items-center space-x-2">
                     <span className="text-sm text-gray-600">Colors:</span>
                     <div className="flex space-x-1">
                       {product.colors.slice(0, 3).map((color, index) => (
-                        <div 
+                        <div
                           key={index}
                           className="w-4 h-4 rounded-full border border-gray-300"
                           style={{ backgroundColor: color.toLowerCase() }}
@@ -195,10 +213,12 @@ const Favorites = () => {
                         />
                       ))}
                       {product.colors.length > 3 && (
-                        <span className="text-xs text-gray-500">+{product.colors.length - 3}</span>
+                        <span className="text-xs text-gray-500">
+                          +{product.colors.length - 3}
+                        </span>
                       )}
                     </div>
-                  </div>
+                  </div>)}
 
                   {/* Action Buttons */}
                   <div className="flex space-x-2 pt-2">

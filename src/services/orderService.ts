@@ -133,7 +133,7 @@ class OrderService {
     if (error) throw error;
   }
 
-  async updatePaymentStatus(orderId: string, status: 'completed' | 'failed', reference?: string, failureReason?: string): Promise<void> {
+  async updatePaymentStatus(orderId: string, status: 'completed' | 'failed' | 'pay later', reference?: string, failureReason?: string): Promise<void> {
     const updateData: any = { payment_status: status };
     
     if (reference) updateData.payment_reference = reference;
