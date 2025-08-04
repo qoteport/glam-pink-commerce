@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,11 +9,13 @@ import { useCart } from '@/contexts/CartContext';
 import { useToast } from '@/hooks/use-toast';
 import { orderService, Order } from '@/services/orderService';
 import PriceDisplay from '@/components/PriceDisplay';
+import OrderDetails from '@/components/OrderDetails';
 
 const MyOrders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const { user } = useAuth();
   const { addToCart } = useCart();
   const { toast } = useToast();
@@ -63,6 +64,16 @@ const MyOrders = () => {
         variant: 'destructive',
       });
     }
+  };
+
+  const handleViewDetails = (order: Order) => {
+    setSelectedOrder(order);
+    setIsDetailsOpen(true);
+  };
+
+  const handleCloseDetails = () => {
+    setIsDetailsOpen(false);
+    setSelectedOrder(null);
   };
 
   const getStatusIcon = (status: string) => {
@@ -216,12 +227,26 @@ const MyOrders = () => {
                         <PriceDisplay price={order.subtotal} showOriginalPrice={false} />
                       </div>
                       <div className="flex justify-between">
-                        <span>Tax:</span>
-                        <PriceDisplay price={order.tax_amount} showOriginalPrice={false} />
-                      </div>
-                      <div className="flex justify-between">
                         <span>Shipping:</span>
                         <PriceDisplay price={order.shipping_amount} showOriginalPrice={false} />
+                      </div>
+                      <div className="space-y-1">
+                        <div className="flex justify-between">
+                          <span>Tax (estimated):</span>
+                          <PriceDisplay price={order.tax_amount} showOriginalPrice={false} />
+                        </div>
+                        {order.tax_amount > 0 && (
+                          <div className="text-xs text-gray-500 ml-4">
+                            <div className="flex justify-between">
+                              <span>• VAT/GST:</span>
+                              <PriceDisplay price={order.tax_amount * 0.8} showOriginalPrice={false} className="text-xs" />
+                            </div>
+                            <div className="flex justify-between">
+                              <span>• Service Tax:</span>
+                              <PriceDisplay price={order.tax_amount * 0.2} showOriginalPrice={false} className="text-xs" />
+                            </div>
+                          </div>
+                        )}
                       </div>
                       <Separator />
                       <div className="flex justify-between font-semibold">
@@ -251,7 +276,7 @@ const MyOrders = () => {
                 <div className="flex flex-col sm:flex-row gap-3 mt-6 pt-6 border-t">
                   <Button 
                     variant="outline" 
-                    onClick={() => setSelectedOrder(order)}
+                    onClick={() => handleViewDetails(order)}
                     className="flex items-center gap-2"
                   >
                     <Eye size={16} />
@@ -280,6 +305,12 @@ const MyOrders = () => {
           ))}
         </div>
       )}
+
+      <OrderDetails 
+        order={selectedOrder}
+        isOpen={isDetailsOpen}
+        onClose={handleCloseDetails}
+      />
     </div>
   );
 };

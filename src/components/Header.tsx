@@ -17,7 +17,7 @@ const Header = ({ onSearch }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const { getTotalItems } = useCart();
-  const { favorites } = useFavorites();
+  const { favorites, getTotalFavorites } = useFavorites();
   const { user, profile, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
 
@@ -78,9 +78,19 @@ const Header = ({ onSearch }: HeaderProps) => {
             className="flex items-center cursor-pointer"
             onClick={() => navigate('/')}
           >
-            <h1 className="text-2xl md:text-3xl font-bold text-gradient">
-              HairyTalesBeauty
-            </h1>
+            {/* Logo placeholder - you can replace this with your uploaded logo */}
+            <div className="flex items-center">
+              {/* Uncomment and update the src when you upload your logo image:
+              <img 
+                src="/lovable-uploads/your-logo.png" 
+                alt="HairyTalesBeauty Logo"
+                className="h-8 w-auto mr-2"
+              />
+              */}
+              <h1 className="text-2xl md:text-3xl font-bold text-gradient">
+                HairyTalesBeauty
+              </h1>
+            </div>
           </div>
 
           {/* Desktop Navigation */}
@@ -210,9 +220,9 @@ const Header = ({ onSearch }: HeaderProps) => {
               onClick={() => navigate('/favorites')}
             >
               <Heart size={20} className="text-blush-600 group-hover:text-blush-700 transition-colors" />
-              {favorites.length > 0 && (
+              {getTotalFavorites() > 0 && (
                 <Badge className="absolute -top-2 -right-2 bg-rosegold-500 text-white text-xs min-w-[20px] h-5 flex items-center justify-center">
-                  {favorites.length}
+                  {getTotalFavorites()}
                 </Badge>
               )}
             </Button>
