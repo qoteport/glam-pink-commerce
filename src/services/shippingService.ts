@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 
 interface ShippingRule {
@@ -129,36 +128,39 @@ class ShippingService {
     return orderAmount * 0.08;
   }
 
-  async getTaxBreakdown(totalTaxAmount: number): Promise<{ vat: number; serviceTax: number; rules: TaxRule[] }> {
+  async getTaxBreakdown(totalTaxAmount: number): Promise<{ breakdown: Array<{name: string, amount: number, rate: number}>, singleTax: {name: string, amount: number} | null, rules: TaxRule[] }> {
     const rules = await this.getTaxRules();
     
-    // Find VAT and Service tax rules specifically
-    const vatRule = rules.find(rule => 
-      rule.name.toLowerCase().includes('vat') || 
-      rule.name.toLowerCase().includes('gst')
-    );
-    
-    const serviceRule = rules.find(rule => 
-      rule.name.toLowerCase().includes('service')
-    );
-    
-    if (vatRule && serviceRule) {
-      const totalRate = vatRule.tax_rate + serviceRule.tax_rate;
-      if (totalRate > 0) {
-        return {
-          vat: totalTaxAmount * (vatRule.tax_rate / totalRate),
-          serviceTax: totalTaxAmount * (serviceRule.tax_rate / totalRate),
-          rules
-        };
-      }
+    if (totalTaxAmount <= 0 || rules.length === 0) {
+      return { breakdown: [], singleTax: null, rules };
     }
+
+    // If only one tax rule, return it as a single tax
+    if (rules.length === 1) {
+      return {
+        breakdown: [],
+        singleTax: {
+          name: rules[0].name,
+          amount: totalTaxAmount
+        },
+        rules
+      };
+    }
+
+    // Multiple tax rules - calculate proportional breakdown
+    const totalRate = rules.reduce((sum, rule) => sum + rule.tax_rate, 0);
     
-    // Default breakdown if specific rules not found
-    return {
-      vat: totalTaxAmount * 0.8,
-      serviceTax: totalTaxAmount * 0.2,
-      rules
-    };
+    if (totalRate === 0) {
+      return { breakdown: [], singleTax: null, rules };
+    }
+
+    const breakdown = rules.map(rule => ({
+      name: rule.name,
+      amount: totalTaxAmount * (rule.tax_rate / totalRate),
+      rate: rule.tax_rate
+    }));
+
+    return { breakdown, singleTax: null, rules };
   }
 }
 

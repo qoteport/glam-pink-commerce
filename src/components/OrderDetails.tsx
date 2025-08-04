@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
@@ -49,36 +48,36 @@ const OrderDetails = ({ order, isOpen, onClose }: OrderDetailsProps) => {
     }
   };
 
-  const calculateTaxBredown = (totalTaxAmount: number) => {
-    if (totalTaxAmount <= 0) return { vat: 0, serviceTax: 0 };
-
-    // Find applicable tax rules
-    const generalTax = taxRules.find(rule => rule.applies_to === 'all');
-    
-    if (generalTax && generalTax.description) {
-      // If we have a description that mentions breakdown, try to parse it
-      const vatMatch = generalTax.description.match(/VAT[:\s]*(\d+(?:\.\d+)?)%/i);
-      const serviceMatch = generalTax.description.match(/service[:\s]*(\d+(?:\.\d+)?)%/i);
-      
-      if (vatMatch && serviceMatch) {
-        const vatRate = parseFloat(vatMatch[1]) / 100;
-        const serviceRate = parseFloat(serviceMatch[1]) / 100;
-        const totalRate = vatRate + serviceRate;
-        
-        if (totalRate > 0) {
-          return {
-            vat: totalTaxAmount * (vatRate / totalRate),
-            serviceTax: totalTaxAmount * (serviceRate / totalRate)
-          };
-        }
-      }
+  const calculateTaxBreakdown = (totalTaxAmount: number) => {
+    if (totalTaxAmount <= 0 || taxRules.length === 0) {
+      return { breakdown: [], singleTax: null };
     }
+
+    // If only one tax rule, show it as a single tax
+    if (taxRules.length === 1) {
+      return {
+        breakdown: [],
+        singleTax: {
+          name: taxRules[0].name,
+          amount: totalTaxAmount
+        }
+      };
+    }
+
+    // Multiple tax rules - calculate proportional breakdown
+    const totalRate = taxRules.reduce((sum, rule) => sum + rule.tax_rate, 0);
     
-    // Default breakdown based on common tax structures
-    return {
-      vat: totalTaxAmount * 0.8, // Assume 80% is VAT/GST
-      serviceTax: totalTaxAmount * 0.2 // Assume 20% is service tax
-    };
+    if (totalRate === 0) {
+      return { breakdown: [], singleTax: null };
+    }
+
+    const breakdown = taxRules.map(rule => ({
+      name: rule.name,
+      amount: totalTaxAmount * (rule.tax_rate / totalRate),
+      rate: rule.tax_rate
+    }));
+
+    return { breakdown, singleTax: null };
   };
 
   if (!order) return null;
@@ -128,7 +127,7 @@ const OrderDetails = ({ order, isOpen, onClose }: OrderDetailsProps) => {
     }
   };
 
-  const taxBreakdown = calculateTaxBredown(order.tax_amount);
+  const { breakdown, singleTax } = calculateTaxBreakdown(order.tax_amount);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -230,7 +229,7 @@ const OrderDetails = ({ order, isOpen, onClose }: OrderDetailsProps) => {
             </div>
           </div>
 
-          {/* Order Summary with Tax Rules Integration */}
+          {/* Order Summary with Real Tax Rules */}
           <div>
             <h3 className="text-lg font-semibold mb-4">Order Summary</h3>
             <div className="bg-gray-50 p-4 rounded-lg space-y-3">
@@ -246,19 +245,24 @@ const OrderDetails = ({ order, isOpen, onClose }: OrderDetailsProps) => {
               
               <div className="space-y-1">
                 <div className="flex justify-between text-sm">
-                  <span>Tax (total):</span>
+                  <span>Tax:</span>
                   <PriceDisplay price={order.tax_amount} showOriginalPrice={false} />
                 </div>
                 {order.tax_amount > 0 && (
                   <div className="text-xs text-gray-500 ml-4 space-y-1">
-                    <div className="flex justify-between">
-                      <span>• VAT/GST:</span>
-                      <PriceDisplay price={taxBreakdown.vat} showOriginalPrice={false} className="text-xs inline" />
-                    </div>
-                    <div className="flex justify-between">
-                      <span>• Service Tax:</span>
-                      <PriceDisplay price={taxBreakdown.serviceTax} showOriginalPrice={false} className="text-xs inline" />
-                    </div>
+                    {singleTax ? (
+                      <div className="flex justify-between">
+                        <span>• {singleTax.name}:</span>
+                        <PriceDisplay price={singleTax.amount} showOriginalPrice={false} className="text-xs inline" />
+                      </div>
+                    ) : breakdown.length > 0 ? (
+                      breakdown.map((tax, index) => (
+                        <div key={index} className="flex justify-between">
+                          <span>• {tax.name}:</span>
+                          <PriceDisplay price={tax.amount} showOriginalPrice={false} className="text-xs inline" />
+                        </div>
+                      ))
+                    ) : null}
                     {taxRules.length > 0 && (
                       <div className="mt-2 pt-2 border-t border-gray-200">
                         <p className="font-medium text-gray-600">Applied Tax Rules:</p>
@@ -313,7 +317,6 @@ const OrderDetails = ({ order, isOpen, onClose }: OrderDetailsProps) => {
             </div>
           )}
 
-          {/* Order Status History */}
           {order.order_status_history && order.order_status_history.length > 0 && (
             <div>
               <h3 className="text-lg font-semibold mb-3">Order History</h3>
@@ -336,7 +339,6 @@ const OrderDetails = ({ order, isOpen, onClose }: OrderDetailsProps) => {
             </div>
           )}
 
-          {/* Payment Information */}
           <div>
             <h3 className="text-lg font-semibold mb-3">Payment Information</h3>
             <div className="bg-gray-50 p-4 rounded-lg">
@@ -361,7 +363,6 @@ const OrderDetails = ({ order, isOpen, onClose }: OrderDetailsProps) => {
             </div>
           </div>
 
-          {/* Order Notes */}
           {order.notes && (
             <div>
               <h3 className="text-lg font-semibold mb-3">Order Notes</h3>

@@ -8,6 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
 import { useToast } from '@/hooks/use-toast';
 import { orderService, Order } from '@/services/orderService';
+import { shippingService } from '@/services/shippingService';
 import PriceDisplay from '@/components/PriceDisplay';
 import OrderDetails from '@/components/OrderDetails';
 
@@ -121,6 +122,13 @@ const MyOrders = () => {
     }
   };
 
+  const getTaxDisplay = async (taxAmount: number) => {
+    if (taxAmount <= 0) return null;
+    
+    const { breakdown, singleTax } = await shippingService.getTaxBreakdown(taxAmount);
+    return { breakdown, singleTax };
+  };
+
   if (!user) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -232,21 +240,9 @@ const MyOrders = () => {
                       </div>
                       <div className="space-y-1">
                         <div className="flex justify-between">
-                          <span>Tax (estimated):</span>
+                          <span>Tax:</span>
                           <PriceDisplay price={order.tax_amount} showOriginalPrice={false} />
                         </div>
-                        {order.tax_amount > 0 && (
-                          <div className="text-xs text-gray-500 ml-4">
-                            <div className="flex justify-between">
-                              <span>• VAT/GST:</span>
-                              <PriceDisplay price={order.tax_amount * 0.8} showOriginalPrice={false} className="text-xs" />
-                            </div>
-                            <div className="flex justify-between">
-                              <span>• Service Tax:</span>
-                              <PriceDisplay price={order.tax_amount * 0.2} showOriginalPrice={false} className="text-xs" />
-                            </div>
-                          </div>
-                        )}
                       </div>
                       <Separator />
                       <div className="flex justify-between font-semibold">
