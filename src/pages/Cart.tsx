@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -9,10 +9,58 @@ import { Plus, Minus, X, ShoppingBag, ArrowLeft } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useCart } from '@/contexts/CartContext';
+import { shippingService } from '@/services/shippingService';
 
 const Cart = () => {
   const navigate = useNavigate();
   const { items, updateQuantity, removeFromCart, getTotalPrice, getTotalItems } = useCart();
+  const [shippingAmount, setShippingAmount] = useState(0);
+  const [taxAmount, setTaxAmount] = useState(0);
+  const [taxBreakdown, setTaxBreakdown] = useState<Array<{name: string, amount: number, rate: number}>>([]);
+  const [singleTax, setSingleTax] = useState<{name: string, amount: number} | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const calculateOrderTotals = async () => {
+      if (items.length === 0) {
+        setShippingAmount(0);
+        setTaxAmount(0);
+        setTaxBreakdown([]);
+        setSingleTax(null);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const subtotal = getTotalPrice();
+        
+        // Calculate shipping
+        const shipping = await shippingService.calculateShipping(subtotal, items);
+        setShippingAmount(shipping);
+        
+        // Calculate tax
+        const tax = await shippingService.calculateTax(subtotal);
+        setTaxAmount(tax);
+        
+        // Get tax breakdown
+        const breakdown = await shippingService.getTaxBreakdown(tax);
+        setTaxBreakdown(breakdown.breakdown);
+        setSingleTax(breakdown.singleTax);
+      } catch (error) {
+        console.error('Error calculating order totals:', error);
+        // Fallback calculations
+        const subtotal = getTotalPrice();
+        setShippingAmount(subtotal >= 75 ? 0 : 9.99);
+        setTaxAmount(subtotal * 0.08);
+        setTaxBreakdown([]);
+        setSingleTax(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    calculateOrderTotals();
+  }, [items, getTotalPrice]);
 
   if (items.length === 0) {
     return (
@@ -37,6 +85,9 @@ const Cart = () => {
       </div>
     );
   }
+
+  const subtotal = getTotalPrice();
+  const total = subtotal + shippingAmount + taxAmount;
 
   return (
     <div className="min-h-screen bg-white">
@@ -159,21 +210,59 @@ const Cart = () => {
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between">
                     <span>Subtotal ({getTotalItems()} items)</span>
-                    <span>${getTotalPrice().toFixed(2)}</span>
+                    <span>${subtotal.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Shipping</span>
-                    <span className="text-green-600">Free</span>
+                    <span className={shippingAmount === 0 ? "text-green-600" : ""}>
+                      {shippingAmount === 0 ? "Free" : `$${shippingAmount.toFixed(2)}`}
+                    </span>
                   </div>
-                  <div className="flex justify-between">
-                    <span>Tax</span>
-                    <span>${(getTotalPrice() * 0.08).toFixed(2)}</span>
-                  </div>
+                  
+                  {/* Tax Section */}
+                  {loading ? (
+                    <div className="flex justify-between">
+                      <span>Tax</span>
+                      <span className="animate-pulse">Loading...</span>
+                    </div>
+                  ) : (
+                    <>
+                      {/* Single Tax Rule */}
+                      {singleTax && (
+                        <div className="flex justify-between">
+                          <span>{singleTax.name}</span>
+                          <span>${singleTax.amount.toFixed(2)}</span>
+                        </div>
+                      )}
+                      
+                      {/* Multiple Tax Rules Breakdown */}
+                      {taxBreakdown.length > 0 && (
+                        <>
+                          <div className="text-sm font-medium text-gray-700 mt-2">Tax Breakdown:</div>
+                          {taxBreakdown.map((tax, index) => (
+                            <div key={index} className="flex justify-between text-sm pl-4">
+                              <span>• {tax.name}:</span>
+                              <span>${tax.amount.toFixed(2)}</span>
+                            </div>
+                          ))}
+                        </>
+                      )}
+                      
+                      {/* Fallback if no breakdown available */}
+                      {!singleTax && taxBreakdown.length === 0 && taxAmount > 0 && (
+                        <div className="flex justify-between">
+                          <span>Tax</span>
+                          <span>${taxAmount.toFixed(2)}</span>
+                        </div>
+                      )}
+                    </>
+                  )}
+                  
                   <div className="border-t pt-3">
                     <div className="flex justify-between text-lg font-semibold">
                       <span>Total</span>
                       <span className="text-blush-600">
-                        ${(getTotalPrice() * 1.08).toFixed(2)}
+                        ${total.toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -203,24 +292,6 @@ const Cart = () => {
                 </div>
               </CardContent>
             </Card>
-
-            {/* Recently Viewed */}
-            {/* <Card>
-              <CardContent className="p-6">
-                <h3 className="font-semibold mb-4">You might also like</h3>
-                <div className="space-y-4">
-                  {[1, 2].map((i) => (
-                    <div key={i} className="flex gap-3">
-                      <div className="w-16 h-16 bg-gradient-to-br from-blush-100 to-cream-100 rounded flex-shrink-0"></div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">Related Product {i}</p>
-                        <p className="text-sm text-blush-600 font-semibold">$199</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card> */}
           </div>
         </div>
       </div>
