@@ -6,6 +6,7 @@ interface PriceDisplayProps {
   price: number;
   originalPrice?: number;
   className?: string;
+  designCSS?: string;
   showOriginalPrice?: boolean;
 }
 
@@ -13,6 +14,7 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({
   price,
   originalPrice,
   className = '',
+  designCSS = 'text-lg font-bold text-blush-600',
   showOriginalPrice = true
 }) => {
   const [displayData, setDisplayData] = useState<{
@@ -34,13 +36,13 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({
             amount: price,
             currency: 'GHS',
             symbol: '₵',
-            formatted: `₵${price.toFixed(2)}`
+            formatted: `₵${price.toFixed(0)}`
           },
           originalPrice: originalPrice ? {
             amount: originalPrice,
             currency: 'GHS',
             symbol: '₵',
-            formatted: `₵${originalPrice.toFixed(2)}`
+            formatted: `₵${originalPrice.toFixed(0)}`
           } : undefined
         });
       } finally {
@@ -69,7 +71,7 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({
 
   return (
     <div className={`flex items-center space-x-2 ${className}`}>
-      <span className="text-lg font-bold text-blush-600">
+      <span className={`${designCSS}`}>
         {displayData.price.formatted}
       </span>
       {showOriginalPrice && displayData.originalPrice && (

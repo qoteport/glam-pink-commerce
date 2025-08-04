@@ -225,7 +225,7 @@ const ProductsManager = () => {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <div className="font-medium">${product.price}</div>
+                      <div className="font-medium">₵{product.price}</div>
                       {product.original_price && (
                         <div className="text-sm text-gray-500 line-through">
                           ${product.original_price}

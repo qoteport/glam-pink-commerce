@@ -1,10 +1,11 @@
-import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { SlidersHorizontal, X } from 'lucide-react';
+import React from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { SlidersHorizontal, X } from "lucide-react";
+import PriceDisplay from "../PriceDisplay";
 
 interface FilterOption {
   value: string;
@@ -17,7 +18,7 @@ interface ProductFilterProps {
   lengths: FilterOption[];
   sizes: FilterOption[];
   hairTypes: FilterOption[];
-  priceRanges: { value: number[]; label: string; }[];
+  priceRanges: { value: number[]; label: string }[];
   selectedCategory: string;
   selectedColor: string;
   selectedLength: string;
@@ -54,35 +55,36 @@ const ProductFilter = ({
   onPriceRangeChange,
   onClearFilters,
 }: ProductFilterProps) => {
-  const hasActiveFilters = 
-    selectedCategory !== 'all' || 
-    selectedColor !== 'all' || 
-    selectedLength !== 'all' || 
-    selectedSize !== 'all' || 
-    selectedHairType !== 'all' || 
-    (priceRange[0] !== 0 || priceRange[1] !== 1000);
+  const hasActiveFilters =
+    selectedCategory !== "all" ||
+    selectedColor !== "all" ||
+    selectedLength !== "all" ||
+    selectedSize !== "all" ||
+    selectedHairType !== "all" ||
+    priceRange[0] !== 0 ||
+    priceRange[1] !== 1000;
 
   // Color name to hex mapping for common colors
   const colorMap: { [key: string]: string } = {
-    black: '#000000',
-    white: '#FFFFFF',
-    red: '#FF0000',
-    blue: '#0000FF',
-    green: '#008000',
-    brown: '#A52A2A',
-    blonde: '#F5E050',
-    gray: '#808080',
-    purple: '#800080',
-    pink: '#FFC1CC',
+    black: "#000000",
+    white: "#FFFFFF",
+    red: "#FF0000",
+    blue: "#0000FF",
+    green: "#008000",
+    brown: "#A52A2A",
+    blonde: "#F5E050",
+    gray: "#808080",
+    purple: "#800080",
+    pink: "#FFC1CC",
   };
 
   // Function to get display color (hex or name)
   const getColorDisplay = (color: string) => {
-    if (color.startsWith('#')) {
+    if (color.startsWith("#")) {
       return { isHex: true, value: color };
     }
     const lowercaseColor = color.toLowerCase();
-    return colorMap[lowercaseColor] 
+    return colorMap[lowercaseColor]
       ? { isHex: true, value: colorMap[lowercaseColor] }
       : { isHex: false, value: color };
   };
@@ -96,9 +98,9 @@ const ProductFilter = ({
             Filters
           </h3>
           {hasActiveFilters && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={onClearFilters}
               className="text-muted-foreground hover:text-foreground"
             >
@@ -116,24 +118,28 @@ const ProductFilter = ({
             </Label>
             <div className="space-y-2">
               {categories?.map((category) => (
-                <div key={category.value} className="flex items-center space-x-2">
+                <div
+                  key={category.value}
+                  className="flex items-center space-x-2"
+                >
                   <Checkbox
                     id={`category-${category.value}`}
                     checked={selectedCategory === category.value}
                     onCheckedChange={() => onCategoryChange(category.value)}
                     className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                   />
-                  <Label 
+                  <Label
                     htmlFor={`category-${category.value}`}
                     className="text-sm font-normal text-muted-foreground hover:text-foreground cursor-pointer"
                   >
                     {category.label}
                   </Label>
-                  {selectedCategory === category.value && category.value !== 'all' && (
-                    <Badge variant="secondary" className="text-xs">
-                      Active
-                    </Badge>
-                  )}
+                  {selectedCategory === category.value &&
+                    category.value !== "all" && (
+                      <Badge variant="secondary" className="text-xs">
+                        Active
+                      </Badge>
+                    )}
                 </div>
               ))}
             </div>
@@ -148,7 +154,10 @@ const ProductFilter = ({
               {colors?.map((color) => {
                 const colorDisplay = getColorDisplay(color.value);
                 return (
-                  <div key={color.value} className="flex items-center space-x-2">
+                  <div
+                    key={color.value}
+                    className="flex items-center space-x-2"
+                  >
                     <Checkbox
                       id={`color-${color.value}`}
                       checked={selectedColor === color.value}
@@ -156,20 +165,20 @@ const ProductFilter = ({
                       className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                     />
                     <div className="flex items-center gap-2">
-                      {colorDisplay.isHex && color.value !== 'all' && (
-                        <div 
-                          className="w-4 h-4 rounded-full border border-border" 
+                      {colorDisplay.isHex && color.value !== "all" && (
+                        <div
+                          className="w-4 h-4 rounded-full border border-border"
                           style={{ backgroundColor: colorDisplay.value }}
                         />
                       )}
-                      <Label 
+                      <Label
                         htmlFor={`color-${color.value}`}
                         className="text-sm font-normal text-muted-foreground hover:text-foreground cursor-pointer"
                       >
                         {color.label}
                       </Label>
                     </div>
-                    {selectedColor === color.value && color.value !== 'all' && (
+                    {selectedColor === color.value && color.value !== "all" && (
                       <Badge variant="secondary" className="text-xs">
                         Active
                       </Badge>
@@ -194,17 +203,18 @@ const ProductFilter = ({
                     onCheckedChange={() => onLengthChange(length.value)}
                     className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                   />
-                  <Label 
+                  <Label
                     htmlFor={`length-${length.value}`}
                     className="text-sm font-normal text-muted-foreground hover:text-foreground cursor-pointer"
                   >
                     {length.label}
                   </Label>
-                  {selectedLength === length.value && length.value !== 'all' && (
-                    <Badge variant="secondary" className="text-xs">
-                      Active
-                    </Badge>
-                  )}
+                  {selectedLength === length.value &&
+                    length.value !== "all" && (
+                      <Badge variant="secondary" className="text-xs">
+                        Active
+                      </Badge>
+                    )}
                 </div>
               ))}
             </div>
@@ -224,13 +234,13 @@ const ProductFilter = ({
                     onCheckedChange={() => onSizeChange(size.value)}
                     className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                   />
-                  <Label 
+                  <Label
                     htmlFor={`size-${size.value}`}
                     className="text-sm font-normal text-muted-foreground hover:text-foreground cursor-pointer"
                   >
                     {size.label}
                   </Label>
-                  {selectedSize === size.value && size.value !== 'all' && (
+                  {selectedSize === size.value && size.value !== "all" && (
                     <Badge variant="secondary" className="text-xs">
                       Active
                     </Badge>
@@ -247,24 +257,28 @@ const ProductFilter = ({
             </Label>
             <div className="space-y-2">
               {hairTypes?.map((hairType) => (
-                <div key={hairType.value} className="flex items-center space-x-2">
+                <div
+                  key={hairType.value}
+                  className="flex items-center space-x-2"
+                >
                   <Checkbox
                     id={`hairType-${hairType.value}`}
                     checked={selectedHairType === hairType.value}
                     onCheckedChange={() => onHairTypeChange(hairType.value)}
                     className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                   />
-                  <Label 
+                  <Label
                     htmlFor={`hairType-${hairType.value}`}
                     className="text-sm font-normal text-muted-foreground hover:text-foreground cursor-pointer"
                   >
                     {hairType.label}
                   </Label>
-                  {selectedHairType === hairType.value && hairType.value !== 'all' && (
-                    <Badge variant="secondary" className="text-xs">
-                      Active
-                    </Badge>
-                  )}
+                  {selectedHairType === hairType.value &&
+                    hairType.value !== "all" && (
+                      <Badge variant="secondary" className="text-xs">
+                        Active
+                      </Badge>
+                    )}
                 </div>
               ))}
             </div>
@@ -277,24 +291,49 @@ const ProductFilter = ({
             </Label>
             <div className="space-y-2">
               {priceRanges?.map((range) => (
-                <div key={range?.value[0]} className="flex items-center space-x-2">
+                <div
+                  key={range?.value[0]}
+                  className="flex items-center space-x-2"
+                >
                   <Checkbox
                     id={`price-${range.value[0]}`}
-                    checked={priceRange[0] === range.value[0] && priceRange[1] === range.value[1]}
+                    checked={
+                      priceRange[0] === range.value[0] &&
+                      priceRange[1] === range.value[1]
+                    }
                     onCheckedChange={() => onPriceRangeChange(range.value)}
                     className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                   />
-                  <Label 
+                  <Label
                     htmlFor={`price-${range.value[0]}`}
                     className="text-sm font-normal text-muted-foreground hover:text-foreground cursor-pointer"
                   >
-                    {range.label}
+                    {range.label.split(" - ").length > 1 ? (
+                      <div className="flex items-center gap-1">
+                      <PriceDisplay
+                      price={Number(range.label.split(" - ")[0].trim())}
+                      designCSS=""
+                      className="py-0"
+                    /> -  <PriceDisplay
+                      price={Number(range.label.split(" - ")[1].trim())}
+                      designCSS=""
+                      className="py-0"
+                    /></div>) : (
+                      <div className="flex items-center gap-1">
+                       <PriceDisplay
+                      price={Number(range.label.trim())}
+                      designCSS=""
+                      className="py-0"
+                    />+</div>
+                    )}
+                
                   </Label>
-                  {priceRange[0] === range.value[0] && priceRange[1] === range.value[1] && (
-                    <Badge variant="secondary" className="text-xs">
-                      Active
-                    </Badge>
-                  )}
+                  {priceRange[0] === range.value[0] &&
+                    priceRange[1] === range.value[1] && (
+                      <Badge variant="secondary" className="text-xs">
+                        Active
+                      </Badge>
+                    )}
                 </div>
               ))}
             </div>

@@ -377,7 +377,7 @@ const ShippingRulesManager = () => {
                           <span className="font-medium">Condition:</span> {rule.condition_value}
                         </div>
                         <div>
-                          <span className="font-medium">Rate:</span> ${Number(rule.shipping_rate).toFixed(2)}
+                          <span className="font-medium">Rate:</span> ₵{Number(rule.shipping_rate).toFixed(2)}
                         </div>
                         <div>
                           <span className="font-medium">Status:</span> 

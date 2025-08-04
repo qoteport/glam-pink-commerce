@@ -42,7 +42,7 @@ const Checkout = () => {
     city: "",
     state: "",
     zipCode: "",
-    country: "Ghana",
+    country: "",
     notes: "",
     saveAddress: false,
   });

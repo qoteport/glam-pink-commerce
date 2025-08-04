@@ -1,10 +1,10 @@
-
-import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { ChevronRight, Star, Sparkles, Crown } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { ChevronRight, Star, Sparkles, Crown } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import PriceDisplay from "./PriceDisplay";
 
 interface HeroData {
   title: string;
@@ -23,10 +23,11 @@ interface HeroData {
 const Hero = () => {
   const navigate = useNavigate();
   const [heroData, setHeroData] = useState<HeroData>({
-    title: 'Unleash Your Inner Glam',
-    subtitle: 'Premium wigs and hair bundles that transform your look and boost your confidence. Join thousands of beautiful women who trust GlamCrown Beauty.',
-    cta_text: 'Shop Premium Wigs',
-    cta_url: '/shop'
+    title: "Unleash Your Inner Glam",
+    subtitle:
+      "Premium wigs and hair bundles that transform your look and boost your confidence. Join thousands of beautiful women who trust GlamCrown Beauty.",
+    cta_text: "Shop Premium Wigs",
+    cta_url: "/shop",
   });
 
   useEffect(() => {
@@ -36,18 +37,20 @@ const Hero = () => {
   const fetchHeroData = async () => {
     try {
       const { data, error } = await supabase
-        .from('hero_settings')
-        .select(`
+        .from("hero_settings")
+        .select(
+          `
           *,
           products!featured_product_id (id, name, price, image)
-        `)
-        .eq('is_active', true)
-        .eq('hero_design', 'hero1')
+        `
+        )
+        .eq("is_active", true)
+        .eq("hero_design", "hero1")
         .limit(1)
         .single();
 
-      if (error && error.code !== 'PGRST116') throw error;
-      
+      if (error && error.code !== "PGRST116") throw error;
+
       if (data) {
         setHeroData({
           title: data.title,
@@ -59,7 +62,7 @@ const Hero = () => {
         });
       }
     } catch (error) {
-      console.error('Error fetching hero data:', error);
+      console.error("Error fetching hero data:", error);
     }
   };
 
@@ -70,10 +73,16 @@ const Hero = () => {
         <div className="absolute top-10 left-10 animate-float">
           <Crown size={40} className="text-rosegold-300" />
         </div>
-        <div className="absolute top-32 right-20 animate-float" style={{ animationDelay: '1s' }}>
+        <div
+          className="absolute top-32 right-20 animate-float"
+          style={{ animationDelay: "1s" }}
+        >
           <Sparkles size={30} className="text-blush-300" />
         </div>
-        <div className="absolute bottom-20 left-20 animate-float" style={{ animationDelay: '2s' }}>
+        <div
+          className="absolute bottom-20 left-20 animate-float"
+          style={{ animationDelay: "2s" }}
+        >
           <Star size={35} className="text-rosegold-300" />
         </div>
       </div>
@@ -98,8 +107,10 @@ const Hero = () => {
             {/* Main Headline */}
             <div className="space-y-4">
               <h1 className="text-4xl md:text-6xl font-bold leading-tight">
-                {heroData.title.split(' ').slice(0, 2).join(' ')}
-                <span className="block text-gradient">{heroData.title.split(' ').slice(2).join(' ')}</span>
+                {heroData.title.split(" ").slice(0, 2).join(" ")}
+                <span className="block text-gradient">
+                  {heroData.title.split(" ").slice(2).join(" ")}
+                </span>
               </h1>
               <p className="text-lg md:text-xl text-gray-600 leading-relaxed max-w-lg">
                 {heroData.subtitle}
@@ -122,12 +133,17 @@ const Hero = () => {
                   ))}
                 </div>
                 <span className="ml-3">
-                  <strong className="text-blush-600">10K+</strong> happy customers
+                  <strong className="text-blush-600">5K+</strong> happy
+                  customers
                 </span>
               </div>
               <div className="flex items-center">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={16} className="text-yellow-400 fill-current" />
+                  <Star
+                    key={i}
+                    size={16}
+                    className="text-yellow-400 fill-current"
+                  />
                 ))}
                 <span className="ml-2">4.9/5 rating</span>
               </div>
@@ -135,19 +151,19 @@ const Hero = () => {
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="bg-gradient-to-r from-blush-500 to-rosegold-500 hover:from-blush-600 hover:to-rosegold-600 text-white px-8 py-6 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-                onClick={() => navigate(heroData.cta_url || '/shop')}
+                onClick={() => navigate(heroData.cta_url || "/shop")}
               >
-                {heroData.cta_text || 'Shop Premium Wigs'}
+                {heroData.cta_text || "Shop Premium Wigs"}
                 <ChevronRight className="ml-2" size={20} />
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="lg"
                 className="border-2 border-blush-300 text-blush-600 hover:bg-blush-50 px-8 py-6 text-lg font-semibold rounded-xl"
-                onClick={() => navigate('/shop')}
+                onClick={() => navigate("/shop")}
               >
                 View Collections
               </Button>
@@ -160,23 +176,30 @@ const Hero = () => {
                   <Sparkles className="text-white" size={20} />
                 </div>
                 <div>
-                  <p className="font-semibold text-blush-700">Limited Time Offer!</p>
-                  <p className="text-sm text-gray-600">Get 20% off your first order + free styling guide</p>
+                  <p className="font-semibold text-blush-700">
+                    Limited Time Offer!
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    Get 20% off your first order + free styling guide
+                  </p>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Right Content - Hero Image */}
-          <div className="relative animate-fade-in" style={{ animationDelay: '0.3s' }}>
+          <div
+            className="relative animate-fade-in"
+            style={{ animationDelay: "0.3s" }}
+          >
             <div className="relative group">
               {/* Main Image Container */}
               <div className="relative overflow-hidden rounded-3xl shadow-2xl">
                 <div className="aspect-[4/5] bg-gradient-to-br from-blush-100 to-rosegold-100 flex items-center justify-center">
                   {heroData.background_image ? (
-                    <img 
-                      src={heroData.background_image} 
-                      alt="Hero Image" 
+                    <img
+                      src={heroData.background_image}
+                      alt="Hero Image"
                       className="w-full h-full object-cover"
                     />
                   ) : (
@@ -186,30 +209,44 @@ const Hero = () => {
                         <Crown size={60} className="text-white" />
                       </div>
                       <div className="space-y-2">
-                        <p className="text-lg font-semibold text-blush-700">Beautiful Model</p>
-                        <p className="text-sm text-gray-600">Wearing Premium Lace Front Wig</p>
+                        <p className="text-lg font-semibold text-blush-700">
+                          Beautiful Model
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Wearing Premium Lace Front Wig
+                        </p>
                       </div>
                     </div>
                   )}
                 </div>
-                
+
                 {/* Overlay elements */}
                 <div className="absolute top-4 right-4">
                   <Badge className="bg-white/90 text-rosegold-600 font-semibold">
                     🔥 Best Seller
                   </Badge>
                 </div>
-                
+
                 {heroData.featured_product && (
                   <div className="absolute bottom-4 left-4 right-4">
                     <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-semibold text-blush-700">{heroData.featured_product.name}</p>
-                          <p className="text-sm text-gray-600">Featured Product</p>
+                          <p className="font-semibold text-blush-700">
+                            {heroData.featured_product.name}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            Featured Product
+                          </p>
                         </div>
                         <div className="text-right">
-                          <p className="text-lg font-bold text-rosegold-600">${heroData.featured_product.price}</p>
+                          <p className="text-lg font-bold text-rosegold-600">
+                            <PriceDisplay
+                              price={heroData.featured_product.price}
+                              designCSS=""
+                              className="py-0"
+                            />
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -219,7 +256,10 @@ const Hero = () => {
 
               {/* Floating Elements */}
               <div className="absolute -top-4 -left-4 w-24 h-24 bg-gradient-to-br from-cream-200 to-blush-200 rounded-full opacity-60 animate-float"></div>
-              <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-gradient-to-br from-rosegold-200 to-blush-200 rounded-full opacity-40 animate-float" style={{ animationDelay: '1.5s' }}></div>
+              <div
+                className="absolute -bottom-4 -right-4 w-32 h-32 bg-gradient-to-br from-rosegold-200 to-blush-200 rounded-full opacity-40 animate-float"
+                style={{ animationDelay: "1.5s" }}
+              ></div>
             </div>
           </div>
         </div>

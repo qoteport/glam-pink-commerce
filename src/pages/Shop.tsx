@@ -126,12 +126,12 @@ const Shop = () => {
         const rangeEnd = Math.min(i + rangeStep, maxPrice);
         dynamicPriceRanges.push({
           value: [i, rangeEnd],
-          label: `$${i} - $${rangeEnd}`
+          label: `${i} - ${rangeEnd}`
         });
       }
       dynamicPriceRanges.push({
         value: [maxPrice, Infinity],
-        label: `$${maxPrice}+`
+        label: `${maxPrice}`
       });
 
       setColors([{ value: 'all', label: 'All Colors' }, ...uniqueColors]);

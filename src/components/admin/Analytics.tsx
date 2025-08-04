@@ -209,7 +209,7 @@ const Analytics = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-                <p className="text-2xl font-bold text-gray-900">${analytics.totalRevenue.toFixed(2)}</p>
+                <p className="text-2xl font-bold text-gray-900">₵{analytics.totalRevenue.toFixed(2)}</p>
                 <p className="text-sm text-green-600 flex items-center mt-1">
                   <TrendingUp className="w-4 h-4 mr-1" />
                   Live data
@@ -263,7 +263,7 @@ const Analytics = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Avg. Order Value</p>
-                <p className="text-2xl font-bold text-gray-900">${analytics.avgOrderValue.toFixed(2)}</p>
+                <p className="text-2xl font-bold text-gray-900">₵{analytics.avgOrderValue.toFixed(2)}</p>
                 <p className="text-sm text-orange-600 flex items-center mt-1">
                   <DollarSign className="w-4 h-4 mr-1" />
                   Live data
@@ -292,7 +292,7 @@ const Analytics = () => {
                 <YAxis yAxisId="left" />
                 <YAxis yAxisId="right" orientation="right" />
                 <Tooltip />
-                <Bar yAxisId="left" dataKey="revenue" fill="#D97706" name="Revenue ($)" />
+                <Bar yAxisId="left" dataKey="revenue" fill="#D97706" name="Revenue (₵)" />
                 <Line yAxisId="right" type="monotone" dataKey="orders" stroke="#059669" strokeWidth={2} name="Orders" />
               </LineChart>
             </ResponsiveContainer>
@@ -349,7 +349,7 @@ const Analytics = () => {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-medium text-gray-900">${product.revenue.toFixed(2)}</p>
+                    <p className="font-medium text-gray-900">₵{product.revenue.toFixed(2)}</p>
                     <p className="text-sm text-gray-500">Revenue</p>
                   </div>
                 </div>

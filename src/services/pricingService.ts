@@ -105,7 +105,7 @@ class PricingService {
   // Format price with currency symbol
   private formatPrice(amount: number, currency: string): string {
     const symbol = this.currencySymbols[currency as keyof typeof this.currencySymbols] || currency;
-    return `${symbol}${amount.toFixed(2)}`;
+    return `${symbol}${amount.toFixed(0)}`;
   }
 
   // Main method to get display price

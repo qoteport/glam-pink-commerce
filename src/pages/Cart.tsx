@@ -1,15 +1,15 @@
-
-import React, { useState, useEffect } from 'react';
-import { useCart } from '@/contexts/CartContext';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
-import { Minus, Plus, Trash2, ShoppingBag, Truck } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { shippingService } from '@/services/shippingService';
-import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
+import React, { useState, useEffect } from "react";
+import { useCart } from "@/contexts/CartContext";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { Minus, Plus, Trash2, ShoppingBag, Truck } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { shippingService } from "@/services/shippingService";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import PriceDisplay from "@/components/PriceDisplay";
 
 const Cart = () => {
   const { items, updateQuantity, removeFromCart, getTotalPrice } = useCart();
@@ -17,8 +17,11 @@ const Cart = () => {
   const navigate = useNavigate();
   const [shippingCost, setShippingCost] = useState(0);
   const [taxAmount, setTaxAmount] = useState(0);
-  const [taxBreakdown, setTaxBreakdown] = useState<{ breakdown: Array<{name: string, amount: number, rate: number}>, singleTax: {name: string, amount: number} | null }>({ breakdown: [], singleTax: null });
-  const [customerCountry, setCustomerCountry] = useState('all');
+  const [taxBreakdown, setTaxBreakdown] = useState<{
+    breakdown: Array<{ name: string; amount: number; rate: number }>;
+    singleTax: { name: string; amount: number } | null;
+  }>({ breakdown: [], singleTax: null });
+  const [customerCountry, setCustomerCountry] = useState("all");
   const [loading, setLoading] = useState(false);
 
   const subtotal = getTotalPrice();
@@ -33,16 +36,16 @@ const Cart = () => {
   const fetchCustomerLocation = async () => {
     try {
       const { data, error } = await supabase
-        .from('user_locations')
-        .select('country')
-        .eq('user_id', user?.id)
+        .from("user_locations")
+        .select("country")
+        .eq("user_id", user?.id)
         .single();
 
       if (data && data.country) {
         setCustomerCountry(data.country);
       }
     } catch (error) {
-      console.log('No customer location found, using default');
+      console.log("No customer location found, using default");
     }
   };
 
@@ -57,7 +60,11 @@ const Cart = () => {
     setLoading(true);
     try {
       // Calculate shipping with customer country
-      const shipping = await shippingService.calculateShipping(subtotal, items, customerCountry);
+      const shipping = await shippingService.calculateShipping(
+        subtotal,
+        items,
+        customerCountry
+      );
       setShippingCost(shipping);
 
       // Calculate tax
@@ -68,7 +75,7 @@ const Cart = () => {
       const breakdown = await shippingService.getTaxBreakdown(tax);
       setTaxBreakdown(breakdown);
     } catch (error) {
-      console.error('Error calculating costs:', error);
+      console.error("Error calculating costs:", error);
     } finally {
       setLoading(false);
     }
@@ -90,7 +97,7 @@ const Cart = () => {
             <p className="text-gray-600 mb-6 text-center">
               Looks like you haven't added any items to your cart yet.
             </p>
-            <Button onClick={() => navigate('/shop')} className="w-full">
+            <Button onClick={() => navigate("/shop")} className="w-full">
               Continue Shopping
             </Button>
           </CardContent>
@@ -103,7 +110,7 @@ const Cart = () => {
     <div className="min-h-screen bg-gradient-to-br from-rose-50 to-pink-50 py-8">
       <div className="container mx-auto px-4">
         <h1 className="text-3xl font-bold mb-8">Shopping Cart</h1>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Cart Items */}
           <div className="lg:col-span-2">
@@ -113,25 +120,32 @@ const Cart = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 {items.map((item) => (
-                  <div key={getItemKey(item)} className="flex gap-4 p-4 border rounded-lg">
-                    <img 
-                      src={item.image} 
+                  <div
+                    key={getItemKey(item)}
+                    className="flex gap-4 p-4 border rounded-lg"
+                  >
+                    <img
+                      src={item.image}
                       alt={item.name}
                       className="w-20 h-20 object-cover rounded-md"
                     />
-                    
+
                     <div className="flex-1">
                       <h3 className="font-semibold">{item.name}</h3>
                       <div className="flex gap-2 mt-1">
                         {item.selectedColor && (
-                          <Badge variant="secondary">{item.selectedColor}</Badge>
+                          <Badge variant="secondary">
+                            {item.selectedColor}
+                          </Badge>
                         )}
                         {item.selectedLength && (
-                          <Badge variant="secondary">{item.selectedLength}</Badge>
+                          <Badge variant="secondary">
+                            {item.selectedLength}
+                          </Badge>
                         )}
                       </div>
                       <p className="text-lg font-bold text-rose-600 mt-2">
-                        ${item.price.toFixed(2)}
+                        <PriceDisplay price={item.price} className="py-2" />
                       </p>
                     </div>
 
@@ -143,12 +157,14 @@ const Cart = () => {
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
-                      
+
                       <div className="flex items-center gap-2">
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => updateQuantity(getItemKey(item), item.quantity - 1)}
+                          onClick={() =>
+                            updateQuantity(getItemKey(item), item.quantity - 1)
+                          }
                           disabled={item.quantity <= 1}
                         >
                           <Minus className="h-4 w-4" />
@@ -157,7 +173,9 @@ const Cart = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => updateQuantity(getItemKey(item), item.quantity + 1)}
+                          onClick={() =>
+                            updateQuantity(getItemKey(item), item.quantity + 1)
+                          }
                         >
                           <Plus className="h-4 w-4" />
                         </Button>
@@ -181,14 +199,24 @@ const Cart = () => {
               <CardContent className="space-y-4">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <PriceDisplay
+                    price={subtotal}
+                    designCSS=""
+                    className="py-0"
+                  />
                 </div>
 
                 <div className="flex justify-between">
                   <span>Shipping</span>
-                  <span>
-                    {loading ? 'Calculating...' : `$${shippingCost.toFixed(2)}`}
-                  </span>
+                  {loading ? (
+                    <span>Calculating...</span>
+                  ) : (
+                    <PriceDisplay
+                      price={shippingCost}
+                      designCSS=""
+                      className="py-0"
+                    />
+                  )}
                 </div>
 
                 {/* Tax Breakdown */}
@@ -197,13 +225,24 @@ const Cart = () => {
                     {taxBreakdown.singleTax ? (
                       <div className="flex justify-between">
                         <span>{taxBreakdown.singleTax.name}</span>
-                        <span>${taxBreakdown.singleTax.amount.toFixed(2)}</span>
+                        <PriceDisplay
+                          price={taxBreakdown.singleTax.amount}
+                          designCSS=""
+                          className="py-0"
+                        />
                       </div>
                     ) : (
                       taxBreakdown.breakdown.map((tax, index) => (
-                        <div key={index} className="flex justify-between text-sm">
+                        <div
+                          key={index}
+                          className="flex justify-between text-sm"
+                        >
                           <span>{tax.name}</span>
-                          <span>${tax.amount.toFixed(2)}</span>
+                          <PriceDisplay
+                            price={tax.amount}
+                            designCSS=""
+                            className="py-0"
+                          />
                         </div>
                       ))
                     )}
@@ -211,27 +250,29 @@ const Cart = () => {
                 )}
 
                 <Separator />
-                
+
                 <div className="flex justify-between text-lg font-semibold">
                   <span>Total</span>
-                  <span>
-                    {loading ? 'Calculating...' : `$${total.toFixed(2)}`}
-                  </span>
+                  {loading ? (
+                    <span>Calculating...</span>
+                  ) : (
+                    <PriceDisplay price={total} designCSS="" className="py-0" />
+                  )}
                 </div>
 
-                <Button 
-                  className="w-full" 
+                <Button
+                  className="w-full"
                   size="lg"
-                  onClick={() => navigate('/checkout')}
+                  onClick={() => navigate("/checkout")}
                   disabled={loading}
                 >
                   Proceed to Checkout
                 </Button>
 
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="w-full"
-                  onClick={() => navigate('/shop')}
+                  onClick={() => navigate("/shop")}
                 >
                   Continue Shopping
                 </Button>

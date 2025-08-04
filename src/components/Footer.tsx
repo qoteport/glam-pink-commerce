@@ -1,14 +1,13 @@
-
-import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { 
-  Instagram, 
-  Facebook, 
-  Youtube, 
-  Twitter, 
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import {
+  Instagram,
+  Facebook,
+  Youtube,
+  Twitter,
   Linkedin,
   Mail,
   Phone,
@@ -19,9 +18,9 @@ import {
   Gift,
   Truck,
   Shield,
-  Clock
-} from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+  Clock,
+} from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface SocialLink {
   id: string;
@@ -39,7 +38,7 @@ interface Category {
 }
 
 const Footer = () => {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -52,31 +51,31 @@ const Footer = () => {
   const fetchSocialLinks = async () => {
     try {
       const { data, error } = await supabase
-        .from('social_links')
-        .select('*')
-        .eq('is_active', true)
-        .order('display_order');
+        .from("social_links")
+        .select("*")
+        .eq("is_active", true)
+        .order("display_order");
 
       if (error) throw error;
       setSocialLinks(data || []);
     } catch (error) {
-      console.error('Error fetching social links:', error);
+      console.error("Error fetching social links:", error);
     }
   };
 
   const fetchCategories = async () => {
     try {
       const { data, error } = await supabase
-        .from('categories')
-        .select('*')
-        .eq('is_active', true)
-        .order('sort_order')
+        .from("categories")
+        .select("*")
+        .eq("is_active", true)
+        .order("sort_order")
         .limit(6);
 
       if (error) throw error;
       setCategories(data || []);
     } catch (error) {
-      console.error('Error fetching categories:', error);
+      console.error("Error fetching categories:", error);
     }
   };
 
@@ -85,16 +84,16 @@ const Footer = () => {
     if (email) {
       try {
         const { error } = await supabase
-          .from('subscriptions')
+          .from("subscriptions")
           .insert([{ email }]);
 
         if (error) throw error;
 
         setIsSubscribed(true);
-        setEmail('');
+        setEmail("");
         setTimeout(() => setIsSubscribed(false), 3000);
       } catch (error) {
-        console.error('Error subscribing:', error);
+        console.error("Error subscribing:", error);
       }
     }
   };
@@ -102,15 +101,15 @@ const Footer = () => {
   const getSocialIcon = (platform: string) => {
     const platformLower = platform.toLowerCase();
     switch (platformLower) {
-      case 'instagram':
+      case "instagram":
         return Instagram;
-      case 'facebook':
+      case "facebook":
         return Facebook;
-      case 'youtube':
+      case "youtube":
         return Youtube;
-      case 'twitter':
+      case "twitter":
         return Twitter;
-      case 'linkedin':
+      case "linkedin":
         return Linkedin;
       default:
         return Instagram;
@@ -127,28 +126,28 @@ const Footer = () => {
   };
 
   const quickLinks = [
-    { name: 'About Us', href: '#about' },
-    { name: 'Size Guide', href: '#size-guide' },
-    { name: 'Hair Care Tips', href: '#hair-care' },
-    { name: 'Installation Guide', href: '#installation' },
-    { name: 'Reviews', href: '#reviews' },
-    { name: 'Affiliate Program', href: '#affiliate' }
+    { name: "About Us", href: "#about" },
+    { name: "Size Guide", href: "#size-guide" },
+    { name: "Hair Care Tips", href: "#hair-care" },
+    { name: "Installation Guide", href: "#installation" },
+    { name: "Reviews", href: "#reviews" },
+    { name: "Affiliate Program", href: "#affiliate" },
   ];
 
   const customerService = [
-    { name: 'Contact Us', href: '#contact' },
-    { name: 'Shipping Info', href: '#shipping' },
-    { name: 'Returns & Exchanges', href: '#returns' },
-    { name: 'Size Exchange', href: '#size-exchange' },
-    { name: 'Track Your Order', href: '#track' },
-    { name: 'FAQ', href: '#faq' }
+    { name: "Contact Us", href: "#contact" },
+    { name: "Shipping Info", href: "#shipping" },
+    { name: "Returns & Exchanges", href: "#returns" },
+    { name: "Size Exchange", href: "#size-exchange" },
+    { name: "Track Your Order", href: "#track" },
+    { name: "FAQ", href: "#faq" },
   ];
 
   const trustFeatures = [
-    { icon: Shield, text: '100% Virgin Hair Guarantee' },
-    { icon: Truck, text: 'Free Shipping Over $75' },
-    { icon: Clock, text: '30-Day Return Policy' },
-    { icon: Gift, text: 'Free Styling Guide' }
+    { icon: Shield, text: "100% Virgin Hair Guarantee" },
+    { icon: Truck, text: "Free Shipping Over $75" },
+    { icon: Clock, text: "30-Day Return Policy" },
+    { icon: Gift, text: "Free Styling Guide" },
   ];
 
   return (
@@ -162,12 +161,15 @@ const Footer = () => {
                 ✨ Join the Beauty Squad & Stay Connected ✨
               </h3>
               <p className="text-blush-100 max-w-2xl mx-auto">
-                Get exclusive access to new arrivals, styling tips, and special offers. 
-                Plus, receive 10% off your first order!
+                Get exclusive access to new arrivals, styling tips, and special
+                offers. Plus, receive 10% off your first order!
               </p>
             </div>
 
-            <form onSubmit={handleSubscribe} className="max-w-md mx-auto flex gap-3">
+            <form
+              onSubmit={handleSubscribe}
+              className="max-w-md mx-auto flex gap-3"
+            >
               <Input
                 type="email"
                 placeholder="Enter your email address"
@@ -176,17 +178,19 @@ const Footer = () => {
                 className="flex-1 bg-white/20 border-white/30 text-white placeholder:text-white/70 focus:bg-white/30"
                 required
               />
-              <Button 
+              <Button
                 type="submit"
                 className="bg-white text-blush-600 hover:bg-gray-100 font-semibold px-6"
               >
-                {isSubscribed ? '✓ Subscribed!' : 'Subscribe'}
+                {isSubscribed ? "✓ Subscribed!" : "Subscribe"}
               </Button>
             </form>
 
             {/* Social Media Links */}
             <div className="space-y-4">
-              <p className="text-blush-100">Follow us for daily hair inspiration:</p>
+              <p className="text-blush-100">
+                Follow us for daily hair inspiration:
+              </p>
               <div className="flex justify-center space-x-6">
                 {socialLinks.map((social) => {
                   const IconComponent = getSocialIcon(social.platform);
@@ -223,39 +227,50 @@ const Footer = () => {
               <div className="space-y-4">
                 <div className="flex items-center space-x-2">
                   <Crown size={32} className="text-blush-400" />
-                  <h4 className="text-2xl font-bold text-gradient">HairyTalesBeauty</h4>
+                  <h4 className="text-2xl font-bold text-gradient">
+                    HairyTalesBeauty
+                  </h4>
                 </div>
                 <p className="text-gray-300 leading-relaxed max-w-md">
-                  Your premier destination for high-quality wigs and hair bundles. 
-                  We're dedicated to helping every woman feel beautiful, confident, and glamorous.
+                  Your premier destination for high-quality wigs and hair
+                  bundles. We're dedicated to helping every woman feel
+                  beautiful, confident, and glamorous.
                 </p>
               </div>
 
               {/* Trust Features */}
-              <div className="space-y-3">
+              {/* <div className="space-y-3">
                 {trustFeatures.map((feature, index) => (
                   <div key={index} className="flex items-center space-x-3">
                     <feature.icon size={16} className="text-blush-400" />
                     <span className="text-sm text-gray-300">{feature.text}</span>
                   </div>
                 ))}
-              </div>
+              </div> */}
 
               {/* Contact Info */}
               <div className="space-y-3">
                 <h5 className="font-semibold text-white">Get in Touch</h5>
                 <div className="space-y-2 text-sm text-gray-300">
-                  <div className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-3 text-sm">
                     <Phone size={16} className="text-blush-400" />
-                    <span>1-800-GLAMCROWN (1-800-452-6276)</span>
+                    <div className="flex flex-col">
+                      <a href="tel:+233558384512" className="hover:underline">
+                        (+233) 558-384-512
+                      </a>
+                      <a href="tel:+233542511844" className="hover:underline">
+                        (+233) 542-511-844
+                      </a>
+                    </div>
                   </div>
+
                   <div className="flex items-center space-x-3">
                     <Mail size={16} className="text-blush-400" />
-                    <span>hello@hairytalesbeaty.com</span>
+                    <span>hairytalesbeauty@gmail.com</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <MapPin size={16} className="text-blush-400" />
-                    <span>Los Angeles, CA & Atlanta, GA</span>
+                    <span>Madina new road - Accra, Ghana</span>
                   </div>
                 </div>
               </div>
@@ -267,7 +282,7 @@ const Footer = () => {
               <ul className="space-y-2">
                 {quickLinks.map((link, index) => (
                   <li key={index}>
-                    <a 
+                    <a
                       href={link.href}
                       className="text-gray-300 hover:text-blush-400 transition-colors duration-200 text-sm"
                     >
@@ -280,11 +295,13 @@ const Footer = () => {
 
             {/* Customer Service */}
             <div className="space-y-4">
-              <h5 className="font-semibold text-white text-lg">Customer Service</h5>
+              <h5 className="font-semibold text-white text-lg">
+                Customer Service
+              </h5>
               <ul className="space-y-2">
                 {customerService.map((service, index) => (
                   <li key={index}>
-                    <a 
+                    <a
                       href={service.href}
                       className="text-gray-300 hover:text-blush-400 transition-colors duration-200 text-sm"
                     >
@@ -297,11 +314,13 @@ const Footer = () => {
 
             {/* Categories */}
             <div className="space-y-4">
-              <h5 className="font-semibold text-white text-lg">Shop Categories</h5>
+              <h5 className="font-semibold text-white text-lg">
+                Shop Categories
+              </h5>
               <ul className="space-y-2">
                 {categories.map((category) => (
                   <li key={category.id}>
-                    <a 
+                    <a
                       href={`/shop?category=${category.slug}`}
                       className="text-gray-300 hover:text-blush-400 transition-colors duration-200 text-sm"
                     >
@@ -324,9 +343,13 @@ const Footer = () => {
             <div className="flex items-center space-x-4 text-sm text-gray-400">
               <span>© 2024 HairyTalesBeauty. All rights reserved.</span>
               <Separator orientation="vertical" className="h-4 bg-gray-600" />
-              <a href="#" className="hover:text-blush-400 transition-colors">Privacy Policy</a>
+              <a href="#" className="hover:text-blush-400 transition-colors">
+                Privacy Policy
+              </a>
               <Separator orientation="vertical" className="h-4 bg-gray-600" />
-              <a href="#" className="hover:text-blush-400 transition-colors">Terms of Service</a>
+              <a href="#" className="hover:text-blush-400 transition-colors">
+                Terms of Service
+              </a>
             </div>
 
             <div className="flex items-center space-x-2 text-sm text-gray-400">

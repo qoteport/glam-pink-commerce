@@ -206,7 +206,7 @@ const ProductShowcase = () => {
         </div>
 
         {/* Trust Indicators */}
-        <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 py-12 border-t border-blush-100">
+        {/* <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 py-12 border-t border-blush-100">
           {[
             { stat: '10K+', label: 'Happy Customers', icon: '💕' },
             { stat: '4.9/5', label: 'Customer Rating', icon: '⭐' },
@@ -219,7 +219,7 @@ const ProductShowcase = () => {
               <div className="text-sm text-gray-600">{item.label}</div>
             </div>
           ))}
-        </div>
+        </div> */}
       </div>
     </section>
   );
