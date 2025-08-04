@@ -92,6 +92,33 @@ export type Database = {
         }
         Relationships: []
       }
+      countries: {
+        Row: {
+          code: string
+          created_at: string
+          currency: string
+          id: string
+          is_active: boolean
+          name: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          currency?: string
+          id?: string
+          is_active?: boolean
+          name: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+        }
+        Relationships: []
+      }
       custom_wig_orders: {
         Row: {
           color: string | null
@@ -807,32 +834,41 @@ export type Database = {
       shipping_rules: {
         Row: {
           condition_value: string
+          country: string | null
           created_at: string
           description: string | null
           id: string
           is_active: boolean | null
           name: string
+          priority: number | null
           rule_type: string
+          shipping_rate: number | null
           updated_at: string
         }
         Insert: {
           condition_value: string
+          country?: string | null
           created_at?: string
           description?: string | null
           id?: string
           is_active?: boolean | null
           name: string
+          priority?: number | null
           rule_type: string
+          shipping_rate?: number | null
           updated_at?: string
         }
         Update: {
           condition_value?: string
+          country?: string | null
           created_at?: string
           description?: string | null
           id?: string
           is_active?: boolean | null
           name?: string
+          priority?: number | null
           rule_type?: string
+          shipping_rate?: number | null
           updated_at?: string
         }
         Relationships: []

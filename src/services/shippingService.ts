@@ -6,6 +6,9 @@ interface ShippingRule {
   description?: string;
   rule_type: 'minimum_amount' | 'product_category' | 'product_specific';
   condition_value: string;
+  shipping_rate: number;
+  country: string;
+  priority: number;
   is_active: boolean;
 }
 
@@ -19,12 +22,37 @@ interface TaxRule {
   is_active: boolean;
 }
 
+interface Country {
+  id: string;
+  name: string;
+  code: string;
+  currency: string;
+  is_active: boolean;
+}
+
 class ShippingService {
+  async getCountries(): Promise<Country[]> {
+    const { data, error } = await supabase
+      .from('countries')
+      .select('*')
+      .eq('is_active', true)
+      .order('name');
+    
+    if (error) {
+      console.error('Error fetching countries:', error);
+      return [];
+    }
+    
+    return data || [];
+  }
+
   async getShippingRules(): Promise<ShippingRule[]> {
     const { data, error } = await supabase
       .from('shipping_rules')
       .select('*')
-      .eq('is_active', true);
+      .eq('is_active', true)
+      .order('priority', { ascending: false })
+      .order('created_at', { ascending: false });
     
     if (error) {
       console.error('Error fetching shipping rules:', error);
@@ -33,7 +61,10 @@ class ShippingService {
     
     return (data || []).map(item => ({
       ...item,
-      rule_type: item.rule_type as 'minimum_amount' | 'product_category' | 'product_specific'
+      rule_type: item.rule_type as 'minimum_amount' | 'product_category' | 'product_specific',
+      shipping_rate: Number(item.shipping_rate) || 0,
+      priority: item.priority || 0,
+      country: item.country || 'all'
     }));
   }
 
@@ -54,37 +85,53 @@ class ShippingService {
     }));
   }
 
-  async calculateShipping(orderAmount: number, items: any[]): Promise<number> {
+  async calculateShipping(orderAmount: number, items: any[], customerCountry: string = 'all'): Promise<number> {
     const rules = await this.getShippingRules();
     
-    // Check minimum amount rules
-    const minAmountRules = rules.filter(rule => rule.rule_type === 'minimum_amount');
-    for (const rule of minAmountRules) {
-      const minAmount = parseFloat(rule.condition_value);
-      if (orderAmount >= minAmount) {
-        return 0; // Free shipping
+    // Filter rules by country (specific country rules take precedence over 'all')
+    const countryRules = rules.filter(rule => 
+      rule.country === customerCountry || rule.country === 'all'
+    );
+    
+    // Sort by priority and country specificity
+    const sortedRules = countryRules.sort((a, b) => {
+      // Higher priority first
+      if (a.priority !== b.priority) return b.priority - a.priority;
+      // Country-specific rules before 'all' rules
+      if (a.country !== b.country) {
+        if (a.country === 'all') return 1;
+        if (b.country === 'all') return -1;
+      }
+      return 0;
+    });
+    
+    // Check rules in order of priority
+    for (const rule of sortedRules) {
+      let qualifies = false;
+      
+      switch (rule.rule_type) {
+        case 'minimum_amount':
+          const minAmount = parseFloat(rule.condition_value);
+          qualifies = orderAmount >= minAmount;
+          break;
+          
+        case 'product_category':
+          qualifies = items.some(item => item.category === rule.condition_value);
+          break;
+          
+        case 'product_specific':
+          qualifies = items.some(item => item.id === rule.condition_value);
+          break;
+      }
+      
+      if (qualifies) {
+        console.log(`Applied shipping rule: ${rule.name} - Rate: ${rule.shipping_rate}`);
+        return rule.shipping_rate;
       }
     }
     
-    // Check product category rules
-    const categoryRules = rules.filter(rule => rule.rule_type === 'product_category');
-    for (const rule of categoryRules) {
-      const hasCategory = items.some(item => item.category === rule.condition_value);
-      if (hasCategory) {
-        return 0; // Free shipping
-      }
-    }
-    
-    // Check product specific rules
-    const productRules = rules.filter(rule => rule.rule_type === 'product_specific');
-    for (const rule of productRules) {
-      const hasProduct = items.some(item => item.id === rule.condition_value);
-      if (hasProduct) {
-        return 0; // Free shipping
-      }
-    }
-    
-    // Default shipping rate
+    // Default shipping rate if no rules match
+    console.log('No shipping rules matched, using default rate');
     return 9.99;
   }
 
@@ -165,4 +212,4 @@ class ShippingService {
 }
 
 export const shippingService = new ShippingService();
-export type { ShippingRule, TaxRule };
+export type { ShippingRule, TaxRule, Country };
