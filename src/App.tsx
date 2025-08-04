@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -17,6 +18,10 @@ import CustomBraidedWigs from '@/pages/CustomBraidedWigs';
 import WholesaleDeals from '@/pages/WholesaleDeals';
 import PaymentCallback from '@/pages/PaymentCallback';
 import MyOrders from '@/pages/MyOrders';
+import ContactUs from '@/pages/ContactUs';
+import ShippingInfo from '@/pages/ShippingInfo';
+import ReturnsExchanges from '@/pages/ReturnsExchanges';
+import FAQ from '@/pages/FAQ';
 import NotFound from '@/pages/NotFound';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import './App.css';
@@ -43,6 +48,10 @@ function App() {
                   <Route path="/wholesale-deals" element={<WholesaleDeals />} />
                   <Route path="/payment/callback" element={<PaymentCallback />} />
                   <Route path="/my-orders" element={<MyOrders />} />
+                  <Route path="/contact" element={<ContactUs />} />
+                  <Route path="/shipping" element={<ShippingInfo />} />
+                  <Route path="/returns" element={<ReturnsExchanges />} />
+                  <Route path="/faq" element={<FAQ />} />
                   <Route path="/admin" element={
                     <ProtectedRoute requireAdmin={true}>
                       <Admin />

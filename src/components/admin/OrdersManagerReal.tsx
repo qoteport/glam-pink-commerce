@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,12 +9,15 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Order } from '@/services/orderService';
 import OrderDetails from '@/components/OrderDetails';
+import OrderEditDialog from '@/components/admin/OrderEditDialog';
 
 const OrdersManagerReal = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editingOrder, setEditingOrder] = useState<Order | null>(null);
   const [stats, setStats] = useState({
     total: 0,
     processing: 0,
@@ -110,6 +112,20 @@ const OrdersManagerReal = () => {
   const handleCloseDetails = () => {
     setIsDetailsOpen(false);
     setSelectedOrder(null);
+  };
+
+  const handleEditOrder = (order: Order) => {
+    setEditingOrder(order);
+    setIsEditOpen(true);
+  };
+
+  const handleCloseEdit = () => {
+    setIsEditOpen(false);
+    setEditingOrder(null);
+  };
+
+  const handleOrderUpdated = () => {
+    fetchOrders(); // Refresh the orders list
   };
 
   const getStatusIcon = (status: string) => {
@@ -300,7 +316,11 @@ const OrdersManagerReal = () => {
                           >
                             <Eye className="w-4 h-4" />
                           </Button>
-                          <Button variant="ghost" size="sm">
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => handleEditOrder(order)}
+                          >
                             <Edit className="w-4 h-4" />
                           </Button>
                         </div>
@@ -318,6 +338,13 @@ const OrdersManagerReal = () => {
         order={selectedOrder}
         isOpen={isDetailsOpen}
         onClose={handleCloseDetails}
+      />
+
+      <OrderEditDialog
+        order={editingOrder}
+        isOpen={isEditOpen}
+        onClose={handleCloseEdit}
+        onOrderUpdated={handleOrderUpdated}
       />
     </div>
   );
