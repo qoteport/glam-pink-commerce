@@ -1,10 +1,11 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Package, Clock, CheckCircle, XCircle, MapPin, CreditCard, Truck } from 'lucide-react';
 import { Order } from '@/services/orderService';
+import { supabase } from '@/integrations/supabase/client';
 import PriceDisplay from '@/components/PriceDisplay';
 
 interface OrderDetailsProps {
@@ -13,7 +14,73 @@ interface OrderDetailsProps {
   onClose: () => void;
 }
 
+interface TaxRule {
+  id: string;
+  name: string;
+  tax_rate: number;
+  applies_to: 'all' | 'category' | 'location';
+  description?: string;
+}
+
 const OrderDetails = ({ order, isOpen, onClose }: OrderDetailsProps) => {
+  const [taxRules, setTaxRules] = useState<TaxRule[]>([]);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchTaxRules();
+    }
+  }, [isOpen]);
+
+  const fetchTaxRules = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('tax_rules')
+        .select('*')
+        .eq('is_active', true);
+
+      if (error) throw error;
+      
+      setTaxRules((data || []).map(rule => ({
+        ...rule,
+        applies_to: rule.applies_to as 'all' | 'category' | 'location'
+      })));
+    } catch (error) {
+      console.error('Error fetching tax rules:', error);
+    }
+  };
+
+  const calculateTaxBredown = (totalTaxAmount: number) => {
+    if (totalTaxAmount <= 0) return { vat: 0, serviceTax: 0 };
+
+    // Find applicable tax rules
+    const generalTax = taxRules.find(rule => rule.applies_to === 'all');
+    
+    if (generalTax && generalTax.description) {
+      // If we have a description that mentions breakdown, try to parse it
+      const vatMatch = generalTax.description.match(/VAT[:\s]*(\d+(?:\.\d+)?)%/i);
+      const serviceMatch = generalTax.description.match(/service[:\s]*(\d+(?:\.\d+)?)%/i);
+      
+      if (vatMatch && serviceMatch) {
+        const vatRate = parseFloat(vatMatch[1]) / 100;
+        const serviceRate = parseFloat(serviceMatch[1]) / 100;
+        const totalRate = vatRate + serviceRate;
+        
+        if (totalRate > 0) {
+          return {
+            vat: totalTaxAmount * (vatRate / totalRate),
+            serviceTax: totalTaxAmount * (serviceRate / totalRate)
+          };
+        }
+      }
+    }
+    
+    // Default breakdown based on common tax structures
+    return {
+      vat: totalTaxAmount * 0.8, // Assume 80% is VAT/GST
+      serviceTax: totalTaxAmount * 0.2 // Assume 20% is service tax
+    };
+  };
+
   if (!order) return null;
 
   const getStatusIcon = (status: string) => {
@@ -60,6 +127,8 @@ const OrderDetails = ({ order, isOpen, onClose }: OrderDetailsProps) => {
         return 'bg-yellow-100 text-yellow-800';
     }
   };
+
+  const taxBreakdown = calculateTaxBredown(order.tax_amount);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -161,7 +230,7 @@ const OrderDetails = ({ order, isOpen, onClose }: OrderDetailsProps) => {
             </div>
           </div>
 
-          {/* Order Summary with Enhanced Tax Breakdown */}
+          {/* Order Summary with Tax Rules Integration */}
           <div>
             <h3 className="text-lg font-semibold mb-4">Order Summary</h3>
             <div className="bg-gray-50 p-4 rounded-lg space-y-3">
@@ -177,14 +246,30 @@ const OrderDetails = ({ order, isOpen, onClose }: OrderDetailsProps) => {
               
               <div className="space-y-1">
                 <div className="flex justify-between text-sm">
-                  <span>Tax (estimated):</span>
+                  <span>Tax (total):</span>
                   <PriceDisplay price={order.tax_amount} showOriginalPrice={false} />
                 </div>
                 {order.tax_amount > 0 && (
-                  <div className="text-xs text-gray-500 ml-4">
-                    • VAT/GST: <PriceDisplay price={order.tax_amount * 0.8} showOriginalPrice={false} className="text-xs inline" />
-                    <br />
-                    • Service Tax: <PriceDisplay price={order.tax_amount * 0.2} showOriginalPrice={false} className="text-xs inline" />
+                  <div className="text-xs text-gray-500 ml-4 space-y-1">
+                    <div className="flex justify-between">
+                      <span>• VAT/GST:</span>
+                      <PriceDisplay price={taxBreakdown.vat} showOriginalPrice={false} className="text-xs inline" />
+                    </div>
+                    <div className="flex justify-between">
+                      <span>• Service Tax:</span>
+                      <PriceDisplay price={taxBreakdown.serviceTax} showOriginalPrice={false} className="text-xs inline" />
+                    </div>
+                    {taxRules.length > 0 && (
+                      <div className="mt-2 pt-2 border-t border-gray-200">
+                        <p className="font-medium text-gray-600">Applied Tax Rules:</p>
+                        {taxRules.map(rule => (
+                          <div key={rule.id} className="flex justify-between text-xs">
+                            <span>• {rule.name}:</span>
+                            <span>{(rule.tax_rate * 100).toFixed(1)}%</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

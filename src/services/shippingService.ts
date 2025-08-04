@@ -92,12 +92,19 @@ class ShippingService {
   async calculateTax(orderAmount: number, customerLocation?: string): Promise<number> {
     const rules = await this.getTaxRules();
     
+    if (rules.length === 0) {
+      console.warn('No tax rules found, using default rate');
+      return orderAmount * 0.08; // 8% default
+    }
+    
     // Check location-specific tax rules first
     if (customerLocation) {
       const locationRules = rules.filter(rule => 
-        rule.applies_to === 'location' && rule.condition_value === customerLocation
+        rule.applies_to === 'location' && 
+        rule.condition_value?.toLowerCase() === customerLocation.toLowerCase()
       );
       if (locationRules.length > 0) {
+        // Apply the first matching location rule
         return orderAmount * locationRules[0].tax_rate;
       }
     }
@@ -105,11 +112,53 @@ class ShippingService {
     // Check general tax rules
     const generalRules = rules.filter(rule => rule.applies_to === 'all');
     if (generalRules.length > 0) {
-      return orderAmount * generalRules[0].tax_rate;
+      // Sum up all general tax rates (e.g., VAT + Service Tax)
+      const totalTaxRate = generalRules.reduce((sum, rule) => sum + rule.tax_rate, 0);
+      return orderAmount * totalTaxRate;
     }
     
-    // Default tax rate (8%)
+    // Check category-specific rules (if we have category info)
+    const categoryRules = rules.filter(rule => rule.applies_to === 'category');
+    if (categoryRules.length > 0) {
+      // Use the first category rule as fallback
+      return orderAmount * categoryRules[0].tax_rate;
+    }
+    
+    // Fallback to default tax rate if no rules match
+    console.warn('No applicable tax rules found, using default rate');
     return orderAmount * 0.08;
+  }
+
+  async getTaxBreakdown(totalTaxAmount: number): Promise<{ vat: number; serviceTax: number; rules: TaxRule[] }> {
+    const rules = await this.getTaxRules();
+    
+    // Find VAT and Service tax rules specifically
+    const vatRule = rules.find(rule => 
+      rule.name.toLowerCase().includes('vat') || 
+      rule.name.toLowerCase().includes('gst')
+    );
+    
+    const serviceRule = rules.find(rule => 
+      rule.name.toLowerCase().includes('service')
+    );
+    
+    if (vatRule && serviceRule) {
+      const totalRate = vatRule.tax_rate + serviceRule.tax_rate;
+      if (totalRate > 0) {
+        return {
+          vat: totalTaxAmount * (vatRule.tax_rate / totalRate),
+          serviceTax: totalTaxAmount * (serviceRule.tax_rate / totalRate),
+          rules
+        };
+      }
+    }
+    
+    // Default breakdown if specific rules not found
+    return {
+      vat: totalTaxAmount * 0.8,
+      serviceTax: totalTaxAmount * 0.2,
+      rules
+    };
   }
 }
 

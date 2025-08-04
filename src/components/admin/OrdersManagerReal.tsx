@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -7,25 +8,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Package, Clock, CheckCircle, XCircle, Eye, Edit } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-
-interface Order {
-  id: string;
-  customer_name: string;
-  customer_email: string;
-  order_status: string;
-  total_amount: number;
-  created_at: string;
-  order_items: Array<{
-    id: string;
-    product_name: string;
-    quantity: number;
-    unit_price: number;
-  }>;
-}
+import { Order } from '@/services/orderService';
+import OrderDetails from '@/components/OrderDetails';
 
 const OrdersManagerReal = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [stats, setStats] = useState({
     total: 0,
     processing: 0,
@@ -45,20 +35,28 @@ const OrdersManagerReal = () => {
         .from('orders')
         .select(`
           *,
-          order_items(*)
+          order_items(*),
+          order_status_history(*)
         `)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
 
-      setOrders(ordersData || []);
+      // Type cast the orders properly
+      const typedOrders: Order[] = (ordersData || []).map(order => ({
+        ...order,
+        order_status: order.order_status as Order['order_status'],
+        payment_status: order.payment_status as Order['payment_status']
+      }));
+
+      setOrders(typedOrders);
       
       // Calculate stats
       const stats = {
-        total: ordersData?.length || 0,
-        processing: ordersData?.filter(o => o.order_status === 'processing').length || 0,
-        shipped: ordersData?.filter(o => o.order_status === 'shipped').length || 0,
-        delivered: ordersData?.filter(o => o.order_status === 'delivered').length || 0
+        total: typedOrders.length,
+        processing: typedOrders.filter(o => o.order_status === 'processing').length,
+        shipped: typedOrders.filter(o => o.order_status === 'shipped').length,
+        delivered: typedOrders.filter(o => o.order_status === 'delivered').length
       };
       setStats(stats);
 
@@ -86,7 +84,7 @@ const OrdersManagerReal = () => {
       // Update local state
       setOrders(prev => prev.map(order => 
         order.id === orderId 
-          ? { ...order, order_status: newStatus }
+          ? { ...order, order_status: newStatus as Order['order_status'] }
           : order
       ));
 
@@ -102,6 +100,16 @@ const OrdersManagerReal = () => {
         variant: 'destructive',
       });
     }
+  };
+
+  const handleViewDetails = (order: Order) => {
+    setSelectedOrder(order);
+    setIsDetailsOpen(true);
+  };
+
+  const handleCloseDetails = () => {
+    setIsDetailsOpen(false);
+    setSelectedOrder(null);
   };
 
   const getStatusIcon = (status: string) => {
@@ -285,7 +293,11 @@ const OrdersManagerReal = () => {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-2">
-                          <Button variant="ghost" size="sm">
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => handleViewDetails(order)}
+                          >
                             <Eye className="w-4 h-4" />
                           </Button>
                           <Button variant="ghost" size="sm">
@@ -301,6 +313,12 @@ const OrdersManagerReal = () => {
           )}
         </CardContent>
       </Card>
+
+      <OrderDetails 
+        order={selectedOrder}
+        isOpen={isDetailsOpen}
+        onClose={handleCloseDetails}
+      />
     </div>
   );
 };
