@@ -134,7 +134,7 @@ const Header = memo(({ onSearch }: HeaderProps) => {
             <div className="container mx-auto px-4">
               <div className="flex items-center justify-center py-2 text-sm text-blush-600">
                 <span>Free shipping on orders </span>
-                <PriceDisplay price={199} designCSS="" className="py-0 mx-1" />
+                <PriceDisplay price={5000} designCSS="" className="py-0 pl-1" />
                 <span>+ | 100% Virgin Hair Guarantee</span>
               </div>
             </div>
@@ -155,7 +155,7 @@ const Header = memo(({ onSearch }: HeaderProps) => {
               <img
                 src="../hairytales-logo.png"
                 alt="HairyTalesBeauty Logo"
-                className={`h-10 w-auto mr-2 transition-all duration-300 ${
+                className={`h-10 w-auto mr-2 mt-2 transition-all duration-300 ${
                   isScrolled ? "hidden" : "hidden md:block"
                 }`}
                 loading="lazy"
