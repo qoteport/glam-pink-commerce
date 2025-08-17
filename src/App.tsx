@@ -22,6 +22,8 @@ import ContactUs from '@/pages/ContactUs';
 import ShippingInfo from '@/pages/ShippingInfo';
 import ReturnsExchanges from '@/pages/ReturnsExchanges';
 import FAQ from '@/pages/FAQ';
+import Privacy from '@/pages/Privacy';
+import Terms from '@/pages/Terms';
 import NotFound from '@/pages/NotFound';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import './App.css';
@@ -60,6 +62,8 @@ function App() {
                   <Route path="/shipping" element={<ShippingInfo />} />
                   <Route path="/returns" element={<ReturnsExchanges />} />
                   <Route path="/faq" element={<FAQ />} />
+                  <Route path="/privacy" element={<Privacy />} />
+                  <Route path="/terms" element={<Terms />} />
                   <Route path="/admin" element={
                     <ProtectedRoute requireAdmin={true}>
                       <Admin />
