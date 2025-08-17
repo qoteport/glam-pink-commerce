@@ -10,7 +10,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-white">
       <Header />
-      <main>
+      <main className='lg:mx-[50px]'>
         <DynamicHero />
         <ProductShowcase />
         <Testimonials />
