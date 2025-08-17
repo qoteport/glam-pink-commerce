@@ -14,6 +14,7 @@ import {
   LogOut,
   ChevronDown,
   Package,
+  Settings,
 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useFavorites } from "@/contexts/FavoritesContext";
@@ -285,7 +286,7 @@ const Header = memo(({ onSearch }: HeaderProps) => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="end"
-                  className="w-56 bg-white border border-blush-100 shadow-lg"
+                  className="w-56 bg-white border border-blush-100 shadow-lg z-50"
                 >
                   <div className="flex items-center justify-start gap-2 p-2">
                     <div className="flex flex-col space-y-1 leading-none">
@@ -298,6 +299,13 @@ const Header = memo(({ onSearch }: HeaderProps) => {
                     </div>
                   </div>
                   <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => handleNavClick("/profile")}
+                    className="hover:bg-blush-50 hover:text-blush-600 cursor-pointer text-foreground"
+                  >
+                    <Settings className="mr-2 h-4 w-4" />
+                    Profile Settings
+                  </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => handleNavClick("/my-orders")}
                     className="hover:bg-blush-50 hover:text-blush-600 cursor-pointer text-foreground"
@@ -465,6 +473,16 @@ const Header = memo(({ onSearch }: HeaderProps) => {
                 )}
 
                 <div className="border-t border-gray-200 pt-3 mt-2 space-y-2">
+                  {user && (
+                    <motion.button
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => handleNavClick("/profile")}
+                      className="flex items-center w-full font-medium py-1.5 text-left text-gray-600 hover:text-blush-500 text-sm"
+                    >
+                      <Settings size={16} className="mr-2" />
+                      Profile Settings
+                    </motion.button>
+                  )}
                   <motion.button
                     whileTap={{ scale: 0.98 }}
                     onClick={() => handleNavClick("/favorites")}

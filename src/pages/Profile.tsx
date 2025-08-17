@@ -38,11 +38,16 @@ const Profile = () => {
   });
 
   useEffect(() => {
-    if (profile) {
-      form.setValue('fullName', profile.full_name || '');
-      form.setValue('email', profile.email || '');
+    if (!loading && !user) {
+      navigate('/auth');
+      return;
     }
-  }, [profile, form]);
+
+    if (profile && user) {
+      form.setValue('fullName', profile.full_name || '');
+      form.setValue('email', user.email || '');
+    }
+  }, [profile, user, form, navigate, loading]);
 
   const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -57,6 +62,8 @@ const Profile = () => {
   };
 
   const onSubmit = async (data: ProfileFormValues) => {
+    if (!user) return;
+    
     setIsUpdating(true);
     
     try {
@@ -103,7 +110,6 @@ const Profile = () => {
   }
 
   if (!user) {
-    navigate('/auth');
     return null;
   }
 
