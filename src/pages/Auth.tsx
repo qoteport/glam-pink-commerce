@@ -89,10 +89,15 @@ const Auth = () => {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
-            <Crown className="w-8 h-8 text-rosegold-500 mr-2" />
-            <h1 className="text-3xl font-bold text-gradient">GlamCrown Beauty</h1>
+               <img
+                src="../hairytales-logo.png"
+                alt="HairyTalesBeauty Logo"
+                className={`h-10 w-auto mr-2 mt-2 transition-all duration-300`}
+                loading="lazy"
+              />
+            <h1 className="text-3xl font-bold text-gradient">HairyTales Beauty</h1>
           </div>
-          <p className="text-gray-600">Premium hair extensions & wigs</p>
+          <p className="text-gray-600">Premium wigs, wig caps and more</p>
         </div>
 
         <Card className="shadow-xl border-blush-100">

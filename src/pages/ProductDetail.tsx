@@ -743,7 +743,7 @@ const ProductDetail = () => {
                 value="reviews"
                 className="py-2 px-3 text-sm sm:text-base rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm"
               >
-                Customer Reviews
+                Reviews
               </TabsTrigger>
               <TabsTrigger
                 value="care"

@@ -86,7 +86,7 @@ const ProductCard = ({ product, viewMode = "grid" }: ProductCardProps) => {
         </div>
 
         {/* Overlay Actions - Optimized for mobile */}
-        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center hidden lg:flex">
           <div className="flex flex-col sm:flex-row gap-2 p-2 w-full justify-center">
             <Button
               size="sm"
@@ -99,7 +99,7 @@ const ProductCard = ({ product, viewMode = "grid" }: ProductCardProps) => {
             </Button>
             <Button
               size="sm"
-              className="bg-blush-500 hover:bg-blush-600 text-white shadow-lg w-full sm:w-auto"
+              className="bg-blush-500 hover:bg-blush-600 text-white shadow-lg w-full sm:w-auto "
               onClick={handleAddToCart}
             >
               <ShoppingCart size={16} className="mr-1 hidden xs:inline" />

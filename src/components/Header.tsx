@@ -133,9 +133,16 @@ const Header = memo(({ onSearch }: HeaderProps) => {
           >
             <div className="container mx-auto px-4">
               <div className="flex items-center justify-center py-2 text-sm text-blush-600">
-                <span>Free shipping on orders </span>
-                <PriceDisplay price={5000} designCSS="" className="py-0 pl-1" />
-                <span>+ | 100% Virgin Hair Guarantee</span>
+                <span className="lg:block hidden">Free shipping on orders</span>
+                <div>
+                  <span className="lg:hidden">Free shipping on orders</span>
+                  <div className="flex flex-row gap-0 lg:ml-1">
+                    <PriceDisplay price={1000} designCSS="" className="py-0" />{" "}
+                    +
+                  </div>
+                </div>
+                <div className="m-1 mt-0">|</div>
+                <span className="">100% Virgin Hair Guarantee</span>
               </div>
             </div>
           </motion.div>
