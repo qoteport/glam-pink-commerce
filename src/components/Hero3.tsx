@@ -20,10 +20,6 @@ interface HeroData {
   };
 }
 
-
-
-
-
 const Hero3 = () => {
   const navigate = useNavigate();
   let handleCardClick = () => {
@@ -74,14 +70,14 @@ const Hero3 = () => {
   };
 
   return (
-    <section className="relative min-h-screen">
-      {/* Split Layout */}
-      <div className="grid lg:grid-cols-2 min-h-screen">
-        {/* Left Side - Content */}
-        <div className="flex items-center justify-center p-8 lg:p-16 bg-gradient-to-br from-white via-primary/5 to-secondary/10">
-          <div className="max-w-lg space-y-8">
+    <section className="relative w-full min-h-screen">
+      {/* Full-width container */}
+      <div className="flex flex-col lg:flex-row w-full min-h-screen">
+        {/* Left Side - Content (50% width on large screens) */}
+        <div className="lg:w-1/2 flex items-center justify-center p-6 sm:p-8 md:p-12 lg:p-16 bg-gradient-to-br from-white via-primary/5 to-secondary/10">
+          <div className="w-full max-w-md lg:max-w-lg xl:max-w-xl space-y-6 md:space-y-8">
             {/* Floating Badges */}
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-2 md:gap-3">
               <Badge className="bg-gradient-to-r from-primary to-accent text-white border-0">
                 <Award className="w-3 h-3 mr-1" />
                 Award Winning
@@ -93,8 +89,8 @@ const Hero3 = () => {
             </div>
 
             {/* Main Title */}
-            <div className="space-y-4">
-              <h1 className="text-4xl lg:text-6xl font-bold leading-tight">
+            <div className="space-y-3 md:space-y-4">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
                 {heroData.title.split(" ").slice(0, 2).join(" ")}
                 <span className="block bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
                   {heroData.title.split(" ").slice(2).join(" ")}
@@ -107,52 +103,52 @@ const Hero3 = () => {
             </div>
 
             {/* Features List */}
-            <div className="space-y-3">
+            <div className="space-y-2 md:space-y-3">
               {[
                 "100% Human Hair Quality",
                 "Free Styling Consultation",
                 "Lifetime Color Guarantee",
                 "30-Day Return Policy",
               ].map((feature, index) => (
-                <div key={index} className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center">
-                    <Sparkles className="w-3 h-3 text-white" />
+                <div key={index} className="flex items-center gap-2 md:gap-3">
+                  <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center shrink-0">
+                    <Sparkles className="w-2.5 h-2.5 md:w-3 md:h-3 text-white" />
                   </div>
-                  <span className="text-gray-700">{feature}</span>
+                  <span className="text-sm md:text-base text-gray-700">{feature}</span>
                 </div>
               ))}
             </div>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
               <Button
                 size="lg"
-                className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white px-8 py-6 text-lg font-semibold"
+                className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white px-6 py-5 md:px-8 md:py-6 text-base md:text-lg font-semibold"
                 onClick={() => navigate(heroData.cta_url || "/shop")}
               >
-                <ShoppingCart className="mr-2" size={20} />
+                <ShoppingCart className="mr-2" size={18} />
                 {heroData.cta_text || "Shop Collection"}
               </Button>
 
               <Button
                 variant="outline"
                 size="lg"
-                className="border-2 border-primary text-primary hover:bg-primary hover:text-white px-8 py-6 text-lg font-semibold"
+                className="border-2 border-primary text-primary hover:bg-primary hover:text-white px-6 py-5 md:px-8 md:py-6 text-base md:text-lg font-semibold"
               >
-                <Heart className="mr-2" size={20} />
+                <Heart className="mr-2" size={18} />
                 Browse Favorites
               </Button>
             </div>
 
             {/* Trust Indicators */}
-            <div className="pt-6 border-t border-gray-200">
-              <div className="flex items-center justify-between text-sm text-gray-600">
+            <div className="pt-4 md:pt-6 border-t border-gray-200">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-gray-600">
                 <div className="flex items-center gap-2">
                   <div className="flex -space-x-1">
                     {[1, 2, 3, 4, 5].map((i) => (
                       <div
                         key={i}
-                        className="w-6 h-6 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 border border-white flex items-center justify-center text-xs font-semibold text-primary"
+                        className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 border border-white flex items-center justify-center text-xs font-semibold text-primary"
                       >
                         {String.fromCharCode(64 + i)}
                       </div>
@@ -160,17 +156,13 @@ const Hero3 = () => {
                   </div>
                   <span>5K+ Happy Customers</span>
                 </div>
-                {/* <div className="text-right">
-                  <div className="font-semibold text-primary">4.9★★★★★</div>
-                  <div>Google Reviews</div>
-                </div> */}
               </div>
             </div>
           </div>
         </div>
 
-        {/* Right Side - Visual */}
-        <div className="relative bg-gradient-to-br from-primary/10 via-accent/5 to-secondary/10">
+        {/* Right Side - Visual (50% width on large screens) */}
+        <div className="lg:w-1/2 relative bg-gradient-to-br from-primary/10 via-accent/5 to-secondary/10 min-h-[50vh] lg:min-h-screen flex items-center justify-center">
           {/* Background Pattern */}
           <div className="absolute inset-0 opacity-20">
             <div className="absolute top-1/4 left-1/4 w-32 h-32 rounded-full bg-gradient-to-r from-primary to-accent animate-pulse"></div>
@@ -185,14 +177,14 @@ const Hero3 = () => {
           </div>
 
           {/* Main Image */}
-          <div className="flex items-center justify-center h-full p-8">
-            <div className="relative group">
-              <div className="w-80 h-96 rounded-3xl overflow-hidden shadow-2xl transform rotate-3 group-hover:rotate-0 transition-transform duration-500">
+          <div className="relative w-full h-full flex items-center justify-center p-6 md:p-8 lg:p-12">
+            <div className="relative group w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg">
+              <div className="aspect-[3/4] w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-xl md:shadow-2xl transform rotate-3 group-hover:rotate-0 transition-transform duration-500">
                 {heroData.background_image ? (
                   <img
                     src={heroData.background_image}
                     alt="Hero Image"
-                    className="w-full h-full object-cover"
+                    className="w-full h-98 object-cover"
                   />
                 ) : (
                   <div className="w-full h-full bg-gradient-to-br from-primary/30 via-accent/20 to-secondary/30 flex items-center justify-center">
@@ -225,7 +217,10 @@ const Hero3 = () => {
               </div>
 
               {heroData.featured_product && (
-                <div  onClick={handleCardClick} className="absolute top-1/2 -right-8 bg-white/90 backdrop-blur-sm rounded-xl p-3 shadow-lg transform translate-y-[-50%] group-hover:translate-x-2 transition-transform duration-500">
+                <div 
+                  onClick={handleCardClick} 
+                  className="absolute top-1/2 -right-8 bg-white/90 backdrop-blur-sm rounded-xl p-3 shadow-lg transform translate-y-[-50%] group-hover:translate-x-2 transition-transform duration-500 cursor-pointer"
+                >
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-lg overflow-hidden">
                       <img
@@ -235,11 +230,10 @@ const Hero3 = () => {
                       />
                     </div>
                     <div>
-                      <div className="text-sm font-semibold text-gray-800">
+                      <div className="text-sm font-semibold text-gray-800 line-clamp-1">
                         {heroData.featured_product.name}
                       </div>
                       <div className="text-lg font-bold text-primary">
-                        {" "}
                         <PriceDisplay
                           price={heroData.featured_product.price}
                           designCSS=""

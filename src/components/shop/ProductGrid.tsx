@@ -61,7 +61,7 @@ const ProductGrid = ({ products, viewMode = 'grid', onViewModeChange, loading }:
       {/* Products Grid/List */}
       <div className={
         viewMode === 'grid' 
-          ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'
+          ? 'grid grid-cols-1 grid-cols-2 lg:grid-cols-3 gap-2'
           : 'space-y-4'
       }>
         {products.map((product) => (

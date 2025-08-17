@@ -45,7 +45,9 @@ const ProductDetail = () => {
   const [selectedSize, setSelectedSize] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [selectedMediaIndex, setSelectedMediaIndex] = useState(0);
-  const [playingVideoIndex, setPlayingVideoIndex] = useState<number | null>(null);
+  const [playingVideoIndex, setPlayingVideoIndex] = useState<number | null>(
+    null
+  );
   const dialogRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -122,33 +124,34 @@ const ProductDetail = () => {
   const fetchSimilarProducts = async (category: string) => {
     try {
       const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('category', category)
-        .neq('id', id)
+        .from("products")
+        .select("*")
+        .eq("category", category)
+        .neq("id", id)
         .limit(4);
 
       if (error) throw error;
 
-      const transformedProducts = data?.map(product => ({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        originalPrice: product.original_price,
-        rating: product.rating || 0,
-        reviewCount: product.review_count || 0,
-        image: product.image_gallery?.[0] || product.image,
-        category: product.category,
-        subcategory: product.subcategory,
-        isNew: product.is_new,
-        isBestSeller: product.is_best_seller,
-        colors: product.colors || [],
-        lengths: product.lengths || []
-      })) || [];
+      const transformedProducts =
+        data?.map((product) => ({
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          originalPrice: product.original_price,
+          rating: product.rating || 0,
+          reviewCount: product.review_count || 0,
+          image: product.image_gallery?.[0] || product.image,
+          category: product.category,
+          subcategory: product.subcategory,
+          isNew: product.is_new,
+          isBestSeller: product.is_best_seller,
+          colors: product.colors || [],
+          lengths: product.lengths || [],
+        })) || [];
 
       setSimilarProducts(transformedProducts);
     } catch (error) {
-      console.error('Error fetching similar products:', error);
+      console.error("Error fetching similar products:", error);
     }
   };
 
@@ -180,7 +183,7 @@ const ProductDetail = () => {
       title: "Payment Successful",
       description: `Payment completed! Reference: ${reference}`,
     });
-    navigate('/');
+    navigate("/");
   };
 
   const handlePaystackError = (error: string) => {
@@ -333,8 +336,12 @@ const ProductDetail = () => {
                       </div>
                     ) : (
                       <img
-                        src={mediaItems[selectedMediaIndex]?.url || product.image}
-                        alt={mediaItems[selectedMediaIndex]?.alt || product.name}
+                        src={
+                          mediaItems[selectedMediaIndex]?.url || product.image
+                        }
+                        alt={
+                          mediaItems[selectedMediaIndex]?.alt || product.name
+                        }
                         className="w-full h-full object-cover transition-transform group-hover:scale-105"
                       />
                     )}
@@ -347,23 +354,28 @@ const ProductDetail = () => {
                   </div>
                 </DialogTrigger>
                 <DialogContent
-                  className="max-w-6xl p-0 w-full h-[80vh]"
+                  className="max-w-[95vw] sm:max-w-6xl p-0 w-full h-[60vh] sm:h-[80vh] flex items-center justify-center"
                   ref={dialogRef}
                 >
-                  <div className="w-full h-full">
+                  <div className="w-full h-full flex items-center justify-center">
                     {mediaItems[selectedMediaIndex]?.type === "video" ? (
                       <iframe
                         src={`${mediaItems[selectedMediaIndex].url}?autoplay=1&mute=1`}
-                        className="w-full h-full"
+                        className="w-full h-full max-w-full max-h-full"
                         frameBorder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
                       ></iframe>
                     ) : (
                       <img
-                        src={mediaItems[selectedMediaIndex]?.url || product.image}
-                        alt={mediaItems[selectedMediaIndex]?.alt || product.name}
-                        className="w-full h-[auto] max-h-[503px] object-contain"
+                        src={
+                          mediaItems[selectedMediaIndex]?.url || product.image
+                        }
+                        alt={
+                          mediaItems[selectedMediaIndex]?.alt || product.name
+                        }
+                        className="max-w-full max-h-full object-contain"
+                        loading="eager"
                       />
                     )}
                   </div>
@@ -434,8 +446,8 @@ const ProductDetail = () => {
             </div>
           </div>
 
-          <div className="space-y-6">
-            <div className="space-y-3">
+          <div className="space-y-3">
+            <div className="space-y-1 md:space-y-2">
               <div className="flex flex-wrap gap-2">
                 {product.isNew && (
                   <Badge className="bg-green-500 hover:bg-green-600 text-white">
@@ -449,7 +461,7 @@ const ProductDetail = () => {
                 )}
               </div>
 
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-xl md:text-3xl font-bold text-gray-900">
                 {product.name}
               </h1>
 
@@ -474,11 +486,10 @@ const ProductDetail = () => {
                 </div>
               )}
             </div>
-
             <PriceDisplay
               price={product.price}
               originalPrice={product.originalPrice}
-              className="py-2"
+              className="py-1"
             />
 
             <p className="text-gray-700 leading-relaxed">
@@ -660,7 +671,7 @@ const ProductDetail = () => {
                     quantity,
                     selected_color: selectedColor,
                     selected_length: selectedLength,
-                    selected_size: selectedSize
+                    selected_size: selectedSize,
                   }}
                 >
                   Buy Now - Express Checkout
@@ -671,7 +682,7 @@ const ProductDetail = () => {
                 <Button
                   variant="outline"
                   className="w-full h-12 border-primary text-primary hover:bg-primary/10"
-                  onClick={() => navigate('/auth')}
+                  onClick={() => navigate("/auth")}
                 >
                   Sign in to Buy Now
                 </Button>
@@ -721,22 +732,22 @@ const ProductDetail = () => {
 
         <div className="mt-16">
           <Tabs defaultValue="details" className="w-full">
-            <TabsList className="w-full bg-gray-100 rounded-lg p-1 h-auto">
+            <TabsList className="w-full bg-gray-100 rounded-lg p-1 h-auto flex flex-wrap justify-start lg:justify-center lg:space-x-2">
               <TabsTrigger
                 value="details"
-                className="py-2 px-4 rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                className="py-2 px-3 text-sm sm:text-base rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm"
               >
                 Product Details
               </TabsTrigger>
               <TabsTrigger
                 value="reviews"
-                className="py-2 px-4 rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                className="py-2 px-3 text-sm sm:text-base rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm"
               >
                 Customer Reviews
               </TabsTrigger>
               <TabsTrigger
                 value="care"
-                className="py-2 px-4 rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                className="py-2 px-3 text-sm sm:text-base rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm"
               >
                 Hair Care Guide
               </TabsTrigger>

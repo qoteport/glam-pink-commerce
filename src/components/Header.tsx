@@ -1,4 +1,4 @@
-import React, { useState, useCallback, memo } from "react";
+import React, { useState, useCallback, useEffect, memo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { debounce } from "lodash";
 import PriceDisplay from "./PriceDisplay";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface HeaderProps {
   onSearch?: (query: string) => void;
@@ -52,12 +53,21 @@ const NAV_ITEMS = [
 const Header = memo(({ onSearch }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
   const { getTotalItems } = useCart();
   const { favorites, getTotalFavorites } = useFavorites();
   const { user, profile, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
 
-  // Debounced search to improve performance
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const debouncedSearch = useCallback(
     debounce((query: string) => {
       if (query.trim()) {
@@ -78,8 +88,6 @@ const Header = memo(({ onSearch }: HeaderProps) => {
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
-    // Optional: Trigger search on type for better UX
-    // debouncedSearch(e.target.value);
   };
 
   const handleNavClick = useCallback(
@@ -97,28 +105,49 @@ const Header = memo(({ onSearch }: HeaderProps) => {
 
   const toggleMenu = useCallback(() => {
     setIsMenuOpen((prev) => !prev);
+    setShowSearch(false);
   }, []);
 
+  const toggleSearch = () => {
+    setShowSearch((prev) => !prev);
+    setIsMenuOpen(false);
+  };
+
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-blush-100 shadow-sm">
+    <header
+      className={`sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b transition-all duration-300 ${
+        isScrolled
+          ? "shadow-lg border-blush-100"
+          : "shadow-sm border-transparent"
+      }`}
+    >
       {/* Top Bar */}
-      <div className="bg-gradient-to-r from-blush-50 to-cream-50 py-2">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-center text-sm text-blush-600">
-            <span className="text-center">🚚 Free shipping on orders {" "}
-            </span>
-            <PriceDisplay price={1000} designCSS="" className="py-0 pl-1" />
-             <span className="text-center"> + |💎 100% Virgin Hair Guarantee
-            </span>
-          </div>
-        </div>
-      </div>
+      <AnimatePresence>
+        {!isScrolled && (
+          <motion.div
+            initial={{ opacity: 1, height: "auto" }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className="bg-gradient-to-r from-blush-50 to-cream-50 overflow-hidden"
+          >
+            <div className="container mx-auto px-4">
+              <div className="flex items-center justify-center py-2 text-sm text-blush-600">
+                <span>Free shipping on orders </span>
+                <PriceDisplay price={199} designCSS="" className="py-0 mx-1" />
+                <span>+ | 100% Virgin Hair Guarantee</span>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Main Navigation */}
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <div
+          <motion.div
+            whileHover={{ scale: 1.02 }}
             className="flex items-center cursor-pointer"
             onClick={() => navigate("/")}
           >
@@ -126,14 +155,20 @@ const Header = memo(({ onSearch }: HeaderProps) => {
               <img
                 src="../hairytales-logo.png"
                 alt="HairyTalesBeauty Logo"
-                className="h-10 w-auto mr-2 mp-4 pt-2 hidden md:block"
+                className={`h-10 w-auto mr-2 transition-all duration-300 ${
+                  isScrolled ? "hidden" : "hidden md:block"
+                }`}
                 loading="lazy"
               />
-              <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gradient">
+              <h1
+                className={`text-xl md:text-2xl font-bold text-gradient ${
+                  isScrolled ? "text-2xl" : "lg:text-3xl"
+                }`}
+              >
                 HairyTalesBeauty
               </h1>
             </div>
-          </div>
+          </motion.div>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8">
@@ -143,7 +178,7 @@ const Header = memo(({ onSearch }: HeaderProps) => {
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="chip"
-                      className="font-medium text-sm xl:text-base"
+                      className="font-medium text-sm xl:text-base hover:bg-blush-50"
                     >
                       {item.name}
                       <ChevronDown size={16} className="ml-1" />
@@ -162,25 +197,44 @@ const Header = memo(({ onSearch }: HeaderProps) => {
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <button
+                <motion.button
                   key={item.name}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => handleNavClick(item.href)}
-                  className={`font-medium text-sm xl:text-base transition-colors duration-200 hover:text-blush-500 ${
+                  className={`font-medium text-sm xl:text-base transition-colors duration-200 ${
                     item.isSpecial
-                      ? "text-rosegold-500 bg-rosegold-50 px-3 py-1 rounded-full"
-                      : "text-gray-700"
+                      ? "text-rosegold-500 bg-rosegold-50 px-3 py-1 rounded-full hover:bg-rosegold-100"
+                      : "text-gray-700 hover:text-blush-500"
                   }`}
                 >
                   {item.name}
-                </button>
+                </motion.button>
               )
             )}
           </nav>
 
           {/* Search & Actions */}
           <div className="flex items-center space-x-2 sm:space-x-4">
-            {/* Search - Hidden on smallest mobile */}
-            <form onSubmit={handleSearch} className="hidden sm:flex relative">
+            {/* Search - Desktop */}
+            {!showSearch && (
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={toggleSearch}
+                className="sm:hidden p-1 text-blush-600"
+                aria-label="Search"
+              >
+                <Search size={20} />
+              </motion.button>
+            )}
+
+            <form
+              onSubmit={handleSearch}
+              className={`hidden sm:flex relative ${
+                showSearch ? "sm:hidden" : ""
+              }`}
+            >
               <Input
                 type="text"
                 placeholder="Search wigs, bundles..."
@@ -201,10 +255,10 @@ const Header = memo(({ onSearch }: HeaderProps) => {
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="relative hover:bg-blush-50 p-1 sm:p-2"
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="relative hover:bg-blush-50 p-1 sm:p-2 rounded-full"
                   >
                     <div className="flex items-center space-x-1 sm:space-x-2">
                       <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-rosegold-400 to-blush-400 rounded-full flex items-center justify-center text-white text-xs sm:text-sm font-medium">
@@ -219,7 +273,7 @@ const Header = memo(({ onSearch }: HeaderProps) => {
                         />
                       )}
                     </div>
-                  </Button>
+                  </motion.button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="end"
@@ -265,26 +319,26 @@ const Header = memo(({ onSearch }: HeaderProps) => {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="relative hover:bg-blush-50 p-1 sm:p-2"
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                className="relative hover:bg-blush-50 p-1 sm:p-2 rounded-full"
                 onClick={() => navigate("/auth")}
                 aria-label="Account"
               >
-                <User size={18} className="text-blush-600" />
-              </Button>
+                <User size={20} className="text-blush-600" />
+              </motion.button>
             )}
 
-            <Button
-              variant="ghost"
-              size="sm"
-              className="relative hover:bg-blush-50 hidden md:flex group p-1 sm:p-2"
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="relative hover:bg-blush-50 hidden md:flex group p-1 sm:p-2 rounded-full"
               onClick={() => navigate("/favorites")}
               aria-label="Favorites"
             >
               <Heart
-                size={18}
+                size={20}
                 className="text-blush-600 group-hover:text-blush-700 transition-colors"
               />
               {getTotalFavorites() > 0 && (
@@ -292,17 +346,17 @@ const Header = memo(({ onSearch }: HeaderProps) => {
                   {getTotalFavorites()}
                 </Badge>
               )}
-            </Button>
+            </motion.button>
 
-            <Button
-              variant="ghost"
-              size="sm"
-              className="relative hover:bg-blush-50 group p-1 sm:p-2"
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="relative hover:bg-blush-50 group p-1 sm:p-2 rounded-full"
               onClick={() => navigate("/cart")}
               aria-label="Cart"
             >
               <ShoppingCart
-                size={18}
+                size={20}
                 className="text-blush-600 group-hover:text-blush-700 transition-colors"
               />
               {getTotalItems() > 0 && (
@@ -310,110 +364,131 @@ const Header = memo(({ onSearch }: HeaderProps) => {
                   {getTotalItems()}
                 </Badge>
               )}
-            </Button>
+            </motion.button>
 
             {/* Mobile Menu Button */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="lg:hidden p-1 sm:p-2"
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="lg:hidden p-1 sm:p-2 rounded-full"
               onClick={toggleMenu}
               aria-label={isMenuOpen ? "Close menu" : "Open menu"}
             >
-              {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
-            </Button>
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </motion.button>
           </div>
         </div>
 
-        {/* Mobile Search - Only shown when menu is closed */}
-        {!isMenuOpen && (
-          <form onSubmit={handleSearch} className="sm:hidden mt-3">
-            <div className="relative">
-              <Input
-                type="text"
-                placeholder="Search wigs, bundles..."
-                value={searchQuery}
-                onChange={handleSearchChange}
-                className="w-full pl-4 pr-10 border-blush-200 focus:border-blush-400 text-sm"
-              />
-              <button
-                type="submit"
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-blush-400"
-                aria-label="Search"
-              >
-                <Search size={18} />
-              </button>
-            </div>
-          </form>
-        )}
+        {/* Mobile Search */}
+        <AnimatePresence>
+          {(showSearch || isMenuOpen) && (
+            <motion.form
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+              onSubmit={handleSearch}
+              className="overflow-hidden"
+            >
+              <div className="relative mt-3">
+                <Input
+                  type="text"
+                  placeholder="Search wigs, bundles..."
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  className="w-full pl-4 pr-10 border-blush-200 focus:border-blush-400 text-sm"
+                />
+                <button
+                  type="submit"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-blush-400"
+                  aria-label="Search"
+                >
+                  <Search size={18} />
+                </button>
+              </div>
+            </motion.form>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Mobile Menu */}
-      {isMenuOpen && (
-        <div className="lg:hidden bg-white border-t border-blush-100 animate-slide-down">
-          <div className="container mx-auto px-4 py-3">
-            <div className="flex flex-col space-y-3">
-              {NAV_ITEMS.map((item) =>
-                item.isDropdown ? (
-                  <div key={item.name} className="space-y-1">
-                    <div className="font-medium py-2 text-gray-700 border-b border-gray-200">
-                      {item.name}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className="lg:hidden bg-white border-t border-blush-100 overflow-hidden"
+          >
+            <div className="container mx-auto px-4 py-3">
+              <div className="flex flex-col space-y-3">
+                {NAV_ITEMS.map((item) =>
+                  item.isDropdown ? (
+                    <div key={item.name} className="space-y-1">
+                      <div className="font-medium py-2 text-gray-700 border-b border-gray-200">
+                        {item.name}
+                      </div>
+                      {item.items?.map((subItem) => (
+                        <motion.button
+                          key={subItem.name}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => handleNavClick(subItem.href)}
+                          className="font-medium py-1.5 pl-4 transition-colors duration-200 hover:text-blush-500 text-left text-gray-600 block w-full text-sm"
+                        >
+                          {subItem.name}
+                        </motion.button>
+                      ))}
                     </div>
-                    {item.items?.map((subItem) => (
-                      <button
-                        key={subItem.name}
-                        onClick={() => handleNavClick(subItem.href)}
-                        className="font-medium py-1.5 pl-4 transition-colors duration-200 hover:text-blush-500 text-left text-gray-600 block w-full text-sm"
-                      >
-                        {subItem.name}
-                      </button>
-                    ))}
-                  </div>
-                ) : (
-                  <button
-                    key={item.name}
-                    onClick={() => handleNavClick(item.href)}
-                    className={`font-medium py-2 transition-colors duration-200 hover:text-blush-500 text-left text-sm ${
-                      item.isSpecial
-                        ? "text-rosegold-500 bg-rosegold-50 px-3 py-1.5 rounded-lg"
-                        : "text-gray-700"
-                    }`}
-                  >
-                    {item.name}
-                  </button>
-                )
-              )}
-
-              {/* Mobile-only menu items */}
-              <div className="border-t border-gray-200 pt-3 mt-2 space-y-2">
-                <button
-                  onClick={() => handleNavClick("/favorites")}
-                  className="flex items-center w-full font-medium py-1.5 text-left text-gray-600 hover:text-blush-500 text-sm"
-                >
-                  <Heart size={16} className="mr-2" />
-                  Favorites ({favorites.length})
-                </button>
-                <button
-                  onClick={() => handleNavClick("/my-orders")}
-                  className="flex items-center w-full font-medium py-1.5 text-left text-gray-600 hover:text-blush-500 text-sm"
-                >
-                  <Package size={16} className="mr-2" />
-                  My Orders
-                </button>
-                {user && isAdmin && (
-                  <button
-                    onClick={() => handleNavClick("/admin")}
-                    className="flex items-center w-full font-medium py-1.5 text-left text-rosegold-600 bg-rosegold-50 px-3 py-1.5 rounded-lg text-sm"
-                  >
-                    <Crown className="mr-2 w-4 h-4" />
-                    Admin Dashboard
-                  </button>
+                  ) : (
+                    <motion.button
+                      key={item.name}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => handleNavClick(item.href)}
+                      className={`font-medium py-2 transition-colors duration-200 hover:text-blush-500 text-left text-sm ${
+                        item.isSpecial
+                          ? "text-rosegold-500 bg-rosegold-50 px-3 py-1.5 rounded-lg"
+                          : "text-gray-700"
+                      }`}
+                    >
+                      {item.name}
+                    </motion.button>
+                  )
                 )}
+
+                <div className="border-t border-gray-200 pt-3 mt-2 space-y-2">
+                  <motion.button
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleNavClick("/favorites")}
+                    className="flex items-center w-full font-medium py-1.5 text-left text-gray-600 hover:text-blush-500 text-sm"
+                  >
+                    <Heart size={16} className="mr-2" />
+                    Favorites ({favorites.length})
+                  </motion.button>
+                  <motion.button
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleNavClick("/my-orders")}
+                    className="flex items-center w-full font-medium py-1.5 text-left text-gray-600 hover:text-blush-500 text-sm"
+                  >
+                    <Package size={16} className="mr-2" />
+                    My Orders
+                  </motion.button>
+                  {user && isAdmin && (
+                    <motion.button
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => handleNavClick("/admin")}
+                      className="flex items-center w-full font-medium py-1.5 text-left text-rosegold-600 bg-rosegold-50 px-3 py-1.5 rounded-lg text-sm"
+                    >
+                      <Crown className="mr-2 w-4 h-4" />
+                      Admin Dashboard
+                    </motion.button>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 });

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -86,39 +85,39 @@ const ProductCard = ({ product, viewMode = "grid" }: ProductCardProps) => {
           </div>
         </div>
 
-        {/* Overlay Actions */}
+        {/* Overlay Actions - Optimized for mobile */}
         <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-          <div className="flex space-x-2">
+          <div className="flex flex-col sm:flex-row gap-2 p-2 w-full justify-center">
             <Button
               size="sm"
               variant="secondary"
-              className="bg-white/90 hover:bg-white text-blush-600 shadow-lg"
+              className="bg-white/90 hover:bg-white text-blush-600 shadow-lg w-full sm:w-auto"
               onClick={handleQuickView}
             >
-              <Eye size={16} className="mr-1" />
-              Quick View
+              <Eye size={16} className="mr-1 hidden xs:inline" />
+              <span className="text-xs sm:text-sm">Quick View</span>
             </Button>
             <Button
               size="sm"
-              className="bg-blush-500 hover:bg-blush-600 text-white shadow-lg"
+              className="bg-blush-500 hover:bg-blush-600 text-white shadow-lg w-full sm:w-auto"
               onClick={handleAddToCart}
             >
-              <ShoppingCart size={16} className="mr-1" />
-              Add to Cart
+              <ShoppingCart size={16} className="mr-1 hidden xs:inline" />
+              <span className="text-xs sm:text-sm">Add to Cart</span>
             </Button>
           </div>
         </div>
 
         {/* Badges */}
-        <div className="absolute top-3 left-3 space-y-2">
+        <div className="absolute top-2 left-2 space-y-1 sm:space-y-2">
           {product.isNew && (
-            <Badge className="bg-green-500 text-white">Ready to Ship</Badge>
+            <Badge className="bg-green-500 text-white text-xs sm:text-sm">Ready to Ship</Badge>
           )}
           {product.isBestSeller && (
-            <Badge className="bg-rosegold-500 text-white">Best Seller</Badge>
+            <Badge className="bg-rosegold-500 text-white text-xs sm:text-sm">Best Seller</Badge>
           )}
           {discountPercentage > 0 && (
-            <Badge className="bg-red-500 text-white">
+            <Badge className="bg-red-500 text-white text-xs sm:text-sm">
               -{discountPercentage}%
             </Badge>
           )}
@@ -128,7 +127,7 @@ const ProductCard = ({ product, viewMode = "grid" }: ProductCardProps) => {
         <Button
           variant="ghost"
           size="sm"
-          className="absolute top-3 right-3 bg-white/80 hover:bg-white w-8 h-8 p-0"
+          className="absolute top-2 right-2 bg-white/80 hover:bg-white w-7 h-7 sm:w-8 sm:h-8 p-0"
           onClick={(e) => {
             e.stopPropagation();
             if (isFavorite(product.id)) {
@@ -139,7 +138,7 @@ const ProductCard = ({ product, viewMode = "grid" }: ProductCardProps) => {
           }}
         >
           <Heart
-            size={16}
+            size={14}
             className={`transition-colors ${
               isFavorite(product.id)
                 ? "text-primary fill-current"
@@ -150,20 +149,20 @@ const ProductCard = ({ product, viewMode = "grid" }: ProductCardProps) => {
       </div>
 
       {/* Product Info */}
-      <CardContent className="p-4 space-y-3">
+      <CardContent className="p-3 sm:p-4 space-y-2 sm:space-y-3">
         {/* Product Name */}
-        <h3 className="font-semibold text-gray-800 line-clamp-2 leading-tight">
+        <h3 className="font-semibold text-gray-800 text-sm sm:text-base line-clamp-2 leading-tight">
           {product.name}
         </h3>
 
         {/* Rating */}
         {product.rating > 0 && (
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1 sm:space-x-2">
             <div className="flex items-center">
               {[...Array(5)].map((_, i) => (
                 <Star
                   key={i}
-                  size={14}
+                  size={12}
                   className={
                     i < Math.floor(product.rating)
                       ? "text-yellow-400 fill-current"
@@ -173,7 +172,7 @@ const ProductCard = ({ product, viewMode = "grid" }: ProductCardProps) => {
               ))}
             </div>
             {product.rating > 0 && (
-              <span className="text-sm text-gray-600">
+              <span className="text-xs sm:text-sm text-gray-600">
                 {product.rating} ({product.reviewCount})
               </span>
             )}
@@ -182,13 +181,13 @@ const ProductCard = ({ product, viewMode = "grid" }: ProductCardProps) => {
 
         {/* Color Options */}
         {product.colors?.length > 0 && (
-          <div className="space-y-2">
+          <div className="space-y-1 sm:space-y-2">
             <p className="text-xs text-gray-600 font-medium">Colors:</p>
-            <div className="flex space-x-2">
+            <div className="flex space-x-1 sm:space-x-2">
               {product.colors.map((color, index) => (
                 <button
                   key={index}
-                  className={`w-6 h-6 rounded-full border-2 transition-all ${
+                  className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 transition-all ${
                     selectedColor === color
                       ? "border-blush-500 scale-110"
                       : "border-gray-200 hover:border-blush-300"
@@ -204,10 +203,10 @@ const ProductCard = ({ product, viewMode = "grid" }: ProductCardProps) => {
           </div>
         )}
 
-        <div className="flex flex-row gap-10">
+        <div className="flex flex-col sm:flex-row sm:gap-4 gap-2">
           {/* Length Options */}
           {product.lengths?.length > 0 && (
-            <div className="space-y-2">
+            <div className="space-y-1 sm:space-y-2">
               <p className="text-xs text-gray-600 font-medium">Lengths:</p>
               <div className="flex flex-wrap gap-1">
                 {product.lengths.map((length, index) => (
@@ -225,7 +224,7 @@ const ProductCard = ({ product, viewMode = "grid" }: ProductCardProps) => {
 
           {/* Sizes Options */}
           {product.size?.length > 0 && (
-            <div className="space-y-2">
+            <div className="space-y-1 sm:space-y-2">
               <p className="text-xs text-gray-600 font-medium">Sizes:</p>
               <div className="flex flex-wrap gap-1">
                 {product.size.map((size, index) => (
@@ -246,14 +245,15 @@ const ProductCard = ({ product, viewMode = "grid" }: ProductCardProps) => {
         <PriceDisplay
           price={product.price}
           originalPrice={product.originalPrice}
-          className="justify-between"
+          className="justify-between mt-2"
         />
 
-        {/* Add to Cart Button */}
+        {/* Add to Cart Button - Optimized for mobile */}
         <Button
-          className="w-full bg-gradient-to-r from-blush-500 to-rosegold-500 hover:from-blush-600 hover:to-rosegold-600 text-white font-semibold py-2 rounded-lg transition-all duration-300"
+          className="w-full bg-gradient-to-r from-blush-500 to-rosegold-500 hover:from-blush-600 hover:to-rosegold-600 text-white font-semibold py-1 sm:py-2 rounded-lg transition-all duration-300 text-sm sm:text-base"
           onClick={handleAddToCart}
         >
+          <ShoppingCart size={16} className="mr-1 hidden xs:inline" />
           Add to Cart
         </Button>
       </CardContent>

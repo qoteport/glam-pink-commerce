@@ -175,7 +175,7 @@ const ProductShowcase = () => {
 
           {/* Product Grid - Now showing 8 products */}
           {loading ? (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
               {[...Array(8)].map((_, i) => (
                 <div key={i} className="animate-pulse">
                   <div className="aspect-[4/5] bg-gray-200 rounded-lg mb-4"></div>
@@ -185,7 +185,7 @@ const ProductShowcase = () => {
               ))}
             </div>
           ) : (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
               {featuredProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
