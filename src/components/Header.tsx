@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -19,7 +20,7 @@ import { Badge } from "@/components/ui/badge"
 
 const Header = () => {
   const { user, profile, signOut, isAdmin } = useAuth();
-  const { cart } = useCart();
+  const { items } = useCart();
   const { favorites } = useFavorites();
   const navigate = useNavigate();
   const { toast } = useToast()
@@ -55,8 +56,8 @@ const Header = () => {
         <div className="flex items-center space-x-4">
           <Link to="/cart" className="relative hover:text-gray-600">
             <ShoppingCart className="h-5 w-5" />
-            {cart.length > 0 && (
-              <Badge className="absolute -top-2 -right-2 rounded-full px-2 py-0.5 text-xs font-bold">{cart.length}</Badge>
+            {items.length > 0 && (
+              <Badge className="absolute -top-2 -right-2 rounded-full px-2 py-0.5 text-xs font-bold">{items.length}</Badge>
             )}
           </Link>
           <Link to="/favorites" className="relative hover:text-gray-600">
