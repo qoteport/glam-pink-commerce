@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +21,7 @@ interface Product {
   colors?: string[];
   lengths?: string[];
   size?: string[];
+  liveVideoUrl?: string;
 }
 
 interface ProductCardProps {
@@ -33,6 +34,39 @@ const ProductCard = ({ product, viewMode = "grid" }: ProductCardProps) => {
   const { addToCart } = useCart();
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
   const [selectedColor, setSelectedColor] = useState(product.colors?.[0] || "");
+  const [showVideo, setShowVideo] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
+  const hoverTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Handle hover timer for video display
+  useEffect(() => {
+    if (isHovering && product.liveVideoUrl) {
+      hoverTimerRef.current = setTimeout(() => {
+        setShowVideo(true);
+      }, 1500); // Show video after 1.5 seconds of hovering
+    } else {
+      if (hoverTimerRef.current) {
+        clearTimeout(hoverTimerRef.current);
+      }
+      setShowVideo(false);
+    }
+
+    return () => {
+      if (hoverTimerRef.current) {
+        clearTimeout(hoverTimerRef.current);
+      }
+    };
+  }, [isHovering, product.liveVideoUrl]);
+
+  // Auto-play video when it's shown
+  useEffect(() => {
+    if (showVideo && videoRef.current) {
+      videoRef.current.play().catch(() => {
+        // Ignore autoplay errors
+      });
+    }
+  }, [showVideo]);
 
   const discountPercentage = product.originalPrice
     ? Math.round(
@@ -60,17 +94,41 @@ const ProductCard = ({ product, viewMode = "grid" }: ProductCardProps) => {
       onClick={handleCardClick}
     >
       {/* Product Image */}
-      <div className="relative aspect-[4/5] overflow-hidden">
+      <div 
+        className="relative aspect-[4/5] overflow-hidden"
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
+      >
+        {/* Image */}
         <img
           src={product.image}
           alt={product.name}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          className={`w-full h-full object-cover transition-all duration-500 group-hover:scale-105 ${
+            showVideo ? 'opacity-0' : 'opacity-100'
+          }`}
           onError={(e) => {
             const target = e.target as HTMLImageElement;
             target.style.display = "none";
             target.nextElementSibling?.classList.remove("hidden");
           }}
         />
+
+        {/* Video - shown on prolonged hover */}
+        {product.liveVideoUrl && (
+          <video
+            ref={videoRef}
+            src={product.liveVideoUrl}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
+              showVideo ? 'opacity-100' : 'opacity-0 pointer-events-none'
+            }`}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+          />
+        )}
+
         {/* Fallback Placeholder */}
         <div className="hidden w-full h-full bg-gradient-to-br from-blush-100 to-cream-100 flex items-center justify-center">
           <div className="text-center space-y-2">
