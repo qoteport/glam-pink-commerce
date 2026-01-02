@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import ImageUpload from './ImageUpload';
+import VideoUpload from './VideoUpload';
 
 interface Product {
   id: string;
@@ -360,14 +361,10 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="live_video_url">Live Video URL</Label>
-            <Input
-              id="live_video_url"
-              name="live_video_url"
-              type="url"
-              value={formData.live_video_url}
-              onChange={handleInputChange}
-              placeholder="https://youtube.com/watch?v=..."
+            <Label>Live Video (Upload or URL)</Label>
+            <VideoUpload
+              videoUrl={formData.live_video_url}
+              onVideoChange={(url) => setFormData(prev => ({ ...prev, live_video_url: url }))}
             />
           </div>
         </CardContent>

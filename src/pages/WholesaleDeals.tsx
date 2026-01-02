@@ -3,7 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Package, Users, ShoppingCart } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Package, Users, ShoppingCart, ArrowRight, Eye, X } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { supabase } from '@/integrations/supabase/client';
@@ -28,6 +29,7 @@ interface WholesaleDeal {
 const WholesaleDeals = () => {
   const [deals, setDeals] = useState<WholesaleDeal[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedDeal, setSelectedDeal] = useState<WholesaleDeal | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -40,9 +42,9 @@ const WholesaleDeals = () => {
         .from('wholesale_deals')
         .select(`
           *,
-          wholesale_deal_products!inner (
+          wholesale_deal_products (
             wholesale_price,
-            products!inner (
+            products (
               id,
               name,
               price,
@@ -57,17 +59,17 @@ const WholesaleDeals = () => {
       const transformedDeals = data?.map(deal => ({
         id: deal.id,
         name: deal.name,
-        description: deal.description,
+        description: deal.description || '',
         min_quantity: deal.min_quantity,
         discount_percentage: deal.discount_percentage,
         is_active: deal.is_active,
-        products: deal.wholesale_deal_products?.map(p => ({
-          id: p.products.id,
-          name: p.products.name,
-          price: p.products.price,
-          image: p.products.image,
+        products: deal.wholesale_deal_products?.map((p: any) => ({
+          id: p.products?.id || '',
+          name: p.products?.name || '',
+          price: p.products?.price || 0,
+          image: p.products?.image || '',
           wholesale_price: p.wholesale_price
-        })) || []
+        })).filter((p: any) => p.id) || []
       })) || [];
 
       setDeals(transformedDeals);
@@ -83,9 +85,13 @@ const WholesaleDeals = () => {
     }
   };
 
+  const calculateSavings = (regularPrice: number, wholesalePrice: number) => {
+    return ((regularPrice - wholesalePrice) / regularPrice * 100).toFixed(0);
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-background">
         <Header />
         <div className="flex items-center justify-center py-20">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -96,73 +102,92 @@ const WholesaleDeals = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       <Header />
       
       <div className="container mx-auto px-4 py-12">
         {/* Hero Section */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">
+          <h1 className="text-4xl font-bold text-foreground mb-4">
             Wholesale Deals
           </h1>
-          <p className="text-xl text-gray-600 mb-8">
+          <p className="text-xl text-muted-foreground mb-8">
             Bulk pricing for salons, retailers, and beauty professionals
           </p>
-          <div className="flex justify-center items-center space-x-8 text-sm text-gray-600">
+          <div className="flex justify-center items-center space-x-8 text-sm text-muted-foreground">
             <div className="flex items-center">
-              <Package className="w-5 h-5 mr-2 text-pink-500" />
+              <Package className="w-5 h-5 mr-2 text-primary" />
               Bulk Pricing
             </div>
             <div className="flex items-center">
-              <Users className="w-5 h-5 mr-2 text-pink-500" />
+              <Users className="w-5 h-5 mr-2 text-primary" />
               Professional Discounts
             </div>
             <div className="flex items-center">
-              <ShoppingCart className="w-5 h-5 mr-2 text-pink-500" />
+              <ShoppingCart className="w-5 h-5 mr-2 text-primary" />
               Easy Ordering
             </div>
           </div>
         </div>
 
+        {/* No Deals Message */}
+        {deals.length === 0 && (
+          <Card className="max-w-2xl mx-auto">
+            <CardContent className="p-12 text-center">
+              <Package className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
+              <h3 className="text-xl font-semibold mb-2">No Wholesale Deals Available</h3>
+              <p className="text-muted-foreground mb-6">
+                Check back soon for exclusive wholesale pricing and bulk deals.
+              </p>
+              <Button variant="outline" onClick={() => window.location.href = '/contact-us'}>
+                Contact Us for Custom Quotes
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Deals Grid */}
         <div className="grid gap-8">
           {deals.map((deal) => (
-            <Card key={deal.id} className="overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-pink-50 to-rose-50">
+            <Card key={deal.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+              <CardHeader className="bg-gradient-to-r from-primary/10 to-primary/5">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-2xl">{deal.name}</CardTitle>
-                  <Badge variant="secondary" className="bg-pink-100 text-pink-700">
+                  <Badge className="bg-primary text-primary-foreground">
                     {deal.discount_percentage}% OFF
                   </Badge>
                 </div>
-                <p className="text-gray-600">{deal.description}</p>
+                {deal.description && (
+                  <p className="text-muted-foreground">{deal.description}</p>
+                )}
                 <div className="flex items-center space-x-4 text-sm">
-                  <span className="bg-white px-3 py-1 rounded-full text-pink-600 font-medium">
+                  <span className="bg-background px-3 py-1 rounded-full text-primary font-medium">
                     Min. {deal.min_quantity} pieces
                   </span>
-                  <span className="text-gray-500">
+                  <span className="text-muted-foreground">
                     {deal.products.length} products included
                   </span>
                 </div>
               </CardHeader>
               
               <CardContent className="p-6">
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {deal.products.map((product) => (
-                    <div key={product.id} className="flex items-center space-x-4 p-4 border rounded-lg">
+                {/* Product Preview (show first 3) */}
+                <div className="grid md:grid-cols-3 gap-4 mb-6">
+                  {deal.products.slice(0, 3).map((product) => (
+                    <div key={product.id} className="flex items-center space-x-3 p-3 border rounded-lg">
                       <img
                         src={product.image}
                         alt={product.name}
-                        className="w-16 h-16 object-cover rounded-lg"
+                        className="w-14 h-14 object-cover rounded-lg"
                       />
-                      <div className="flex-1">
-                        <h4 className="font-medium text-gray-800">{product.name}</h4>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium text-foreground text-sm truncate">{product.name}</h4>
                         <div className="flex items-center space-x-2">
-                          <span className="text-lg font-bold text-pink-600">
-                            ${product.wholesale_price}
+                          <span className="text-sm font-bold text-primary">
+                            ₵{product.wholesale_price}
                           </span>
-                          <span className="text-sm text-gray-500 line-through">
-                            ${product.price}
+                          <span className="text-xs text-muted-foreground line-through">
+                            ₵{product.price}
                           </span>
                         </div>
                       </div>
@@ -170,17 +195,32 @@ const WholesaleDeals = () => {
                   ))}
                 </div>
                 
-                <Separator className="my-6" />
+                {deal.products.length > 3 && (
+                  <p className="text-sm text-muted-foreground mb-4">
+                    +{deal.products.length - 3} more products in this deal
+                  </p>
+                )}
+                
+                <Separator className="my-4" />
                 
                 <div className="flex items-center justify-between">
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-muted-foreground">
                     <p>• Professional wholesale pricing</p>
                     <p>• Minimum order: {deal.min_quantity} pieces</p>
-                    <p>• Contact us for custom quantities</p>
                   </div>
-                  <Button variant="pink" size="lg">
-                    Request Quote
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setSelectedDeal(deal)}
+                    >
+                      <Eye className="w-4 h-4 mr-2" />
+                      View Details
+                    </Button>
+                    <Button onClick={() => window.location.href = '/contact-us'}>
+                      Request Quote
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -192,17 +232,95 @@ const WholesaleDeals = () => {
           <Card className="max-w-2xl mx-auto">
             <CardContent className="p-8">
               <h3 className="text-2xl font-bold mb-4">Need Custom Pricing?</h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-muted-foreground mb-6">
                 Contact our wholesale team for custom packages and bulk pricing options
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button variant="outline">Call (555) 123-4567</Button>
-                <Button variant="pink">Email Wholesale Team</Button>
+                <Button variant="outline" onClick={() => window.location.href = 'tel:+233000000000'}>
+                  Call Us
+                </Button>
+                <Button onClick={() => window.location.href = '/contact-us'}>
+                  Email Wholesale Team
+                </Button>
               </div>
             </CardContent>
           </Card>
         </div>
       </div>
+
+      {/* Deal Details Dialog */}
+      <Dialog open={!!selectedDeal} onOpenChange={() => setSelectedDeal(null)}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center justify-between">
+              <span>{selectedDeal?.name}</span>
+              <Badge className="bg-primary text-primary-foreground">
+                {selectedDeal?.discount_percentage}% OFF
+              </Badge>
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedDeal && (
+            <div className="space-y-6">
+              {selectedDeal.description && (
+                <p className="text-muted-foreground">{selectedDeal.description}</p>
+              )}
+              
+              <div className="flex items-center gap-4 text-sm">
+                <Badge variant="outline">
+                  Min. {selectedDeal.min_quantity} pieces
+                </Badge>
+                <Badge variant="outline">
+                  {selectedDeal.products.length} products
+                </Badge>
+              </div>
+              
+              <Separator />
+              
+              <div>
+                <h4 className="font-semibold mb-4">Products in this Deal</h4>
+                <div className="grid gap-4">
+                  {selectedDeal.products.map((product) => (
+                    <div key={product.id} className="flex items-center space-x-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="w-20 h-20 object-cover rounded-lg"
+                      />
+                      <div className="flex-1">
+                        <h5 className="font-medium text-foreground">{product.name}</h5>
+                        <div className="flex items-center gap-3 mt-1">
+                          <span className="text-lg font-bold text-primary">
+                            ₵{product.wholesale_price}
+                          </span>
+                          <span className="text-sm text-muted-foreground line-through">
+                            ₵{product.price}
+                          </span>
+                          <Badge variant="secondary" className="text-xs">
+                            Save {calculateSavings(product.price, product.wholesale_price)}%
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <Separator />
+              
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setSelectedDeal(null)}>
+                  Close
+                </Button>
+                <Button onClick={() => window.location.href = '/contact-us'}>
+                  Request Quote
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       <Footer />
     </div>
