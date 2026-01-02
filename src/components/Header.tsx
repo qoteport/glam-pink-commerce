@@ -1,7 +1,6 @@
 
 import React, { useState, useCallback, useEffect, memo } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
   Search,
@@ -15,6 +14,7 @@ import {
   ChevronDown,
   Package,
   Settings,
+  Sparkles,
 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useFavorites } from "@/contexts/FavoritesContext";
@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { debounce } from "lodash";
 import PriceDisplay from "./PriceDisplay";
+import AISearchBar from "./AISearchBar";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface HeaderProps {
@@ -225,7 +226,7 @@ const Header = memo(({ onSearch }: HeaderProps) => {
 
           {/* Search & Actions */}
           <div className="flex items-center space-x-2 sm:space-x-4">
-            {/* Search - Desktop */}
+            {/* AI Search - Desktop */}
             {!showSearch && (
               <motion.button
                 whileHover={{ scale: 1.1 }}
@@ -234,31 +235,13 @@ const Header = memo(({ onSearch }: HeaderProps) => {
                 className="sm:hidden p-1 text-blush-600"
                 aria-label="Search"
               >
-                <Search size={20} />
+                <Sparkles size={20} />
               </motion.button>
             )}
 
-            <form
-              onSubmit={handleSearch}
-              className={`hidden sm:flex relative ${
-                showSearch ? "sm:hidden" : ""
-              }`}
-            >
-              <Input
-                type="text"
-                placeholder="Search wigs, bundles..."
-                value={searchQuery}
-                onChange={handleSearchChange}
-                className="w-40 md:w-56 lg:w-64 pl-4 pr-10 border-blush-200 focus:border-blush-400 text-sm"
-              />
-              <button
-                type="submit"
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-blush-400 hover:text-blush-600"
-                aria-label="Search"
-              >
-                <Search size={18} />
-              </button>
-            </form>
+            <div className={`hidden sm:block ${showSearch ? "sm:hidden" : ""}`}>
+              <AISearchBar className="w-56 lg:w-72" />
+            </div>
 
             {/* User Account */}
             {user ? (
@@ -398,31 +381,17 @@ const Header = memo(({ onSearch }: HeaderProps) => {
         {/* Mobile Search */}
         <AnimatePresence>
           {(showSearch || isMenuOpen) && (
-            <motion.form
+            <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.2 }}
-              onSubmit={handleSearch}
-              className="overflow-hidden"
+              className="overflow-hidden sm:hidden"
             >
-              <div className="relative mt-3">
-                <Input
-                  type="text"
-                  placeholder="Search wigs, bundles..."
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                  className="w-full pl-4 pr-10 border-blush-200 focus:border-blush-400 text-sm"
-                />
-                <button
-                  type="submit"
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-blush-400"
-                  aria-label="Search"
-                >
-                  <Search size={18} />
-                </button>
+              <div className="mt-3">
+                <AISearchBar onClose={() => setShowSearch(false)} />
               </div>
-            </motion.form>
+            </motion.div>
           )}
         </AnimatePresence>
       </div>

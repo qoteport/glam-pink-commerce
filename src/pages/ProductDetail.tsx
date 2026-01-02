@@ -23,11 +23,23 @@ import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import PriceDisplay from "@/components/PriceDisplay";
 import PaystackPayment from "@/components/PaystackPayment";
+import WriteReviewDialog from "@/components/WriteReviewDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/contexts/CartContext";
 import { useFavorites } from "@/contexts/FavoritesContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { format } from "date-fns";
+
+interface Review {
+  id: string;
+  customer_name: string;
+  rating: number;
+  title: string | null;
+  comment: string;
+  created_at: string;
+  is_verified_purchase: boolean;
+}
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -48,11 +60,13 @@ const ProductDetail = () => {
   const [playingVideoIndex, setPlayingVideoIndex] = useState<number | null>(
     null
   );
+  const [reviews, setReviews] = useState<Review[]>([]);
   const dialogRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (id) {
       fetchProduct(id);
+      fetchReviews(id);
     }
   }, [id]);
 
@@ -152,6 +166,23 @@ const ProductDetail = () => {
       setSimilarProducts(transformedProducts);
     } catch (error) {
       console.error("Error fetching similar products:", error);
+    }
+  };
+
+  const fetchReviews = async (productId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from("reviews")
+        .select("id, customer_name, rating, title, comment, created_at, is_verified_purchase")
+        .eq("product_id", productId)
+        .eq("is_approved", true)
+        .order("created_at", { ascending: false })
+        .limit(10);
+
+      if (error) throw error;
+      setReviews(data || []);
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
     }
   };
 
@@ -792,19 +823,67 @@ const ProductDetail = () => {
             <TabsContent value="reviews" className="mt-6">
               <Card className="border-none shadow-none">
                 <CardContent className="p-0">
-                  <div className="text-center py-12 bg-gray-50 rounded-lg">
-                    <div className="w-16 h-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center mb-4">
-                      <Star className="text-primary" size={24} />
+                  {reviews.length === 0 ? (
+                    <div className="text-center py-12 bg-gray-50 rounded-lg">
+                      <div className="w-16 h-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                        <Star className="text-primary" size={24} />
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2 text-gray-900">
+                        Customer Reviews
+                      </h3>
+                      <p className="text-gray-600 max-w-md mx-auto">
+                        Be the first to review this product and help others make
+                        their decision!
+                      </p>
+                      <WriteReviewDialog 
+                        productId={product.id} 
+                        productName={product.name}
+                        onReviewSubmitted={() => fetchReviews(product.id)}
+                      >
+                        <Button className="mt-6">Write a Review</Button>
+                      </WriteReviewDialog>
                     </div>
-                    <h3 className="text-xl font-semibold mb-2 text-gray-900">
-                      Customer Reviews
-                    </h3>
-                    <p className="text-gray-600 max-w-md mx-auto">
-                      Be the first to review this product and help others make
-                      their decision!
-                    </p>
-                    <Button className="mt-6">Write a Review</Button>
-                  </div>
+                  ) : (
+                    <div className="space-y-6">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-xl font-semibold text-gray-900">
+                          Customer Reviews ({reviews.length})
+                        </h3>
+                        <WriteReviewDialog 
+                          productId={product.id} 
+                          productName={product.name}
+                          onReviewSubmitted={() => fetchReviews(product.id)}
+                        >
+                          <Button>Write a Review</Button>
+                        </WriteReviewDialog>
+                      </div>
+                      <div className="space-y-4">
+                        {reviews.map((review) => (
+                          <div key={review.id} className="border-b pb-4">
+                            <div className="flex items-center gap-2 mb-2">
+                              <div className="flex">
+                                {[...Array(5)].map((_, i) => (
+                                  <Star
+                                    key={i}
+                                    size={16}
+                                    className={i < review.rating ? "text-yellow-400 fill-current" : "text-gray-300"}
+                                  />
+                                ))}
+                              </div>
+                              {review.is_verified_purchase && (
+                                <Badge variant="outline" className="text-xs">Verified</Badge>
+                              )}
+                            </div>
+                            {review.title && <h4 className="font-semibold">{review.title}</h4>}
+                            <p className="text-gray-700 mt-1">{review.comment}</p>
+                            <div className="text-sm text-gray-500 mt-2">
+                              {review.customer_name} • {format(new Date(review.created_at), "MMM d, yyyy")}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>

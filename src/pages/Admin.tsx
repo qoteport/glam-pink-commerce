@@ -17,6 +17,8 @@ import {
   Calculator,
   ExternalLink,
   LogOut,
+  Star,
+  UserCheck,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -40,6 +42,8 @@ import SocialLinksManager from "@/components/admin/SocialLinksManager";
 import SubscriptionsManager from "@/components/admin/SubscriptionsManager";
 import ShippingRulesManager from "@/components/admin/ShippingRulesManager";
 import TaxRulesManager from "@/components/admin/TaxRulesManager";
+import ReviewsManager from "@/components/admin/ReviewsManager";
+import CustomersManager from "@/components/admin/CustomersManager";
 
 const Admin = () => {
   const { isAdmin, profile, signOut } = useAuth();
@@ -157,11 +161,25 @@ const Admin = () => {
                 <span className="hidden sm:inline">Users</span>
               </TabsTrigger>
               <TabsTrigger
+                value="customers"
+                className="flex items-center space-x-2"
+              >
+                <UserCheck size={16} />
+                <span className="hidden sm:inline">Customers</span>
+              </TabsTrigger>
+              <TabsTrigger
                 value="categories"
                 className="flex items-center space-x-2"
               >
                 <FileText size={16} />
                 <span className="hidden sm:inline">Categories</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="reviews"
+                className="flex items-center space-x-2"
+              >
+                <Star size={16} />
+                <span className="hidden sm:inline">Reviews</span>
               </TabsTrigger>
               <TabsTrigger
                 value="discounts"
@@ -239,12 +257,20 @@ const Admin = () => {
               <UsersManager />
             </TabsContent>
 
+            <TabsContent value="customers" className="mx-2">
+              <CustomersManager />
+            </TabsContent>
+
             <TabsContent value="categories" className="mx-2">
               <div className="space-y-6">
                 <CategoriesManager />
                 <HairTypesManager />
                 <TexturesManager />
               </div>
+            </TabsContent>
+
+            <TabsContent value="reviews" className="mx-2">
+              <ReviewsManager />
             </TabsContent>
 
             <TabsContent value="discounts" className="mx-2">

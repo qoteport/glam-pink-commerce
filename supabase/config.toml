@@ -1,2 +1,7 @@
-
 project_id = "pvzntxpryhtlatpokytk"
+
+[functions.paystack-webhook]
+verify_jwt = false
+
+[functions.ai-search]
+verify_jwt = false
