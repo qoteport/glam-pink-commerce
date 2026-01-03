@@ -19,6 +19,7 @@ import {
   LogOut,
   Star,
   UserCheck,
+  FileQuestion,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -44,6 +45,8 @@ import ShippingRulesManager from "@/components/admin/ShippingRulesManager";
 import TaxRulesManager from "@/components/admin/TaxRulesManager";
 import ReviewsManager from "@/components/admin/ReviewsManager";
 import CustomersManager from "@/components/admin/CustomersManager";
+import QuotesManager from "@/components/admin/QuotesManager";
+import AdminNotifications from "@/components/admin/AdminNotifications";
 
 const Admin = () => {
   const { isAdmin, profile, signOut } = useAuth();
@@ -90,6 +93,7 @@ const Admin = () => {
                 </p>
               </div>
               <div className="flex items-center space-x-4">
+                <AdminNotifications />
                 <Button
                   variant="outline"
                   onClick={handleViewStore}
@@ -145,6 +149,13 @@ const Admin = () => {
               >
                 <Package size={16} />
                 <span className="hidden sm:inline">Custom Wigs</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="quotes"
+                className="flex items-center space-x-2"
+              >
+                <FileQuestion size={16} />
+                <span className="hidden sm:inline">Quotes</span>
               </TabsTrigger>
               <TabsTrigger
                 value="wholesale"
@@ -315,6 +326,10 @@ const Admin = () => {
 
             <TabsContent value="wholesale" className="mx-2">
               <WholesaleDealsManager />
+            </TabsContent>
+
+            <TabsContent value="quotes" className="mx-2">
+              <QuotesManager />
             </TabsContent>
           </Tabs>
         </div>
