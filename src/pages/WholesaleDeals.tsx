@@ -4,11 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Package, Users, ShoppingCart, ArrowRight, Eye, X } from 'lucide-react';
+import { Package, Users, ShoppingCart, ArrowRight, Eye } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import QuoteRequestForm from '@/components/QuoteRequestForm';
 
 interface WholesaleDeal {
   id: string;
@@ -30,6 +31,7 @@ const WholesaleDeals = () => {
   const [deals, setDeals] = useState<WholesaleDeal[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedDeal, setSelectedDeal] = useState<WholesaleDeal | null>(null);
+  const [showQuoteForm, setShowQuoteForm] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -139,8 +141,8 @@ const WholesaleDeals = () => {
               <p className="text-muted-foreground mb-6">
                 Check back soon for exclusive wholesale pricing and bulk deals.
               </p>
-              <Button variant="outline" onClick={() => window.location.href = '/contact-us'}>
-                Contact Us for Custom Quotes
+              <Button variant="outline" onClick={() => setShowQuoteForm(true)}>
+                Request a Custom Quote
               </Button>
             </CardContent>
           </Card>
@@ -216,7 +218,7 @@ const WholesaleDeals = () => {
                       <Eye className="w-4 h-4 mr-2" />
                       View Details
                     </Button>
-                    <Button onClick={() => window.location.href = '/contact-us'}>
+                    <Button onClick={() => setShowQuoteForm(true)}>
                       Request Quote
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
@@ -227,24 +229,15 @@ const WholesaleDeals = () => {
           ))}
         </div>
 
-        {/* Contact Section */}
-        <div className="mt-16 text-center">
-          <Card className="max-w-2xl mx-auto">
-            <CardContent className="p-8">
-              <h3 className="text-2xl font-bold mb-4">Need Custom Pricing?</h3>
-              <p className="text-muted-foreground mb-6">
-                Contact our wholesale team for custom packages and bulk pricing options
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button variant="outline" onClick={() => window.location.href = 'tel:+233000000000'}>
-                  Call Us
-                </Button>
-                <Button onClick={() => window.location.href = '/contact-us'}>
-                  Email Wholesale Team
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Quote Request Form Section */}
+        <div className="mt-16" id="quote-form">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold mb-4">Request a Quote</h2>
+            <p className="text-muted-foreground">
+              Fill out the form below or contact us directly for wholesale pricing
+            </p>
+          </div>
+          <QuoteRequestForm />
         </div>
       </div>
 
@@ -312,7 +305,11 @@ const WholesaleDeals = () => {
                 <Button variant="outline" onClick={() => setSelectedDeal(null)}>
                   Close
                 </Button>
-                <Button onClick={() => window.location.href = '/contact-us'}>
+                <Button onClick={() => {
+                  setSelectedDeal(null);
+                  setShowQuoteForm(true);
+                  document.getElementById('quote-form')?.scrollIntoView({ behavior: 'smooth' });
+                }}>
                   Request Quote
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
