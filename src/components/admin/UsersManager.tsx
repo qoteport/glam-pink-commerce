@@ -32,6 +32,13 @@ const UsersManager = () => {
     try {
       setLoading(true);
       
+      // Fetch all user roles first (admins can see all)
+      const { data: roles, error: rolesError } = await supabase
+        .from('user_roles')
+        .select('user_id, role');
+
+      if (rolesError) throw rolesError;
+
       // Fetch profiles
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
@@ -40,20 +47,26 @@ const UsersManager = () => {
 
       if (profilesError) throw profilesError;
 
-      // Fetch user roles
-      const { data: roles, error: rolesError } = await supabase
-        .from('user_roles')
-        .select('user_id, role');
-
-      if (rolesError) throw rolesError;
-
       // Combine profiles with roles
       const usersWithRoles = profiles?.map(profile => ({
         ...profile,
         role: roles?.find(role => role.user_id === profile.id)?.role || 'user'
       })) || [];
 
-      setUsers(usersWithRoles);
+      // Also include users that have roles but may not have profiles
+      const profileIds = new Set(profiles?.map(p => p.id) || []);
+      const usersFromRoles = roles
+        ?.filter(r => !profileIds.has(r.user_id))
+        .map(r => ({
+          id: r.user_id,
+          email: 'Unknown email',
+          full_name: null,
+          avatar_url: null,
+          created_at: new Date().toISOString(),
+          role: r.role
+        })) || [];
+
+      setUsers([...usersWithRoles, ...usersFromRoles]);
     } catch (error) {
       console.error('Error fetching users:', error);
       toast({

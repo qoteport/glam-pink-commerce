@@ -20,6 +20,7 @@ import {
   Star,
   UserCheck,
   FileQuestion,
+  Gift,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -47,6 +48,7 @@ import ReviewsManager from "@/components/admin/ReviewsManager";
 import CustomersManager from "@/components/admin/CustomersManager";
 import QuotesManager from "@/components/admin/QuotesManager";
 import AdminNotifications from "@/components/admin/AdminNotifications";
+import OffersManager from "@/components/admin/OffersManager";
 
 const Admin = () => {
   const { isAdmin, profile, signOut } = useAuth();
@@ -163,6 +165,13 @@ const Admin = () => {
               >
                 <Package size={16} />
                 <span className="hidden sm:inline">Wholesale</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="offers"
+                className="flex items-center space-x-2"
+              >
+                <Gift size={16} />
+                <span className="hidden sm:inline">Offers</span>
               </TabsTrigger>
               <TabsTrigger
                 value="users"
@@ -334,6 +343,10 @@ const Admin = () => {
 
             <TabsContent value="quotes" className="mx-2">
               <QuotesManager />
+            </TabsContent>
+
+            <TabsContent value="offers" className="mx-2">
+              <OffersManager />
             </TabsContent>
           </Tabs>
         </div>

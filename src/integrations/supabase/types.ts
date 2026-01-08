@@ -441,6 +441,84 @@ export type Database = {
         }
         Relationships: []
       }
+      offer_products: {
+        Row: {
+          created_at: string
+          id: string
+          offer_id: string
+          offer_price: number | null
+          product_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          offer_id: string
+          offer_price?: number | null
+          product_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          offer_id?: string
+          offer_price?: number | null
+          product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "offer_products_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "offers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "offer_products_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      offers: {
+        Row: {
+          banner_image: string | null
+          created_at: string
+          description: string | null
+          discount_percentage: number
+          end_date: string
+          id: string
+          is_active: boolean
+          name: string
+          start_date: string
+          updated_at: string
+        }
+        Insert: {
+          banner_image?: string | null
+          created_at?: string
+          description?: string | null
+          discount_percentage?: number
+          end_date: string
+          id?: string
+          is_active?: boolean
+          name: string
+          start_date: string
+          updated_at?: string
+        }
+        Update: {
+          banner_image?: string | null
+          created_at?: string
+          description?: string | null
+          discount_percentage?: number
+          end_date?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          start_date?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           created_at: string
@@ -586,6 +664,7 @@ export type Database = {
           failure_reason: string | null
           id: string
           notes: string | null
+          offer_id: string | null
           order_status: string
           payment_reference: string | null
           payment_status: string
@@ -608,6 +687,7 @@ export type Database = {
           failure_reason?: string | null
           id?: string
           notes?: string | null
+          offer_id?: string | null
           order_status?: string
           payment_reference?: string | null
           payment_status?: string
@@ -630,6 +710,7 @@ export type Database = {
           failure_reason?: string | null
           id?: string
           notes?: string | null
+          offer_id?: string | null
           order_status?: string
           payment_reference?: string | null
           payment_status?: string
@@ -641,7 +722,15 @@ export type Database = {
           tracking_number?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "orders_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "offers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       platform_settings: {
         Row: {

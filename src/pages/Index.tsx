@@ -5,6 +5,7 @@ import DynamicHero from '@/components/DynamicHero';
 import ProductShowcase from '@/components/ProductShowcase';
 import Testimonials from '@/components/Testimonials';
 import Footer from '@/components/Footer';
+import OfferBanner from '@/components/OfferBanner';
 
 const Index = () => {
   return (
@@ -14,6 +15,7 @@ const Index = () => {
       </div>
       <main className='lg:mx-[50px]'>
         <DynamicHero />
+        <OfferBanner />
         <ProductShowcase />
         <Testimonials />
       </main>
