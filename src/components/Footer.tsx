@@ -157,8 +157,8 @@ const Footer = () => {
         <div className="container mx-auto px-4">
           <div className="text-center space-y-6">
             <div className="space-y-2">
-              <h3 className="text-2xl md:text-3xl font-bold text-white">
-                ✨ Join the Beauty Squad & Stay Connected ✨
+              <h3 className="text-xl md:text-2xl md:text-3xl font-bold text-white">
+                ✨ Join the Beauty Squad & Stay Connected
               </h3>
               <p className="text-blush-100 max-w-2xl mx-auto">
                 Get exclusive access to new arrivals, styling tips, and special
@@ -227,7 +227,7 @@ const Footer = () => {
               <div className="space-y-4">
                 <div className="flex items-center space-x-2">
                   <Crown size={32} className="text-blush-400" />
-                  <h4 className="text-2xl font-bold text-gradient">
+                  <h4 className="text-xl md:text-2xl font-bold text-gradient">
                     HairyTalesBeauty
                   </h4>
                 </div>
@@ -341,7 +341,7 @@ const Footer = () => {
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
             <div className="flex items-center space-x-4 text-sm text-gray-400">
-              <span>© 2024 HairyTalesBeauty. All rights reserved.</span>
+              <span>© 2026 HairyTalesBeauty. All rights reserved.</span>
               <Separator orientation="vertical" className="h-4 bg-gray-600" />
               <a href="#" className="hover:text-blush-400 transition-colors">
                 Privacy Policy

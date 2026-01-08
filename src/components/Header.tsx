@@ -144,16 +144,23 @@ const Header = memo(({ onSearch }: HeaderProps) => {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b transition-all duration-300 mb-50 ${
+      className={`fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b transition-all duration-300 md:h-auto ${
         isScrolled
           ? "shadow-lg border-blush-100 py-2"
           : "shadow-sm border-transparent py-3"
-      }`}
+      }  ${isMenuOpen ? 'h-screen lg:h-auto' : 'h-auto'}`}
       style={{
         // Optimize for GPU acceleration
         willChange: 'transform',
         backfaceVisibility: 'hidden',
         WebkitBackfaceVisibility: 'hidden',
+      }}
+
+      onClick={(e) => {
+        if(isMenuOpen){
+           e.stopPropagation();
+           setIsMenuOpen(false);
+        }
       }}
     >
       {/* Top Bar - Only show when not scrolled */}
@@ -170,8 +177,8 @@ const Header = memo(({ onSearch }: HeaderProps) => {
           >
             <div className="container mx-auto px-4">
               <div className="flex items-center justify-center py-2 text-sm text-blush-600">
-                <span className="lg:block hidden">Free shipping on orders</span>
-                <div>
+                <span className="hidden lg:block">Free shipping on orders</span>
+                <div className="flex flex-row gap-1">
                   <span className="lg:hidden">Free shipping on orders</span>
                   <div className="flex flex-row gap-0 lg:ml-1">
                     <PriceDisplay price={5000} designCSS="" className="py-0" />{" "}
@@ -206,7 +213,7 @@ const Header = memo(({ onSearch }: HeaderProps) => {
               />
               <h1
                 className={`font-bold text-gradient transition-all duration-200 ${
-                  isScrolled ? "text-xl" : "text-2xl"
+                  isScrolled ? "text-xl" : "text-xl md:text-xl md:text-2xl"
                 }`}
               >
                 HairyTalesBeauty
@@ -408,7 +415,7 @@ const Header = memo(({ onSearch }: HeaderProps) => {
               transition={{ duration: 0.2 }}
               className="overflow-hidden sm:hidden"
             >
-              <div className="mt-3">
+              <div className="mt-3 mb-3">
                 <AISearchBar onClose={() => setShowSearch(false)} />
               </div>
             </motion.div>

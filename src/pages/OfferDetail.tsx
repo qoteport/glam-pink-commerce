@@ -151,7 +151,7 @@ const OfferDetail = () => {
   const TimeBlock = ({ value, label }: { value: number; label: string }) => (
     <div className="flex flex-col items-center">
       <div className="bg-rosegold-500 rounded-lg px-3 py-2 min-w-[50px]">
-        <span className="text-xl md:text-2xl font-bold text-white">
+        <span className="text-xl md:text-xl md:text-2xl font-bold text-white">
           {value.toString().padStart(2, '0')}
         </span>
       </div>
@@ -176,7 +176,7 @@ const OfferDetail = () => {
       <div className="min-h-screen bg-white">
         <Header />
         <div className="container mx-auto px-4 py-20 text-center">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">Offer Not Found</h1>
+          <h1 className="text-xl md:text-2xl font-bold text-gray-800 mb-4">Offer Not Found</h1>
           <p className="text-gray-600 mb-6">This offer may have expired or doesn't exist.</p>
           <Button onClick={() => navigate('/')}>Go Home</Button>
         </div>
@@ -257,7 +257,7 @@ const OfferDetail = () => {
 
         {/* Products Grid */}
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-gray-800">
+          <h2 className="text-xl md:text-2xl font-bold text-gray-800">
             Products in this Offer ({offerProducts.length})
           </h2>
           {!isExpired && offerProducts.length > 0 && (
@@ -296,7 +296,7 @@ const OfferDetail = () => {
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <span className="text-2xl font-bold text-rosegold-600">
+                    <span className="text-xl md:text-2xl font-bold text-rosegold-600">
                       ₵{offerPrice.toFixed(2)}
                     </span>
                     {savings > 0 && (

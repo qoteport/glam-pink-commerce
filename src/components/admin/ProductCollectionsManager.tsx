@@ -222,7 +222,7 @@ const ProductCollectionsManager = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Product Collections</h2>
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900">Product Collections</h2>
           <p className="text-gray-600">Manage the collections shown on the homepage</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

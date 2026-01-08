@@ -158,7 +158,7 @@ const WholesaleDeals = () => {
             <Card key={deal.id} className="overflow-hidden hover:shadow-lg transition-shadow">
               <CardHeader className="bg-gradient-to-r from-primary/10 to-primary/5">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-2xl">{deal.name}</CardTitle>
+                  <CardTitle className="text-xl md:text-2xl">{deal.name}</CardTitle>
                   <Badge className="bg-primary text-primary-foreground">
                     {deal.discount_percentage}% OFF
                   </Badge>

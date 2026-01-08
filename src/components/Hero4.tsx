@@ -77,7 +77,7 @@ const Hero4 = () => {
           <div className="w-full h-full bg-gradient-to-br from-pink-100 via-pink-50 to-white flex items-center justify-center">
             <div className="text-center space-y-4 opacity-30">
               <Crown size={120} className="text-pink-400 mx-auto" />
-              <p className="text-2xl font-semibold text-pink-600">Upload your hero image</p>
+              <p className="text-xl md:text-2xl font-semibold text-pink-600">Upload your hero image</p>
             </div>
           </div>
         )}
@@ -104,7 +104,7 @@ const Hero4 = () => {
             </h1>
 
             {/* Subtitle */}
-            <p className="text-xl md:text-2xl text-white/90 leading-relaxed mb-8 max-w-lg">
+            <p className="text-xl md:text-xl md:text-2xl text-white/90 leading-relaxed mb-8 max-w-lg">
               {heroData.subtitle}
             </p>
 

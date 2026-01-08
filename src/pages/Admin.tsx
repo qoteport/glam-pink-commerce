@@ -68,7 +68,7 @@ const Admin = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">
+          <h1 className="text-xl md:text-2xl font-bold text-gray-800 mb-4">
             Access Denied
           </h1>
           <p className="text-gray-600">
@@ -87,7 +87,7 @@ const Admin = () => {
           <div className="container mx-auto px-4 py-4">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-2xl font-bold text-gray-800">
+                <h1 className="text-xl md:text-2xl font-bold text-gray-800">
                   HairyTalesBeauty Admin
                 </h1>
                 <p className="text-gray-600">

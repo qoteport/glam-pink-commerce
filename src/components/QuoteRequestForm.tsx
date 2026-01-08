@@ -70,7 +70,7 @@ const QuoteRequestForm = () => {
           <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
             <CheckCircle className="w-10 h-10 text-primary" />
           </div>
-          <h3 className="text-2xl font-bold mb-4">Thank You!</h3>
+          <h3 className="text-xl md:text-2xl font-bold mb-4">Thank You!</h3>
           <p className="text-muted-foreground mb-6">
             Your quote request has been received. Our wholesale team will contact you within 24 hours.
           </p>

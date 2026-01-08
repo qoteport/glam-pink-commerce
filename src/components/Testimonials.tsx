@@ -211,7 +211,7 @@ const Testimonials = () => {
             {instagramData.display_feed && (
               <div className="space-y-8">
                 <div className="text-center space-y-4">
-                  <h3 className="text-2xl font-bold text-gray-800">
+                  <h3 className="text-xl md:text-2xl font-bold text-gray-800">
                     {instagramData.feed_title ||
                       "See Real Results on Instagram"}
                   </h3>

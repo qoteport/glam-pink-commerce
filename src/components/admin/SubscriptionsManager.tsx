@@ -131,7 +131,7 @@ const SubscriptionsManager = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Newsletter Subscriptions</h2>
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900">Newsletter Subscriptions</h2>
           <p className="text-gray-600">Manage newsletter subscribers</p>
         </div>
         <Button onClick={exportSubscriptions} className="bg-gradient-pink-vibrant text-white hover:opacity-90">
@@ -147,7 +147,7 @@ const SubscriptionsManager = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Total Subscribers</p>
-                <p className="text-2xl font-bold text-gray-900">{subscriptions.length}</p>
+                <p className="text-xl md:text-2xl font-bold text-gray-900">{subscriptions.length}</p>
               </div>
               <Mail className="w-8 h-8 text-blue-500" />
             </div>
@@ -159,7 +159,7 @@ const SubscriptionsManager = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Active Subscriptions</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-xl md:text-2xl font-bold text-gray-900">
                   {subscriptions.filter(sub => sub.is_active).length}
                 </p>
               </div>
@@ -173,7 +173,7 @@ const SubscriptionsManager = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">This Month</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-xl md:text-2xl font-bold text-gray-900">
                   {subscriptions.filter(sub => 
                     new Date(sub.subscribed_at).getMonth() === new Date().getMonth()
                   ).length}

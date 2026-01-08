@@ -383,7 +383,7 @@ const Checkout = () => {
         <Header />
       </div>
         <div className="container mx-auto px-4 py-16 text-center">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">
+          <h1 className="text-xl md:text-2xl font-bold text-gray-800 mb-4">
             Your cart is empty
           </h1>
           <Button onClick={() => navigate("/shop")}>Continue Shopping</Button>
@@ -408,11 +408,11 @@ const Checkout = () => {
         <Header />
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="md:container md:mx-auto px-0  md:px-4 py-4 md:py-8">
         <Button
           variant="ghost"
           onClick={() => navigate(retryOrder ? "/my-orders" : "/cart")}
-          className="mb-6"
+          className="md:mb-6"
         >
           <ArrowLeft size={16} className="mr-2" />
           {retryOrder ? "Back to Orders" : "Back to Cart"}
@@ -440,7 +440,7 @@ const Checkout = () => {
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Checkout Form */}
           <div className="space-y-6">
-            <Card>
+            <Card className=" ">
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <Truck className="mr-2" size={20} />

@@ -156,7 +156,7 @@ const ProductShowcase = () => {
         <div className="space-y-8">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-2xl font-bold text-gray-800 mb-2">
+              <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-2">
                 Best Sellers & New Arrivals
               </h3>
               <p className="text-gray-600">
@@ -214,8 +214,8 @@ const ProductShowcase = () => {
             { stat: '24/7', label: 'Support Team', icon: '🔧' }
           ].map((item, index) => (
             <div key={index} className="text-center space-y-2">
-              <div className="text-2xl">{item.icon}</div>
-              <div className="text-2xl font-bold text-blush-600">{item.stat}</div>
+              <div className="text-xl md:text-2xl">{item.icon}</div>
+              <div className="text-xl md:text-2xl font-bold text-blush-600">{item.stat}</div>
               <div className="text-sm text-gray-600">{item.label}</div>
             </div>
           ))}

@@ -75,7 +75,7 @@ const OrdersManager = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Orders</h2>
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900">Orders</h2>
           <p className="text-gray-600">Track and manage customer orders</p>
         </div>
       </div>
@@ -87,7 +87,7 @@ const OrdersManager = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Total Orders</p>
-                <p className="text-2xl font-bold">248</p>
+                <p className="text-xl md:text-2xl font-bold">248</p>
               </div>
               <Package className="w-8 h-8 text-blue-500" />
             </div>
@@ -99,7 +99,7 @@ const OrdersManager = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Processing</p>
-                <p className="text-2xl font-bold">12</p>
+                <p className="text-xl md:text-2xl font-bold">12</p>
               </div>
               <Clock className="w-8 h-8 text-yellow-500" />
             </div>
@@ -111,7 +111,7 @@ const OrdersManager = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Shipped</p>
-                <p className="text-2xl font-bold">23</p>
+                <p className="text-xl md:text-2xl font-bold">23</p>
               </div>
               <Package className="w-8 h-8 text-blue-500" />
             </div>
@@ -123,7 +123,7 @@ const OrdersManager = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Delivered</p>
-                <p className="text-2xl font-bold">213</p>
+                <p className="text-xl md:text-2xl font-bold">213</p>
               </div>
               <CheckCircle className="w-8 h-8 text-green-500" />
             </div>

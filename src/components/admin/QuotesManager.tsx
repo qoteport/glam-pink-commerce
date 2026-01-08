@@ -141,7 +141,7 @@ const QuotesManager = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Quote Requests</h2>
+          <h2 className="text-xl md:text-2xl font-bold">Quote Requests</h2>
           <p className="text-muted-foreground">Manage wholesale quote requests</p>
         </div>
         <div className="relative">

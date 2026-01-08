@@ -175,7 +175,7 @@ const OrdersManagerReal = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Orders Management</h2>
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900">Orders Management</h2>
           <p className="text-gray-600">Track and manage customer orders</p>
         </div>
       </div>
@@ -187,7 +187,7 @@ const OrdersManagerReal = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Total Orders</p>
-                <p className="text-2xl font-bold">{stats.total}</p>
+                <p className="text-xl md:text-2xl font-bold">{stats.total}</p>
               </div>
               <Package className="w-8 h-8 text-blue-500" />
             </div>
@@ -199,7 +199,7 @@ const OrdersManagerReal = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Processing</p>
-                <p className="text-2xl font-bold">{stats.processing}</p>
+                <p className="text-xl md:text-2xl font-bold">{stats.processing}</p>
               </div>
               <Clock className="w-8 h-8 text-yellow-500" />
             </div>
@@ -211,7 +211,7 @@ const OrdersManagerReal = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Shipped</p>
-                <p className="text-2xl font-bold">{stats.shipped}</p>
+                <p className="text-xl md:text-2xl font-bold">{stats.shipped}</p>
               </div>
               <Package className="w-8 h-8 text-blue-500" />
             </div>
@@ -223,7 +223,7 @@ const OrdersManagerReal = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Delivered</p>
-                <p className="text-2xl font-bold">{stats.delivered}</p>
+                <p className="text-xl md:text-2xl font-bold">{stats.delivered}</p>
               </div>
               <CheckCircle className="w-8 h-8 text-green-500" />
             </div>

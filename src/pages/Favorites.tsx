@@ -81,7 +81,7 @@ const Favorites = () => {
         <div className="container mx-auto px-4 py-16">
           <div className="text-center max-w-md mx-auto">
             <Heart size={64} className="mx-auto text-blush-300 mb-6" />
-            <h1 className="text-2xl font-bold text-gray-800 mb-4">
+            <h1 className="text-xl md:text-2xl font-bold text-gray-800 mb-4">
               No favorites yet
             </h1>
             <p className="text-gray-600 mb-8">

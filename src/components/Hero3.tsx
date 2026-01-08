@@ -204,14 +204,14 @@ const Hero3 = () => {
               {/* Floating Cards */}
               <div className="absolute -top-4 -left-4 bg-white rounded-2xl p-4 shadow-lg transform -rotate-12 group-hover:rotate-0 transition-transform duration-500">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">4.9</div>
+                  <div className="text-xl md:text-2xl font-bold text-primary">4.9</div>
                   <div className="text-xs text-gray-600">Rating</div>
                 </div>
               </div>
 
               <div className="absolute -bottom-4 -right-4 bg-white rounded-2xl p-4 shadow-lg transform rotate-12 group-hover:rotate-0 transition-transform duration-500">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-accent">5K+</div>
+                  <div className="text-xl md:text-2xl font-bold text-accent">5K+</div>
                   <div className="text-xs text-gray-600">Customers</div>
                 </div>
               </div>

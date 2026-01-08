@@ -98,7 +98,7 @@ const Hero2 = () => {
             </span>
           </h1>
 
-          <p className="text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
             {heroData.subtitle}
           </p>
         </div>
@@ -159,7 +159,7 @@ const Hero2 = () => {
                 {heroData.featured_product.name}
               </h3>
               <div className="flex justify-between items-center">
-                <span className="text-2xl font-bold text-primary">
+                <span className="text-xl md:text-2xl font-bold text-primary">
                   {" "}
                   <PriceDisplay
                     price={heroData.featured_product.price}

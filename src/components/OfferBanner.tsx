@@ -77,7 +77,7 @@ const OfferBanner = () => {
   const TimeBlock = ({ value, label }: { value: number; label: string }) => (
     <div className="flex flex-col items-center">
       <div className="bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2 min-w-[50px]">
-        <span className="text-2xl md:text-3xl font-bold text-white">
+        <span className="text-xl md:text-2xl md:text-3xl font-bold text-white">
           {value.toString().padStart(2, '0')}
         </span>
       </div>
@@ -103,7 +103,7 @@ const OfferBanner = () => {
                 Limited Time Offer
               </Badge>
             </div>
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
+            <h2 className="text-xl md:text-2xl md:text-3xl font-bold text-white mb-2">
               {offer.name}
             </h2>
             {offer.description && (
@@ -123,11 +123,11 @@ const OfferBanner = () => {
             </div>
             <div className="flex items-center gap-2">
               <TimeBlock value={timeLeft.days} label="Days" />
-              <span className="text-2xl text-white font-bold">:</span>
+              <span className="text-xl md:text-2xl text-white font-bold">:</span>
               <TimeBlock value={timeLeft.hours} label="Hours" />
-              <span className="text-2xl text-white font-bold">:</span>
+              <span className="text-xl md:text-2xl text-white font-bold">:</span>
               <TimeBlock value={timeLeft.minutes} label="Mins" />
-              <span className="text-2xl text-white font-bold">:</span>
+              <span className="text-xl md:text-2xl text-white font-bold">:</span>
               <TimeBlock value={timeLeft.seconds} label="Secs" />
             </div>
             <Button

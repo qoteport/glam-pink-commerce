@@ -112,7 +112,7 @@ const Hero5 = () => {
           <div className="w-full h-full bg-gradient-to-br from-pink-600 via-pink-400 to-pink-200 flex items-center justify-center">
             <div className="text-center space-y-4 opacity-50">
               <Crown size={120} className="text-white mx-auto" />
-              <p className="text-2xl font-semibold text-white">Upload your video or image</p>
+              <p className="text-xl md:text-2xl font-semibold text-white">Upload your video or image</p>
             </div>
           </div>
         )}
@@ -161,7 +161,7 @@ const Hero5 = () => {
             </h1>
 
             {/* Subtitle */}
-            <p className="text-xl md:text-2xl text-white/90 leading-relaxed mb-10 max-w-3xl mx-auto">
+            <p className="text-xl md:text-xl md:text-2xl text-white/90 leading-relaxed mb-10 max-w-3xl mx-auto">
               {heroData.subtitle}
             </p>
 

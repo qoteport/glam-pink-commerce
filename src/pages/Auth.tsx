@@ -134,7 +134,7 @@ const Auth = () => {
 
           <Card className="shadow-xl border-blush-100">
             <CardHeader className="text-center">
-              <CardTitle className="text-2xl">Password Reset</CardTitle>
+              <CardTitle className="text-xl md:text-2xl">Password Reset</CardTitle>
               <CardDescription>
                 Enter your email address and we'll send you a link to reset your password
               </CardDescription>
@@ -210,7 +210,7 @@ const Auth = () => {
 
         <Card className="shadow-xl border-blush-100">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl">
+            <CardTitle className="text-xl md:text-2xl">
               {isSignUp ? 'Create Account' : 'Welcome Back'}
             </CardTitle>
             <CardDescription>

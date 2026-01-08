@@ -124,7 +124,7 @@ const UsersManager = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Users</h2>
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900">Users</h2>
           <p className="text-gray-600">Manage user accounts and permissions</p>
         </div>
       </div>

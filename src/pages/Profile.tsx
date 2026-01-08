@@ -140,7 +140,7 @@ const Profile = () => {
 
         <Card className="shadow-xl border-blush-100">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Edit Profile</CardTitle>
+            <CardTitle className="text-xl md:text-2xl">Edit Profile</CardTitle>
             <CardDescription>
               Update your personal information and profile picture
             </CardDescription>

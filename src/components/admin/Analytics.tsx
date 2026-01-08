@@ -197,7 +197,7 @@ const Analytics = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Analytics</h2>
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900">Analytics</h2>
           <p className="text-gray-600">Track your business performance and insights</p>
         </div>
       </div>
@@ -209,7 +209,7 @@ const Analytics = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-                <p className="text-2xl font-bold text-gray-900">₵{analytics.totalRevenue.toFixed(2)}</p>
+                <p className="text-xl md:text-2xl font-bold text-gray-900">₵{analytics.totalRevenue.toFixed(2)}</p>
                 <p className="text-sm text-green-600 flex items-center mt-1">
                   <TrendingUp className="w-4 h-4 mr-1" />
                   Live data
@@ -227,7 +227,7 @@ const Analytics = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Total Orders</p>
-                <p className="text-2xl font-bold text-gray-900">{analytics.totalOrders}</p>
+                <p className="text-xl md:text-2xl font-bold text-gray-900">{analytics.totalOrders}</p>
                 <p className="text-sm text-blue-600 flex items-center mt-1">
                   <Package className="w-4 h-4 mr-1" />
                   Live data
@@ -245,7 +245,7 @@ const Analytics = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">New Customers</p>
-                <p className="text-2xl font-bold text-gray-900">{analytics.newCustomers}</p>
+                <p className="text-xl md:text-2xl font-bold text-gray-900">{analytics.newCustomers}</p>
                 <p className="text-sm text-purple-600 flex items-center mt-1">
                   <Users className="w-4 h-4 mr-1" />
                   Last 30 days
@@ -263,7 +263,7 @@ const Analytics = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Avg. Order Value</p>
-                <p className="text-2xl font-bold text-gray-900">₵{analytics.avgOrderValue.toFixed(2)}</p>
+                <p className="text-xl md:text-2xl font-bold text-gray-900">₵{analytics.avgOrderValue.toFixed(2)}</p>
                 <p className="text-sm text-orange-600 flex items-center mt-1">
                   <DollarSign className="w-4 h-4 mr-1" />
                   Live data

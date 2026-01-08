@@ -246,7 +246,7 @@ const ProductDetail = () => {
         <Header />
       </div>
         <div className="container mx-auto px-4 py-16 text-center">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">
+          <h1 className="text-xl md:text-2xl font-bold text-gray-800 mb-4">
             Product Not Found
           </h1>
           <Button onClick={() => navigate("/shop")}>Continue Shopping</Button>
@@ -918,11 +918,11 @@ const ProductDetail = () => {
         </div>
 
         {similarProducts.length > 0 && (
-          <div className="mt-16">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+          <div className="mt-5">
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-6">
               You May Also Like
             </h2>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
               {similarProducts.map((similarProduct) => (
                 <ProductCard key={similarProduct.id} product={similarProduct} />
               ))}
