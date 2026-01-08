@@ -408,7 +408,7 @@ const Checkout = () => {
         <Header />
       </div>
 
-      <div className="md:container md:mx-auto px-0  md:px-4 py-4 md:py-8">
+      <div className="md:container md:mx-auto px-0 mx-1 md:px-4 py-4 md:py-8">
         <Button
           variant="ghost"
           onClick={() => navigate(retryOrder ? "/my-orders" : "/cart")}
@@ -637,7 +637,7 @@ const Checkout = () => {
           </div>
 
           {/* Order Summary */}
-          <div className="space-y-6">
+          <div className="space-y-6 ">
             <Card>
               <CardHeader>
                 <CardTitle>Order Summary</CardTitle>
@@ -769,7 +769,7 @@ const Checkout = () => {
 
                 {/* Payment Button */}
                 {isFormValid && user ? (
-                  <div className="items-center text-center flex flex-row gap-2">
+                  <div className="items-center justify-center  flex flex-row flex-wrap gap-2">
                     <PaystackPayment
                       amount={retryOrder ? retryOrder.total_amount : total}
                       currency="GHS"
