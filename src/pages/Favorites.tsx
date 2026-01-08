@@ -118,7 +118,7 @@ const Favorites = () => {
               <ArrowLeft size={16} className="mr-2" />
               Back
             </Button>
-            <h1 className="text-3xl font-bold text-gray-800">
+            <h1 className="text-xl md:text-2xl font-bold text-gray-800">
               My Favorites ({favoriteProducts.length} items)
             </h1>
             <p className="text-gray-600 mt-2">

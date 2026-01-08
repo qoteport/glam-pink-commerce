@@ -157,7 +157,7 @@ const Footer = () => {
         <div className="container mx-auto px-4">
           <div className="text-center space-y-6">
             <div className="space-y-2">
-              <h3 className="text-xl md:text-2xl md:text-3xl font-bold text-white">
+              <h3 className="text-xl md:text-2xl md:text-xl md:text-3xl font-bold text-white">
                 ✨ Join the Beauty Squad & Stay Connected
               </h3>
               <p className="text-blush-100 max-w-2xl mx-auto">

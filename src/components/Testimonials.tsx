@@ -114,7 +114,7 @@ const Testimonials = () => {
               <Badge className="bg-white text-blush-600 border-blush-200 px-4 py-2 shadow-sm">
                 💕 Customer Love
               </Badge>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
+              <h2 className="text-xl md:text-3xl md:text-4xl font-bold text-gray-800">
                 What Our Beautiful{" "}
                 <span className="text-gradient">Queens Say</span>
               </h2>
@@ -308,7 +308,7 @@ const Testimonials = () => {
                   { number: "24/7", label: "Customer Support" },
                 ].map((stat, index) => (
                   <div key={index} className="space-y-2">
-                    <div className="text-3xl font-bold text-blush-600">
+                    <div className="text-xl md:text-3xl font-bold text-blush-600">
                       {stat.number}
                     </div>
                     <div className="text-sm text-gray-600">{stat.label}</div>

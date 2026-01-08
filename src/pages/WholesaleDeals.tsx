@@ -240,7 +240,7 @@ const WholesaleDeals = () => {
         {/* Quote Request Form Section */}
         <div className="mt-16" id="quote-form">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold mb-4">Request a Quote</h2>
+            <h2 className="text-xl md:text-3xl font-bold mb-4">Request a Quote</h2>
             <p className="text-muted-foreground">
               Fill out the form below or contact us directly for wholesale pricing
             </p>

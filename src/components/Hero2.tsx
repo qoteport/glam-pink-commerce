@@ -106,18 +106,18 @@ const Hero2 = () => {
         {/* Stats */}
         <div className="flex flex-wrap justify-center gap-8 text-white">
           <div className="text-center">
-            <div className="text-3xl font-bold">50K+</div>
+            <div className="text-xl md:text-3xl font-bold">50K+</div>
             <div className="text-sm text-gray-400">Happy Customers</div>
           </div>
           <div className="text-center">
             <div className="flex items-center justify-center gap-1">
-              <span className="text-3xl font-bold">4.9</span>
+              <span className="text-xl md:text-3xl font-bold">4.9</span>
               <Star className="w-6 h-6 text-yellow-400 fill-current" />
             </div>
             <div className="text-sm text-gray-400">Customer Rating</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold">1000+</div>
+            <div className="text-xl md:text-3xl font-bold">1000+</div>
             <div className="text-sm text-gray-400">Premium Styles</div>
           </div>
         </div>

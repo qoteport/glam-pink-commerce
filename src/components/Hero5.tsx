@@ -191,15 +191,15 @@ const Hero5 = () => {
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10">
         <div className="flex items-center gap-8 text-white">
           <div className="text-center">
-            <div className="text-3xl font-bold">50K+</div>
+            <div className="text-xl md:text-3xl font-bold">50K+</div>
             <div className="text-sm opacity-80">Happy Customers</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold">1000+</div>
+            <div className="text-xl md:text-3xl font-bold">1000+</div>
             <div className="text-sm opacity-80">Premium Styles</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold">4.9★</div>
+            <div className="text-xl md:text-3xl font-bold">4.9★</div>
             <div className="text-sm opacity-80">Customer Rating</div>
           </div>
         </div>

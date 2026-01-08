@@ -498,7 +498,7 @@ const ProductDetail = () => {
                 )}
               </div>
 
-              <h1 className="text-xl md:text-3xl font-bold text-gray-900">
+              <h1 className="text-xl md:text-xl md:text-3xl font-bold text-gray-900">
                 {product.name}
               </h1>
 

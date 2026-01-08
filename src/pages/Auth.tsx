@@ -127,7 +127,7 @@ const Auth = () => {
                 className={`h-10 w-auto mr-2 mt-2 transition-all duration-300`}
                 loading="lazy"
               />
-              <h1 className="text-3xl font-bold text-gradient">HairyTales Beauty</h1>
+              <h1 className="text-xl md:text-3xl font-bold text-gradient">HairyTales Beauty</h1>
             </div>
             <p className="text-gray-600">Reset your password</p>
           </div>
@@ -203,7 +203,7 @@ const Auth = () => {
                 className={`h-10 w-auto mr-2 mt-2 transition-all duration-300`}
                 loading="lazy"
               />
-            <h1 className="text-3xl font-bold text-gradient">HairyTales Beauty</h1>
+            <h1 className="text-xl md:text-3xl font-bold text-gradient">HairyTales Beauty</h1>
           </div>
           <p className="text-gray-600">Premium wigs, wig caps and more</p>
         </div>

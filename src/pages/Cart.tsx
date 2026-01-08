@@ -128,7 +128,7 @@ const Cart = () => {
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-xl md:text-2xl sm:text-3xl font-bold">Shopping Cart</h1>
+          <h1 className="text-xl md:text-2xl sm:text-xl md:text-3xl font-bold">Shopping Cart</h1>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-4">
