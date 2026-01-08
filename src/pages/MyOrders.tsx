@@ -7,7 +7,9 @@ import MyOrders from '@/components/MyOrders';
 const MyOrdersPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
+       <div className="mb-[100px]">
+        <Header />
+      </div>
       <MyOrders />
       <Footer />
     </div>

@@ -9,7 +9,9 @@ import PriceDisplay from '@/components/PriceDisplay';
 const ShippingInfo = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-cream-50 to-blush-50">
-      <Header />
+       <div className="mb-[100px]">
+        <Header />
+      </div>
       
       <div className="container mx-auto px-4 py-12">
         <div className="text-center mb-12">

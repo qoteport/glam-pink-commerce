@@ -138,7 +138,7 @@ const WholesaleDealsManager = () => {
       })) || [];
 
       setDealProducts(transformedData);
-      
+
       // Initialize editing prices
       const prices: Record<string, number> = {};
       transformedData.forEach(dp => {
@@ -152,7 +152,7 @@ const WholesaleDealsManager = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       if (editingDeal) {
         const { error } = await supabase
@@ -201,7 +201,7 @@ const WholesaleDealsManager = () => {
 
   const handleDelete = async () => {
     if (!deletingDealId) return;
-    
+
     try {
       // First delete associated products
       await supabase
@@ -216,7 +216,7 @@ const WholesaleDealsManager = () => {
         .eq('id', deletingDealId);
 
       if (error) throw error;
-      
+
       fetchDeals();
       if (selectedDealId === deletingDealId) {
         setSelectedDealId(null);
@@ -240,13 +240,13 @@ const WholesaleDealsManager = () => {
     if (checked) {
       const product = products.find(p => p.id === productId);
       const deal = deals.find(d => d.id === selectedDealId);
-      const discountedPrice = product && deal 
+      const discountedPrice = product && deal
         ? product.price * (1 - deal.discount_percentage / 100)
         : product?.price || 0;
-      
-      setSelectedProducts(prev => [...prev, { 
-        productId, 
-        wholesalePrice: Math.round(discountedPrice * 100) / 100 
+
+      setSelectedProducts(prev => [...prev, {
+        productId,
+        wholesalePrice: Math.round(discountedPrice * 100) / 100
       }]);
     } else {
       setSelectedProducts(prev => prev.filter(p => p.productId !== productId));
@@ -254,7 +254,7 @@ const WholesaleDealsManager = () => {
   };
 
   const updateSelectedProductPrice = (productId: string, price: number) => {
-    setSelectedProducts(prev => 
+    setSelectedProducts(prev =>
       prev.map(p => p.productId === productId ? { ...p, wholesalePrice: price } : p)
     );
   };
@@ -274,7 +274,7 @@ const WholesaleDealsManager = () => {
         .insert(productsToAdd);
 
       if (error) throw error;
-      
+
       fetchDealProducts(selectedDealId);
       setSelectedProducts([]);
       toast({ title: 'Success', description: `${productsToAdd.length} product(s) added to deal` });
@@ -296,7 +296,7 @@ const WholesaleDealsManager = () => {
         .eq('id', dealProductId);
 
       if (error) throw error;
-      
+
       if (selectedDealId) {
         fetchDealProducts(selectedDealId);
       }
@@ -319,7 +319,7 @@ const WholesaleDealsManager = () => {
         .eq('id', dealProductId);
 
       if (error) throw error;
-      
+
       if (selectedDealId) {
         fetchDealProducts(selectedDealId);
       }
@@ -337,7 +337,7 @@ const WholesaleDealsManager = () => {
   const saveAllPrices = async () => {
     setSavingPrices(true);
     try {
-      const updates = Object.entries(editingPrices).map(([id, price]) => 
+      const updates = Object.entries(editingPrices).map(([id, price]) =>
         supabase
           .from('wholesale_deal_products')
           .update({ wholesale_price: price })
@@ -345,7 +345,7 @@ const WholesaleDealsManager = () => {
       );
 
       await Promise.all(updates);
-      
+
       if (selectedDealId) {
         fetchDealProducts(selectedDealId);
       }
@@ -373,7 +373,7 @@ const WholesaleDealsManager = () => {
     setEditingDeal(null);
   };
 
-  const availableProducts = products.filter(p => 
+  const availableProducts = products.filter(p =>
     !dealProducts.some(dp => dp.product_id === p.id) &&
     p.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -511,9 +511,9 @@ const WholesaleDealsManager = () => {
                           <Edit size={16} className="mr-1" />
                           Edit
                         </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
+                        <Button
+                          variant="outline"
+                          size="sm"
                           onClick={() => confirmDelete(deal.id)}
                           className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
                         >
@@ -563,8 +563,8 @@ const WholesaleDealsManager = () => {
                       <div className="flex items-center justify-between mb-4">
                         <h4 className="font-medium">Products in "{selectedDeal.name}"</h4>
                         {dealProducts.length > 0 && (
-                          <Button 
-                            size="sm" 
+                          <Button
+                            size="sm"
                             onClick={saveAllPrices}
                             disabled={savingPrices}
                           >
@@ -573,7 +573,7 @@ const WholesaleDealsManager = () => {
                           </Button>
                         )}
                       </div>
-                      
+
                       {dealProducts.length === 0 ? (
                         <div className="text-center py-8 text-muted-foreground border rounded-lg">
                           No products added to this deal yet
@@ -627,7 +627,7 @@ const WholesaleDealsManager = () => {
                     {/* Add Products Section */}
                     <div className="border-t pt-6">
                       <h4 className="font-medium mb-4">Add Products to Deal</h4>
-                      
+
                       <div className="relative mb-4">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
                         <Input
@@ -683,24 +683,31 @@ const WholesaleDealsManager = () => {
                         {availableProducts.map((product) => {
                           const isSelected = selectedProducts.some(sp => sp.productId === product.id);
                           const suggestedPrice = product.price * (1 - selectedDeal.discount_percentage / 100);
-                          
+
                           return (
                             <div
                               key={product.id}
-                              className={`flex items-center space-x-3 p-3 border rounded-lg cursor-pointer transition-colors ${
-                                isSelected ? 'bg-primary/10 border-primary' : 'hover:bg-muted'
-                              }`}
+                              className={`flex items-center space-x-3 p-3 border rounded-lg cursor-pointer transition-colors ${isSelected ? 'bg-primary/10 border-primary' : 'hover:bg-muted'
+                                }`}
                               onClick={() => handleProductSelect(product.id, !isSelected)}
                             >
-                              <Checkbox
-                                checked={isSelected}
-                                onCheckedChange={(checked) => handleProductSelect(product.id, checked as boolean)}
-                              />
+                              <div
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <Checkbox
+                                  checked={isSelected}
+                                  onCheckedChange={(checked) =>
+                                    handleProductSelect(product.id, checked as boolean)
+                                  }
+                                />
+                              </div>
+
                               <img
                                 src={product.image}
                                 alt={product.name}
                                 className="w-12 h-12 object-cover rounded"
                               />
+
                               <div className="flex-1 min-w-0">
                                 <p className="text-sm font-medium truncate">{product.name}</p>
                                 <p className="text-xs text-muted-foreground">
@@ -708,6 +715,7 @@ const WholesaleDealsManager = () => {
                                 </p>
                               </div>
                             </div>
+
                           );
                         })}
                       </div>

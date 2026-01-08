@@ -228,7 +228,9 @@ const ProductDetail = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-white">
+         <div className="mb-[100px]">
         <Header />
+      </div>
         <div className="flex items-center justify-center py-20">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
@@ -240,7 +242,9 @@ const ProductDetail = () => {
   if (!product) {
     return (
       <div className="min-h-screen bg-white">
+         <div className="mb-[100px]">
         <Header />
+      </div>
         <div className="container mx-auto px-4 py-16 text-center">
           <h1 className="text-2xl font-bold text-gray-800 mb-4">
             Product Not Found
@@ -275,7 +279,9 @@ const ProductDetail = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <Header />
+       <div className="mb-[100px]">
+        <Header />
+      </div>
 
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">

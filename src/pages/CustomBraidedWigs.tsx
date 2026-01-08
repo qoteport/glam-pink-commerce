@@ -122,7 +122,9 @@ const CustomBraidedWigs = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <Header />
+       <div className="mb-[100px]">
+        <Header />
+      </div>
 
       <div className="container mx-auto px-4 py-12">
         {/* Hero Section */}

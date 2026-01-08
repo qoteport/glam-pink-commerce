@@ -31,19 +31,24 @@ import {
   QueryClientProvider,
 } from '@tanstack/react-query'
 import Profile from '@/pages/Profile';
+import ScrollToTop from './components/scrollToTop';
 
 const queryClient = new QueryClient()
 
 function App() {
+  if ("scrollRestoration" in window.history) {
+    window.history.scrollRestoration = "manual";
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <CartProvider>
           <FavoritesProvider>
             <Router>
+              <ScrollToTop />
               <div className="min-h-screen bg-white">
-                {/* <Header /> */}
-                <main className="flex-1">
+                <main id="app-scroll" className="flex-1">
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/shop" element={<Shop />} />
@@ -63,18 +68,17 @@ function App() {
                     <Route path="/privacy" element={<Privacy />} />
                     <Route path="/terms" element={<Terms />} />
                     <Route path="/payment-callback" element={<PaymentCallback />} />
-                    <Route 
-                      path="/admin" 
+                    <Route
+                      path="/admin"
                       element={
                         <ProtectedRoute requireAdmin>
                           <Admin />
                         </ProtectedRoute>
-                      } 
+                      }
                     />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </main>
-                <Footer />
                 <Toaster />
               </div>
             </Router>

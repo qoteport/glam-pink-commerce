@@ -215,8 +215,8 @@ const ReviewsManager = () => {
                       <div className="text-sm text-gray-600 truncate">{review.comment}</div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex flex-col gap-1">
-                        <Badge variant={review.is_approved ? 'default' : 'secondary'}>
+                      <div className="flex flex-col gap-1 w-content">
+                        <Badge className='w-content' variant={review.is_approved ? 'default' : 'secondary'}>
                           {review.is_approved ? 'Approved' : 'Pending'}
                         </Badge>
                         {review.is_verified_purchase && (

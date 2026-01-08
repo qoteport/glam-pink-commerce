@@ -127,11 +127,11 @@ const Footer = () => {
 
   const quickLinks = [
     { name: "About Us", href: "#about" },
-    { name: "Size Guide", href: "#size-guide" },
-    { name: "Hair Care Tips", href: "#hair-care" },
-    { name: "Installation Guide", href: "#installation" },
-    { name: "Reviews", href: "#reviews" },
-    { name: "Affiliate Program", href: "#affiliate" },
+    // { name: "Size Guide", href: "#size-guide" },
+    // { name: "Hair Care Tips", href: "#hair-care" },
+    // { name: "Installation Guide", href: "#installation" },
+    // { name: "Reviews", href: "#reviews" },
+    // { name: "Affiliate Program", href: "#affiliate" },
   ];
 
   const customerService = [

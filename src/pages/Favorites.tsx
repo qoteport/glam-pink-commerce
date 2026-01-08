@@ -61,7 +61,9 @@ const Favorites = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-white">
+         <div className="mb-[100px]">
         <Header />
+      </div>
         <div className="flex items-center justify-center py-20">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
@@ -73,7 +75,9 @@ const Favorites = () => {
   if (favoriteProducts.length === 0) {
     return (
       <div className="min-h-screen bg-white">
+         <div className="mb-[100px]">
         <Header />
+      </div>
         <div className="container mx-auto px-4 py-16">
           <div className="text-center max-w-md mx-auto">
             <Heart size={64} className="mx-auto text-blush-300 mb-6" />
@@ -98,7 +102,9 @@ const Favorites = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <Header />
+       <div className="mb-[100px]">
+        <Header />
+      </div>
 
       <div className="container mx-auto px-4 py-8">
         {/* Header */}

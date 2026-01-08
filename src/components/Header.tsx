@@ -1,5 +1,4 @@
-
-import React, { useState, useCallback, useEffect, memo } from "react";
+import React, { useState, useCallback, useEffect, memo, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -62,14 +61,41 @@ const Header = memo(({ onSearch }: HeaderProps) => {
   const { favorites, getTotalFavorites } = useFavorites();
   const { user, profile, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
+  const scrollTimeoutRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
+    let ticking = false;
+    let lastScrollY = window.scrollY;
+    
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      const currentScrollY = window.scrollY;
+      
+      // Use requestAnimationFrame for smooth updates
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          // Only update if scroll position changed significantly (5px threshold)
+          const scrolled = currentScrollY > 10;
+          
+          if (scrolled !== isScrolled) {
+            setIsScrolled(scrolled);
+          }
+          
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    
+    // Use passive listener for better performance
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, [isScrolled]);
 
   const debouncedSearch = useCallback(
     debounce((query: string) => {
@@ -118,21 +144,29 @@ const Header = memo(({ onSearch }: HeaderProps) => {
 
   return (
     <header
-      className={`sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b transition-all duration-300 mb-50 ${
         isScrolled
-          ? "shadow-lg border-blush-100"
-          : "shadow-sm border-transparent"
+          ? "shadow-lg border-blush-100 py-2"
+          : "shadow-sm border-transparent py-3"
       }`}
+      style={{
+        // Optimize for GPU acceleration
+        willChange: 'transform',
+        backfaceVisibility: 'hidden',
+        WebkitBackfaceVisibility: 'hidden',
+      }}
     >
-      {/* Top Bar */}
+      {/* Top Bar - Only show when not scrolled */}
       <AnimatePresence>
         {!isScrolled && (
           <motion.div
-            initial={{ opacity: 1, height: "auto" }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="bg-gradient-to-r from-blush-50 to-cream-50 overflow-hidden"
+            initial={{ height: "auto" }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ 
+              duration: 0.2,
+              ease: "easeInOut" 
+            }}
+            className="bg-gradient-to-r from-blush-50 to-cream-50 overflow-hidden mt-[-10px]"
           >
             <div className="container mx-auto px-4">
               <div className="flex items-center justify-center py-2 text-sm text-blush-600">
@@ -140,7 +174,7 @@ const Header = memo(({ onSearch }: HeaderProps) => {
                 <div>
                   <span className="lg:hidden">Free shipping on orders</span>
                   <div className="flex flex-row gap-0 lg:ml-1">
-                    <PriceDisplay price={1000} designCSS="" className="py-0" />{" "}
+                    <PriceDisplay price={5000} designCSS="" className="py-0" />{" "}
                     +
                   </div>
                 </div>
@@ -153,26 +187,26 @@ const Header = memo(({ onSearch }: HeaderProps) => {
       </AnimatePresence>
 
       {/* Main Navigation */}
-      <div className="container mx-auto px-4 py-3">
+      <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <motion.div
-            whileHover={{ scale: 1.02 }}
             className="flex items-center cursor-pointer"
             onClick={() => navigate("/")}
+            transition={{ duration: 0.2 }}
           >
             <div className="flex items-center">
               <img
                 src="../hairytales-logo.png"
                 alt="HairyTalesBeauty Logo"
-                className={`h-10 w-auto mr-2 mt-2 transition-all duration-300 ${
-                  isScrolled ? "hidden" : "hidden md:block"
+                className={`h-8 w-auto mr-2 transition-all duration-200 mt-2 ${
+                  isScrolled ? "opacity-100 scale-100" : "opacity-100 scale-100"
                 }`}
                 loading="lazy"
               />
               <h1
-                className={`text-xl md:text-2xl font-bold text-gradient ${
-                  isScrolled ? "text-2xl" : "lg:text-3xl"
+                className={`font-bold text-gradient transition-all duration-200 ${
+                  isScrolled ? "text-xl" : "text-2xl"
                 }`}
               >
                 HairyTalesBeauty
@@ -188,7 +222,7 @@ const Header = memo(({ onSearch }: HeaderProps) => {
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="chip"
-                      className="font-medium text-sm xl:text-base hover:bg-blush-50"
+                      className="font-medium text-sm xl:text-base hover:bg-blush-50 transition-colors duration-200"
                     >
                       {item.name}
                       <ChevronDown size={16} className="ml-1" />
@@ -207,10 +241,8 @@ const Header = memo(({ onSearch }: HeaderProps) => {
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <motion.button
+                <button
                   key={item.name}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
                   onClick={() => handleNavClick(item.href)}
                   className={`font-medium text-sm xl:text-base transition-colors duration-200 ${
                     item.isSpecial
@@ -219,7 +251,7 @@ const Header = memo(({ onSearch }: HeaderProps) => {
                   }`}
                 >
                   {item.name}
-                </motion.button>
+                </button>
               )
             )}
           </nav>
@@ -228,15 +260,13 @@ const Header = memo(({ onSearch }: HeaderProps) => {
           <div className="flex items-center space-x-2 sm:space-x-4">
             {/* AI Search - Desktop */}
             {!showSearch && (
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
+              <button
                 onClick={toggleSearch}
                 className="sm:hidden p-1 text-blush-600"
                 aria-label="Search"
               >
                 <Sparkles size={20} />
-              </motion.button>
+              </button>
             )}
 
             <div className={`hidden sm:block ${showSearch ? "sm:hidden" : ""}`}>
@@ -247,13 +277,11 @@ const Header = memo(({ onSearch }: HeaderProps) => {
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="relative hover:bg-blush-50 p-1 sm:p-2 rounded-full"
+                  <button
+                    className="relative hover:bg-blush-50 p-1 sm:p-2 rounded-full transition-colors duration-200"
                   >
                     <div className="flex items-center space-x-1 sm:space-x-2">
-                      <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-rosegold-400 to-blush-400 rounded-full flex items-center justify-center text-white text-xs sm:text-sm font-medium">
+                      <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-rosegold-400 to-blush-400 rounded-full flex items-center justify-center text-white text-xs sm:text-sm font-medium transition-all duration-200">
                         {profile?.full_name
                           ? profile.full_name.charAt(0).toUpperCase()
                           : user.email?.charAt(0).toUpperCase()}
@@ -265,7 +293,7 @@ const Header = memo(({ onSearch }: HeaderProps) => {
                         />
                       )}
                     </div>
-                  </motion.button>
+                  </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="end"
@@ -318,21 +346,17 @@ const Header = memo(({ onSearch }: HeaderProps) => {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                className="relative hover:bg-blush-50 p-1 sm:p-2 rounded-full"
+              <button
+                className="relative hover:bg-blush-50 p-1 sm:p-2 rounded-full transition-colors duration-200"
                 onClick={() => navigate("/auth")}
                 aria-label="Account"
               >
                 <User size={20} className="text-blush-600" />
-              </motion.button>
+              </button>
             )}
 
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className="relative hover:bg-blush-50 hidden md:flex group p-1 sm:p-2 rounded-full"
+            <button
+              className="relative hover:bg-blush-50 hidden md:flex group p-1 sm:p-2 rounded-full transition-colors duration-200"
               onClick={() => navigate("/favorites")}
               aria-label="Favorites"
             >
@@ -345,12 +369,10 @@ const Header = memo(({ onSearch }: HeaderProps) => {
                   {getTotalFavorites()}
                 </Badge>
               )}
-            </motion.button>
+            </button>
 
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className="relative hover:bg-blush-50 group p-1 sm:p-2 rounded-full"
+            <button
+              className="relative hover:bg-blush-50 group p-1 sm:p-2 rounded-full transition-colors duration-200"
               onClick={() => navigate("/cart")}
               aria-label="Cart"
             >
@@ -363,18 +385,16 @@ const Header = memo(({ onSearch }: HeaderProps) => {
                   {getTotalItems()}
                 </Badge>
               )}
-            </motion.button>
+            </button>
 
             {/* Mobile Menu Button */}
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
+            <button
               className="lg:hidden p-1 sm:p-2 rounded-full"
               onClick={toggleMenu}
               aria-label={isMenuOpen ? "Close menu" : "Open menu"}
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </motion.button>
+            </button>
           </div>
         </div>
 
@@ -403,7 +423,7 @@ const Header = memo(({ onSearch }: HeaderProps) => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.2 }}
             className="lg:hidden bg-white border-t border-blush-100 overflow-hidden"
           >
             <div className="container mx-auto px-4 py-3">
@@ -415,20 +435,18 @@ const Header = memo(({ onSearch }: HeaderProps) => {
                         {item.name}
                       </div>
                       {item.items?.map((subItem) => (
-                        <motion.button
+                        <button
                           key={subItem.name}
-                          whileTap={{ scale: 0.98 }}
                           onClick={() => handleNavClick(subItem.href)}
                           className="font-medium py-1.5 pl-4 transition-colors duration-200 hover:text-blush-500 text-left text-gray-600 block w-full text-sm"
                         >
                           {subItem.name}
-                        </motion.button>
+                        </button>
                       ))}
                     </div>
                   ) : (
-                    <motion.button
+                    <button
                       key={item.name}
-                      whileTap={{ scale: 0.98 }}
                       onClick={() => handleNavClick(item.href)}
                       className={`font-medium py-2 transition-colors duration-200 hover:text-blush-500 text-left text-sm ${
                         item.isSpecial
@@ -437,46 +455,42 @@ const Header = memo(({ onSearch }: HeaderProps) => {
                       }`}
                     >
                       {item.name}
-                    </motion.button>
+                    </button>
                   )
                 )}
 
                 <div className="border-t border-gray-200 pt-3 mt-2 space-y-2">
                   {user && (
-                    <motion.button
-                      whileTap={{ scale: 0.98 }}
+                    <button
                       onClick={() => handleNavClick("/profile")}
                       className="flex items-center w-full font-medium py-1.5 text-left text-gray-600 hover:text-blush-500 text-sm"
                     >
                       <Settings size={16} className="mr-2" />
                       Profile Settings
-                    </motion.button>
+                    </button>
                   )}
-                  <motion.button
-                    whileTap={{ scale: 0.98 }}
+                  <button
                     onClick={() => handleNavClick("/favorites")}
                     className="flex items-center w-full font-medium py-1.5 text-left text-gray-600 hover:text-blush-500 text-sm"
                   >
                     <Heart size={16} className="mr-2" />
                     Favorites ({favorites.length})
-                  </motion.button>
-                  <motion.button
-                    whileTap={{ scale: 0.98 }}
+                  </button>
+                  <button
                     onClick={() => handleNavClick("/my-orders")}
                     className="flex items-center w-full font-medium py-1.5 text-left text-gray-600 hover:text-blush-500 text-sm"
                   >
                     <Package size={16} className="mr-2" />
                     My Orders
-                  </motion.button>
+                  </button>
                   {user && isAdmin && (
-                    <motion.button
-                      whileTap={{ scale: 0.98 }}
+                    <button
                       onClick={() => handleNavClick("/admin")}
                       className="flex items-center w-full font-medium py-1.5 text-left text-rosegold-600 bg-rosegold-50 px-3 py-1.5 rounded-lg text-sm"
                     >
                       <Crown className="mr-2 w-4 h-4" />
                       Admin Dashboard
-                    </motion.button>
+                    </button>
                   )}
                 </div>
               </div>

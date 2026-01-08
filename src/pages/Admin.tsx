@@ -121,7 +121,7 @@ const Admin = () => {
             onValueChange={setActiveTab}
             className="space-y-6"
           >
-            <TabsList className="grid w-full grid-cols-8 lg:grid-cols-16 mb-12">
+            <TabsList className="grid grid-start w-full grid-cols-8 lg:grid-cols-16 mb-20">
               <TabsTrigger
                 value="analytics"
                 className="flex items-center space-x-2"
@@ -185,13 +185,15 @@ const Admin = () => {
                 <FileText size={16} />
                 <span className="hidden sm:inline">Categories</span>
               </TabsTrigger>
+
               <TabsTrigger
-                value="reviews"
+                value="collections"
                 className="flex items-center space-x-2"
               >
-                <Star size={16} />
-                <span className="hidden sm:inline">Reviews</span>
+                <Crown size={16} />
+                <span className="hidden sm:inline">Collections</span>
               </TabsTrigger>
+
               <TabsTrigger
                 value="discounts"
                 className="flex items-center space-x-2"
@@ -210,12 +212,23 @@ const Admin = () => {
                 <Calculator size={16} />
                 <span className="hidden sm:inline">Tax</span>
               </TabsTrigger>
+                  <TabsTrigger
+                value="reviews"
+                className="flex items-center space-x-2"
+              >
+                <Star size={16} />
+                <span className="hidden sm:inline">Reviews</span>
+              </TabsTrigger>
               <TabsTrigger
                 value="testimonials"
                 className="flex items-center space-x-2"
               >
                 <MessageSquare size={16} />
                 <span className="hidden sm:inline">Reviews</span>
+              </TabsTrigger>
+              <TabsTrigger value="hero" className="flex items-center space-x-2">
+                <FileText size={16} />
+                <span className="hidden sm:inline">Hero</span>
               </TabsTrigger>
               <TabsTrigger
                 value="instagram"
@@ -224,24 +237,15 @@ const Admin = () => {
                 <Instagram size={16} />
                 <span className="hidden sm:inline">Instagram</span>
               </TabsTrigger>
-              <TabsTrigger
-                value="collections"
-                className="flex items-center space-x-2"
-              >
-                <Crown size={16} />
-                <span className="hidden sm:inline">Collections</span>
-              </TabsTrigger>
 
-              <TabsTrigger value="hero" className="flex items-center space-x-2">
-                <FileText size={16} />
-                <span className="hidden sm:inline">Hero</span>
-              </TabsTrigger>
+
+
               <TabsTrigger
                 value="social"
                 className="flex items-center space-x-2"
               >
                 <Instagram size={16} />
-                <span className="hidden sm:inline">Social</span>
+                <span className="hidden sm:inline">Social Handles</span>
               </TabsTrigger>
               <TabsTrigger
                 value="subscriptions"

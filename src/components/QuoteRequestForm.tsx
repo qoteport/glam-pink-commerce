@@ -97,8 +97,8 @@ const QuoteRequestForm = () => {
             </div>
             <div>
               <h4 className="font-medium">Phone</h4>
-              <a href="tel:+233500000000" className="text-muted-foreground hover:text-primary transition-colors">
-                +233 50 000 0000
+              <a href="tel:+233558384512" className="text-muted-foreground hover:text-primary transition-colors">
+               +233 558 384 512
               </a>
             </div>
           </div>
@@ -110,12 +110,12 @@ const QuoteRequestForm = () => {
             <div>
               <h4 className="font-medium">WhatsApp</h4>
               <a 
-                href="https://wa.me/233500000000?text=Hello! I'm interested in wholesale pricing for your products."
+                href="https://wa.me/+233542511844?text=Hello! I'm interested in wholesale pricing for your products."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-green-600 transition-colors"
               >
-                +233 50 000 0000
+                +233 542 511 844
               </a>
               <p className="text-xs text-muted-foreground mt-1">Click to chat directly</p>
             </div>
@@ -127,8 +127,8 @@ const QuoteRequestForm = () => {
             </div>
             <div>
               <h4 className="font-medium">Email</h4>
-              <a href="mailto:wholesale@hairytalesbeauty.com" className="text-muted-foreground hover:text-primary transition-colors">
-                wholesale@hairytalesbeauty.com
+              <a href="mailto:hairytalesbeauty@gmail.com" className="text-muted-foreground hover:text-primary transition-colors">
+                hairytalesbeauty@gmail.com
               </a>
             </div>
           </div>

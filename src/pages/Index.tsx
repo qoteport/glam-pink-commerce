@@ -9,7 +9,9 @@ import Footer from '@/components/Footer';
 const Index = () => {
   return (
     <div className="min-h-screen bg-white">
-      <Header />
+       <div className="mb-[100px]">
+        <Header />
+      </div>
       <main className='lg:mx-[50px]'>
         <DynamicHero />
         <ProductShowcase />

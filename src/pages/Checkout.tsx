@@ -379,7 +379,9 @@ const Checkout = () => {
   if (items.length === 0 && !retryOrder) {
     return (
       <div className="min-h-screen bg-white">
+         <div className="mb-[100px]">
         <Header />
+      </div>
         <div className="container mx-auto px-4 py-16 text-center">
           <h1 className="text-2xl font-bold text-gray-800 mb-4">
             Your cart is empty
@@ -402,7 +404,9 @@ const Checkout = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
+       <div className="mb-[100px]">
+        <Header />
+      </div>
 
       <div className="container mx-auto px-4 py-8">
         <Button

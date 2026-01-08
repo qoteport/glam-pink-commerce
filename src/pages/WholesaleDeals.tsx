@@ -94,7 +94,9 @@ const WholesaleDeals = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
+         <div className="mb-[100px]">
         <Header />
+      </div>
         <div className="flex items-center justify-center py-20">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
@@ -105,8 +107,10 @@ const WholesaleDeals = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
-      
+       <div className="mb-[100px]">
+        <Header />
+      </div>
+
       <div className="container mx-auto px-4 py-12">
         {/* Hero Section */}
         <div className="text-center mb-12">
@@ -149,7 +153,7 @@ const WholesaleDeals = () => {
         )}
 
         {/* Deals Grid */}
-        <div className="grid gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {deals.map((deal) => (
             <Card key={deal.id} className="overflow-hidden hover:shadow-lg transition-shadow">
               <CardHeader className="bg-gradient-to-r from-primary/10 to-primary/5">
@@ -171,11 +175,11 @@ const WholesaleDeals = () => {
                   </span>
                 </div>
               </CardHeader>
-              
+
               <CardContent className="p-6">
                 {/* Product Preview (show first 3) */}
-                <div className="grid md:grid-cols-3 gap-4 mb-6">
-                  {deal.products.slice(0, 3).map((product) => (
+                <div className="grid md:grid-cols-2 gap-4 mb-6">
+                  {deal.products.slice(0, 2).map((product) => (
                     <div key={product.id} className="flex items-center space-x-3 p-3 border rounded-lg">
                       <img
                         src={product.image}
@@ -196,29 +200,33 @@ const WholesaleDeals = () => {
                     </div>
                   ))}
                 </div>
-                
-                {deal.products.length > 3 && (
+
+                {deal.products.length > 2 && (
                   <p className="text-sm text-muted-foreground mb-4">
                     +{deal.products.length - 3} more products in this deal
                   </p>
                 )}
-                
+
                 <Separator className="my-4" />
-                
+
                 <div className="flex items-center justify-between">
                   <div className="text-sm text-muted-foreground">
                     <p>• Professional wholesale pricing</p>
                     <p>• Minimum order: {deal.min_quantity} pieces</p>
                   </div>
-                  <div className="flex gap-2">
-                    <Button 
-                      variant="outline" 
+                  <div className="flex flex-col gap-2">
+                    <Button
+                      variant="outline"
                       onClick={() => setSelectedDeal(deal)}
                     >
                       <Eye className="w-4 h-4 mr-2" />
                       View Details
                     </Button>
-                    <Button onClick={() => setShowQuoteForm(true)}>
+                    <Button onClick={() => {
+                      setSelectedDeal(null);
+                      setShowQuoteForm(true);
+                      document.getElementById('quote-form')?.scrollIntoView({ behavior: 'smooth' });
+                    }}>
                       Request Quote
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
@@ -243,22 +251,22 @@ const WholesaleDeals = () => {
 
       {/* Deal Details Dialog */}
       <Dialog open={!!selectedDeal} onOpenChange={() => setSelectedDeal(null)}>
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-3xl w-full h-screen md:h-auto md:max-h-[95vh] overflow-y-hidden flex flex-col p-0">
           <DialogHeader>
-            <DialogTitle className="flex items-center justify-between">
+            <DialogTitle className="flex items-start gap-3 px-6 py-4 border-b text-start">
               <span>{selectedDeal?.name}</span>
               <Badge className="bg-primary text-primary-foreground">
                 {selectedDeal?.discount_percentage}% OFF
               </Badge>
             </DialogTitle>
           </DialogHeader>
-          
+
           {selectedDeal && (
-            <div className="space-y-6">
+            <div className="space-y-4 mt-4 px-6 pb-24 md:pb-6 overflow-y-auto">
               {selectedDeal.description && (
                 <p className="text-muted-foreground">{selectedDeal.description}</p>
               )}
-              
+
               <div className="flex items-center gap-4 text-sm">
                 <Badge variant="outline">
                   Min. {selectedDeal.min_quantity} pieces
@@ -267,9 +275,9 @@ const WholesaleDeals = () => {
                   {selectedDeal.products.length} products
                 </Badge>
               </div>
-              
+
               <Separator />
-              
+
               <div>
                 <h4 className="font-semibold mb-4">Products in this Deal</h4>
                 <div className="grid gap-4">
@@ -298,10 +306,16 @@ const WholesaleDeals = () => {
                   ))}
                 </div>
               </div>
-              
+
               <Separator />
-              
-              <div className="flex justify-end gap-2">
+
+
+            </div>
+          )}
+
+          <div className="fixed bottom-0 left-0 right-0 md:static border-t bg-background p-4 md:p-6">
+            <div className="flex justify-end gap-3 pt-4">
+             
                 <Button variant="outline" onClick={() => setSelectedDeal(null)}>
                   Close
                 </Button>
@@ -315,7 +329,7 @@ const WholesaleDeals = () => {
                 </Button>
               </div>
             </div>
-          )}
+      
         </DialogContent>
       </Dialog>
 
