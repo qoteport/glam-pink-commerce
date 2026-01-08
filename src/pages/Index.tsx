@@ -15,7 +15,9 @@ const Index = () => {
       </div>
       <main className='lg:mx-[50px]'>
         <DynamicHero />
-        <OfferBanner />
+       <div className='mt-5'>
+         <OfferBanner />
+       </div>
         <ProductShowcase />
         <Testimonials />
       </main>

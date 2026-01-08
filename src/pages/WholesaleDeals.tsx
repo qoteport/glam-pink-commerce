@@ -262,7 +262,7 @@ const WholesaleDeals = () => {
           </DialogHeader>
 
           {selectedDeal && (
-            <div className="space-y-4 mt-4 px-6 pb-24 md:pb-6 overflow-y-auto">
+            <div className="space-y-4 mt-4 px-6 pb-24 md:pb-6 overflow-y-auto no-scrollbar">
               {selectedDeal.description && (
                 <p className="text-muted-foreground">{selectedDeal.description}</p>
               )}
