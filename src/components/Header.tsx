@@ -173,7 +173,7 @@ const Header = memo(({ onSearch }: HeaderProps) => {
               duration: 0.2,
               ease: "easeInOut" 
             }}
-            className="bg-gradient-to-r from-blush-50 to-cream-50 overflow-hidden mt-[-10px]"
+            className="bg-gradient-to-r from-blush-50 to-cream-50 overflow-hidden mt-[-10px] hidden md:block"
           >
             <div className="container mx-auto px-4">
               <div className="flex items-center justify-center py-2 text-sm text-blush-600">
