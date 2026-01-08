@@ -106,7 +106,7 @@ const Hero = () => {
 
             {/* Main Headline */}
             <div className="space-y-4">
-              <h1 className="text-4xl md:text-6xl font-bold leading-tight">
+              <h1 className="text-2xl md:text-4xl md:text-6xl font-bold leading-tight">
                 {heroData.title.split(" ").slice(0, 2).join(" ")}
                 <span className="block text-gradient">
                   {heroData.title.split(" ").slice(2).join(" ")}

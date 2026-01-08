@@ -107,7 +107,7 @@ const ProductShowcase = () => {
           <Badge className="bg-blush-100 text-blush-600 border-blush-200 px-4 py-2">
             ✨ Featured Collections
           </Badge>
-          <h2 className="text-xl md:text-3xl md:text-4xl font-bold text-gray-800">
+          <h2 className="text-xl md:text-3xl md:text-2xl md:text-4xl font-bold text-gray-800">
             Shop Our <span className="text-gradient">Premium Collection</span>
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">

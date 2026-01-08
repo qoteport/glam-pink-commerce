@@ -114,7 +114,7 @@ const Testimonials = () => {
               <Badge className="bg-white text-blush-600 border-blush-200 px-4 py-2 shadow-sm">
                 💕 Customer Love
               </Badge>
-              <h2 className="text-xl md:text-3xl md:text-4xl font-bold text-gray-800">
+              <h2 className="text-xl md:text-3xl md:text-2xl md:text-4xl font-bold text-gray-800">
                 What Our Beautiful{" "}
                 <span className="text-gradient">Queens Say</span>
               </h2>

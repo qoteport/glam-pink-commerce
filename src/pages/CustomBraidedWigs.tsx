@@ -129,7 +129,7 @@ const CustomBraidedWigs = () => {
       <div className="container mx-auto px-4 py-12">
         {/* Hero Section */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">
+          <h1 className="text-2xl md:text-4xl font-bold text-gray-800 mb-4">
             Custom Braided Wigs
           </h1>
           <p className="text-xl text-gray-600 mb-8">

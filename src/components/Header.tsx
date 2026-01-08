@@ -66,29 +66,29 @@ const Header = memo(({ onSearch }: HeaderProps) => {
   useEffect(() => {
     let ticking = false;
     let lastScrollY = window.scrollY;
-    
+
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      
+
       // Use requestAnimationFrame for smooth updates
       if (!ticking) {
         window.requestAnimationFrame(() => {
           // Only update if scroll position changed significantly (5px threshold)
           const scrolled = currentScrollY > 10;
-          
+
           if (scrolled !== isScrolled) {
             setIsScrolled(scrolled);
           }
-          
+
           ticking = false;
         });
         ticking = true;
       }
     };
-    
+
     // Use passive listener for better performance
     window.addEventListener('scroll', handleScroll, { passive: true });
-    
+
     return () => {
       window.removeEventListener('scroll', handleScroll);
       if (scrollTimeoutRef.current) {
@@ -144,11 +144,10 @@ const Header = memo(({ onSearch }: HeaderProps) => {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b transition-all duration-300 md:h-auto ${
-        isScrolled
+      className={`fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b transition-all duration-300 md:h-auto ${isScrolled
           ? "shadow-lg border-blush-100 py-2"
           : "shadow-sm border-transparent py-3"
-      }  ${isMenuOpen ? 'h-screen lg:h-auto' : 'h-auto'}`}
+        }  ${isMenuOpen ? 'h-screen lg:h-auto' : 'h-auto'}`}
       style={{
         // Optimize for GPU acceleration
         willChange: 'transform',
@@ -157,9 +156,9 @@ const Header = memo(({ onSearch }: HeaderProps) => {
       }}
 
       onClick={(e) => {
-        if(isMenuOpen){
-           e.stopPropagation();
-           setIsMenuOpen(false);
+        if (isMenuOpen) {
+          e.stopPropagation();
+          setIsMenuOpen(false);
         }
       }}
     >
@@ -169,27 +168,34 @@ const Header = memo(({ onSearch }: HeaderProps) => {
           <motion.div
             initial={{ height: "auto" }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ 
+            transition={{
               duration: 0.2,
-              ease: "easeInOut" 
+              ease: "easeInOut"
             }}
-            className="bg-gradient-to-r from-blush-50 to-cream-50 overflow-hidden mt-[-10px] hidden md:block"
+            className="bg-gradient-to-r from-blush-50 to-cream-50 overflow-hidden mt-[-10px]"
           >
             <div className="container mx-auto px-4">
-              <div className="flex items-center justify-center py-2 text-sm text-blush-600">
-              
-               
-                  {/* <span className="lg:hidden">Free shipping on orders</span> */}
-                  <div className="flex flex-row gap-0 ml-1">
-                    Free shipping on orders 
-                    <PriceDisplay price={5000} designCSS="ml-1" className="py-0" />{" "}
-                    +
-                  </div>
-         
-                <div className="m-1 mt-0">|</div>
-                <span className="">100% Virgin Hair Guarantee</span>
+              <div className="flex items-center justify-center py-2 text-sm text-blush-600 flex-nowrap whitespace-nowrap">
+
+                <div className="flex items-center flex-nowrap whitespace-nowrap ml-1">
+                  Free shipping on orders
+                  <PriceDisplay
+                    price={5000}
+                    designCSS="mx-1"
+                    className="py-0"
+                  />
+                  +
+                </div>
+
+                <span className="mx-1">|</span>
+
+                <span className="whitespace-nowrap">
+                  100% Virgin Hair Guarantee
+                </span>
+
               </div>
             </div>
+
           </motion.div>
         )}
       </AnimatePresence>
@@ -207,15 +213,13 @@ const Header = memo(({ onSearch }: HeaderProps) => {
               <img
                 src="../hairytales-logo.png"
                 alt="HairyTalesBeauty Logo"
-                className={`h-8 w-auto mr-2 transition-all duration-200 mt-2 ${
-                  isScrolled ? "opacity-100 scale-100" : "opacity-100 scale-100"
-                }`}
+                className={`h-8 w-auto mr-2 transition-all duration-200 mt-2 ${isScrolled ? "opacity-100 scale-100" : "opacity-100 scale-100"
+                  }`}
                 loading="lazy"
               />
               <h1
-                className={`font-bold text-gradient transition-all duration-200 ${
-                  isScrolled ? "text-xl" : "text-xl md:text-xl md:text-2xl"
-                }`}
+                className={`font-bold text-gradient transition-all duration-200 ${isScrolled ? "text-xl" : "text-xl md:text-xl md:text-2xl"
+                  }`}
               >
                 HairyTalesBeauty
               </h1>
@@ -252,11 +256,10 @@ const Header = memo(({ onSearch }: HeaderProps) => {
                 <button
                   key={item.name}
                   onClick={() => handleNavClick(item.href)}
-                  className={`font-medium text-sm xl:text-base transition-colors duration-200 ${
-                    item.isSpecial
+                  className={`font-medium text-sm xl:text-base transition-colors duration-200 ${item.isSpecial
                       ? "text-rosegold-500 bg-rosegold-50 px-3 py-1 rounded-full hover:bg-rosegold-100"
                       : "text-gray-700 hover:text-blush-500"
-                  }`}
+                    }`}
                 >
                   {item.name}
                 </button>
@@ -456,11 +459,10 @@ const Header = memo(({ onSearch }: HeaderProps) => {
                     <button
                       key={item.name}
                       onClick={() => handleNavClick(item.href)}
-                      className={`font-medium py-2 transition-colors duration-200 hover:text-blush-500 text-left text-sm ${
-                        item.isSpecial
+                      className={`font-medium py-2 transition-colors duration-200 hover:text-blush-500 text-left text-sm ${item.isSpecial
                           ? "text-rosegold-500 bg-rosegold-50 px-3 py-1.5 rounded-lg"
                           : "text-gray-700"
-                      }`}
+                        }`}
                     >
                       {item.name}
                     </button>

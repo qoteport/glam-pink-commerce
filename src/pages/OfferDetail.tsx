@@ -219,7 +219,7 @@ const OfferDetail = () => {
                 <Badge className="bg-orange-500 text-white border-none mb-3">
                   {isExpired ? 'Expired' : 'Limited Time Offer'}
                 </Badge>
-                <h1 className="text-xl md:text-3xl md:text-4xl font-bold text-white mb-2">{offer.name}</h1>
+                <h1 className="text-xl md:text-3xl md:text-2xl md:text-4xl font-bold text-white mb-2">{offer.name}</h1>
                 {offer.description && (
                   <p className="text-white/90 max-w-xl">{offer.description}</p>
                 )}
