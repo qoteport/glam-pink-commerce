@@ -419,7 +419,7 @@ const Header = memo(({ onSearch }: HeaderProps) => {
               transition={{ duration: 0.2 }}
               className="overflow-hidden sm:hidden"
             >
-              <div className="mt-3 mb-3">
+              <div className="mt-3 mb-3 mx-1">
                 <AISearchBar onClose={() => setShowSearch(false)} />
               </div>
             </motion.div>
