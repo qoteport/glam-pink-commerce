@@ -26,6 +26,7 @@ import { FavoritesProvider } from '@/contexts/FavoritesContext';
 import Admin from '@/pages/Admin';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import PaymentCallback from '@/pages/PaymentCallback';
+import OfferDetail from '@/pages/OfferDetail';
 import {
   QueryClient,
   QueryClientProvider,
@@ -68,6 +69,7 @@ function App() {
                     <Route path="/privacy" element={<Privacy />} />
                     <Route path="/terms" element={<Terms />} />
                     <Route path="/payment-callback" element={<PaymentCallback />} />
+                    <Route path="/offer/:id" element={<OfferDetail />} />
                     <Route
                       path="/admin"
                       element={
