@@ -289,7 +289,7 @@ const ProductCard = ({ product, viewMode = "grid", index = 0 }: ProductCardProps
                 <div className="flex gap-3 pt-2">
                   <Button
                     variant="outline"
-                    className="flex-1 border-gray-300 hover:bg-gray-50 text-gray-700"
+                    className="flex-1 border-gray-300 hover:bg-gray-50 hover:text-gray-900 text-gray-700"
                     onClick={handleQuickView}
                   >
                     <Eye size={16} className="mr-2" />
@@ -648,7 +648,7 @@ const ProductCard = ({ product, viewMode = "grid", index = 0 }: ProductCardProps
                   <div className="flex gap-3">
                     <Button
                       variant="outline"
-                      className="border-gray-300 hover:bg-gray-50 text-gray-700"
+                      className="border-gray-300 hover:bg-gray-50 hover:text-gray-900 text-gray-700"
                       onClick={handleQuickView}
                     >
                       <Eye size={16} className="mr-2" />
@@ -763,7 +763,7 @@ const ProductCard = ({ product, viewMode = "grid", index = 0 }: ProductCardProps
               <div className="flex flex-col items-center gap-3 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                 <Button
                   size="sm"
-                  className="bg-white text-gray-800 hover:bg-gray-50 shadow-lg px-6 py-2 rounded-full font-medium"
+                  className="bg-white text-gray-800 hover:bg-gray-50 hover:text-gray-900 shadow-lg px-6 py-2 rounded-full font-medium"
                   onClick={handleQuickView}
                 >
                   <Eye size={16} className="mr-2" />
