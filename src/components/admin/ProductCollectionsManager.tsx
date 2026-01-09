@@ -7,7 +7,9 @@ import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { Edit, Trash2, Plus, Crown, Sparkles, Star } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Edit, Trash2, Plus, Crown, Sparkles, Star, Package, Search, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -25,6 +27,21 @@ interface ProductCollection {
   created_at: string;
 }
 
+interface Product {
+  id: string;
+  name: string;
+  image: string;
+  price: number;
+  category: string;
+}
+
+interface CollectionProduct {
+  id: string;
+  collection_id: string;
+  product_id: string;
+  display_order: number;
+}
+
 interface Category {
   slug: string;
   name: string;
@@ -33,9 +50,15 @@ interface Category {
 const ProductCollectionsManager = () => {
   const [collections, setCollections] = useState<ProductCollection[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [collectionProducts, setCollectionProducts] = useState<CollectionProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isProductsDialogOpen, setIsProductsDialogOpen] = useState(false);
   const [editingCollection, setEditingCollection] = useState<ProductCollection | null>(null);
+  const [selectedCollection, setSelectedCollection] = useState<ProductCollection | null>(null);
+  const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
+  const [productSearch, setProductSearch] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -51,6 +74,7 @@ const ProductCollectionsManager = () => {
   useEffect(() => {
     fetchCollections();
     fetchCategories();
+    fetchProducts();
   }, []);
 
   const fetchCollections = async () => {
@@ -86,11 +110,36 @@ const ProductCollectionsManager = () => {
       setCategories(data || []);
     } catch (error) {
       console.error('Error fetching categories:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to fetch categories',
-        variant: 'destructive',
-      });
+    }
+  };
+
+  const fetchProducts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('id, name, image, price, category')
+        .order('name');
+
+      if (error) throw error;
+      setProducts(data || []);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
+
+  const fetchCollectionProducts = async (collectionId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('collection_products')
+        .select('*')
+        .eq('collection_id', collectionId)
+        .order('display_order');
+
+      if (error) throw error;
+      setCollectionProducts(data || []);
+      setSelectedProductIds((data || []).map(cp => cp.product_id));
+    } catch (error) {
+      console.error('Error fetching collection products:', error);
     }
   };
 
@@ -155,6 +204,62 @@ const ProductCollectionsManager = () => {
     setIsDialogOpen(true);
   };
 
+  const handleManageProducts = async (collection: ProductCollection) => {
+    setSelectedCollection(collection);
+    await fetchCollectionProducts(collection.id);
+    setIsProductsDialogOpen(true);
+  };
+
+  const handleSaveProducts = async () => {
+    if (!selectedCollection) return;
+
+    try {
+      // Delete existing collection products
+      await supabase
+        .from('collection_products')
+        .delete()
+        .eq('collection_id', selectedCollection.id);
+
+      // Insert new collection products
+      if (selectedProductIds.length > 0) {
+        const insertData = selectedProductIds.map((productId, index) => ({
+          collection_id: selectedCollection.id,
+          product_id: productId,
+          display_order: index
+        }));
+
+        const { error } = await supabase
+          .from('collection_products')
+          .insert(insertData);
+
+        if (error) throw error;
+      }
+
+      // Update item count on collection
+      await supabase
+        .from('product_collections')
+        .update({ item_count: `${selectedProductIds.length} items` })
+        .eq('id', selectedCollection.id);
+
+      toast({
+        title: 'Success',
+        description: 'Collection products updated successfully',
+      });
+
+      setIsProductsDialogOpen(false);
+      setSelectedCollection(null);
+      setSelectedProductIds([]);
+      fetchCollections();
+    } catch (error) {
+      console.error('Error saving collection products:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to save collection products',
+        variant: 'destructive',
+      });
+    }
+  };
+
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this collection?')) return;
 
@@ -208,6 +313,18 @@ const ProductCollectionsManager = () => {
         return Crown;
     }
   };
+
+  const toggleProductSelection = (productId: string) => {
+    setSelectedProductIds(prev => 
+      prev.includes(productId)
+        ? prev.filter(id => id !== productId)
+        : [...prev, productId]
+    );
+  };
+
+  const filteredProducts = products.filter(product =>
+    product.name.toLowerCase().includes(productSearch.toLowerCase())
+  );
 
   if (loading && collections.length === 0) {
     return (
@@ -286,16 +403,6 @@ const ProductCollectionsManager = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="item_count">Item Count</Label>
-                  <Input
-                    id="item_count"
-                    value={formData.item_count}
-                    onChange={(e) => setFormData(prev => ({ ...prev, item_count: e.target.value }))}
-                    placeholder="e.g., 120+ styles"
-                  />
-                </div>
-
-                <div className="space-y-2">
                   <Label htmlFor="gradient">Gradient</Label>
                   <Input
                     id="gradient"
@@ -358,6 +465,95 @@ const ProductCollectionsManager = () => {
         </Dialog>
       </div>
 
+      {/* Manage Products Dialog */}
+      <Dialog open={isProductsDialogOpen} onOpenChange={setIsProductsDialogOpen}>
+        <DialogContent className="max-w-3xl max-h-[80vh]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Package className="w-5 h-5" />
+              Manage Products - {selectedCollection?.name}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {/* Search */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Input
+                placeholder="Search products..."
+                value={productSearch}
+                onChange={(e) => setProductSearch(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+
+            {/* Selected count */}
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600">
+                {selectedProductIds.length} products selected
+              </span>
+              {selectedProductIds.length > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedProductIds([])}
+                >
+                  <X className="w-4 h-4 mr-1" />
+                  Clear all
+                </Button>
+              )}
+            </div>
+
+            {/* Products list */}
+            <ScrollArea className="h-[400px] border rounded-lg">
+              <div className="p-4 space-y-2">
+                {filteredProducts.map((product) => (
+                  <div
+                    key={product.id}
+                    className={`flex items-center gap-4 p-3 rounded-lg border cursor-pointer transition-colors ${
+                      selectedProductIds.includes(product.id)
+                        ? 'bg-primary/10 border-primary'
+                        : 'hover:bg-gray-50'
+                    }`}
+                    onClick={() => toggleProductSelection(product.id)}
+                  >
+                    <Checkbox
+                      checked={selectedProductIds.includes(product.id)}
+                      onCheckedChange={() => toggleProductSelection(product.id)}
+                    />
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-12 h-12 object-cover rounded"
+                    />
+                    <div className="flex-1">
+                      <p className="font-medium">{product.name}</p>
+                      <p className="text-sm text-gray-500 capitalize">{product.category}</p>
+                    </div>
+                    <span className="font-medium">₵{product.price.toFixed(2)}</span>
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+
+            <div className="flex justify-end space-x-2 pt-4">
+              <Button 
+                variant="outline" 
+                onClick={() => setIsProductsDialogOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleSaveProducts}
+                className="text-white hover:opacity-90"
+              >
+                Save Products
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Collections Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {collections.map((collection) => {
@@ -376,6 +572,14 @@ const ProductCollectionsManager = () => {
                     </div>
                   </div>
                   <div className="flex space-x-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleManageProducts(collection)}
+                      title="Manage Products"
+                    >
+                      <Package className="w-4 h-4" />
+                    </Button>
                     <Button
                       variant="ghost"
                       size="sm"

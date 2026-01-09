@@ -125,6 +125,45 @@ export type Database = {
         }
         Relationships: []
       }
+      collection_products: {
+        Row: {
+          collection_id: string
+          created_at: string
+          display_order: number | null
+          id: string
+          product_id: string
+        }
+        Insert: {
+          collection_id: string
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          product_id: string
+        }
+        Update: {
+          collection_id?: string
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collection_products_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "product_collections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "collection_products_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       countries: {
         Row: {
           code: string
@@ -156,9 +195,9 @@ export type Database = {
         Row: {
           color: string | null
           created_at: string
-          customer_email: string
+          customer_email: string | null
           customer_name: string
-          customer_phone: string | null
+          customer_phone: string
           estimated_completion: string | null
           id: string
           length: string | null
@@ -172,9 +211,9 @@ export type Database = {
         Insert: {
           color?: string | null
           created_at?: string
-          customer_email: string
+          customer_email?: string | null
           customer_name: string
-          customer_phone?: string | null
+          customer_phone: string
           estimated_completion?: string | null
           id?: string
           length?: string | null
@@ -188,9 +227,9 @@ export type Database = {
         Update: {
           color?: string | null
           created_at?: string
-          customer_email?: string
+          customer_email?: string | null
           customer_name?: string
-          customer_phone?: string | null
+          customer_phone?: string
           estimated_completion?: string | null
           id?: string
           length?: string | null

@@ -124,7 +124,7 @@ const ProductShowcase = () => {
               <div
                 key={collection.id}
                 className="group relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br text-white cursor-pointer hover-lift"
-                onClick={() => navigate(`/shop?category=${collection.category}`)}
+                onClick={() => navigate(`/shop?collection=${collection.id}`)}
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${collection.gradient} opacity-90`}></div>
                 <div className="relative z-10 space-y-4">

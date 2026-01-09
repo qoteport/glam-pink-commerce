@@ -323,55 +323,22 @@ const ProductDetail = () => {
         <div className="grid lg:grid-cols-2 gap-8 xl:gap-12">
           <div className="space-y-4">
             <div className="relative rounded-xl overflow-hidden bg-gray-50 min-h-[100px]">
-              <Dialog>
-                <DialogTrigger asChild>
-                  <div className="w-full h-[400px] cursor-pointer relative group">
-                    {mediaItems[selectedMediaIndex]?.type === "video" ? (
-                      <div className="w-full h-full bg-black flex items-center justify-center">
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div
-                            className={`w-24 h-24 ${
-                              playingVideoIndex === selectedMediaIndex
-                                ? "bg-white/10"
-                                : "bg-white/20"
-                            } rounded-full flex items-center justify-center backdrop-blur-sm transition-all`}
-                          >
-                            {playingVideoIndex === selectedMediaIndex ? (
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                fill="currentColor"
-                                className="w-12 h-12 text-white"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M6.75 5.25a.75.75 0 01.75-.75H9a.75.75 0 01.75.75v13.5a.75.75 0 01-.75.75H7.5a.75.75 0 01-.75-.75V5.25zm7.5 0A.75.75 0 0115 4.5h1.5a.75.75 0 01.75.75v13.5a.75.75 0 01-.75.75H15a.75.75 0 01-.75-.75V5.25z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                            ) : (
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                fill="currentColor"
-                                className="w-12 h-12 text-white ml-1"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                            )}
-                          </div>
-                        </div>
-                        <img
-                          src={product.image}
-                          alt={mediaItems[selectedMediaIndex].alt}
-                          className="w-full h-full object-cover opacity-80"
-                        />
-                      </div>
-                    ) : (
+              {mediaItems[selectedMediaIndex]?.type === "video" ? (
+                // Video player - plays inline
+                <div className="w-full h-[400px] bg-black">
+                  <iframe
+                    src={`${mediaItems[selectedMediaIndex].url}?autoplay=0&mute=0`}
+                    className="w-full h-full"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  ></iframe>
+                </div>
+              ) : (
+                // Image with dialog for zoom
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <div className="w-full h-[400px] cursor-pointer relative group">
                       <img
                         src={
                           mediaItems[selectedMediaIndex]?.url || product.image
@@ -381,29 +348,19 @@ const ProductDetail = () => {
                         }
                         className="w-full h-full object-cover transition-transform group-hover:scale-105"
                       />
-                    )}
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                      <Expand
-                        className="text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                        size={32}
-                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                        <Expand
+                          className="text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                          size={32}
+                        />
+                      </div>
                     </div>
-                  </div>
-                </DialogTrigger>
-                <DialogContent
-                  className="max-w-[95vw] sm:max-w-6xl p-0 w-full h-[60vh] sm:h-[80vh] flex items-center justify-center"
-                  ref={dialogRef}
-                >
-                  <div className="w-full h-full flex items-center justify-center">
-                    {mediaItems[selectedMediaIndex]?.type === "video" ? (
-                      <iframe
-                        src={`${mediaItems[selectedMediaIndex].url}?autoplay=1&mute=1`}
-                        className="w-full h-full max-w-full max-h-full"
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      ></iframe>
-                    ) : (
+                  </DialogTrigger>
+                  <DialogContent
+                    className="max-w-[95vw] sm:max-w-6xl p-0 w-full h-[60vh] sm:h-[80vh] flex items-center justify-center"
+                    ref={dialogRef}
+                  >
+                    <div className="w-full h-full flex items-center justify-center">
                       <img
                         src={
                           mediaItems[selectedMediaIndex]?.url || product.image
@@ -414,10 +371,10 @@ const ProductDetail = () => {
                         className="max-w-full max-h-full object-contain"
                         loading="eager"
                       />
-                    )}
-                  </div>
-                </DialogContent>
-              </Dialog>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              )}
             </div>
 
             <div className="grid grid-cols-5 gap-3">
