@@ -38,6 +38,7 @@ import { DialogHeader } from "@/components/ui/dialog";
 const Shop = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState(
     searchParams.get("search") || ""
@@ -47,6 +48,9 @@ const Shop = () => {
   );
   const [selectedCategory, setSelectedCategory] = useState(
     searchParams.get("category") || "all"
+  );
+  const [selectedCollection, setSelectedCollection] = useState(
+    searchParams.get("collection") || null
   );
   const [selectedColor, setSelectedColor] = useState("all");
   const [selectedLength, setSelectedLength] = useState("all");
@@ -77,6 +81,39 @@ const Shop = () => {
     fetchCategories();
     fetchHairTypes();
   }, []);
+
+  useEffect(() => {
+    const collectionId = searchParams.get("collection");
+    if (collectionId) {
+      setSelectedCollection(collectionId);
+      fetchCollectionProducts(collectionId);
+    } else {
+      setSelectedCollection(null);
+      setProducts(allProducts);
+    }
+  }, [searchParams, allProducts]);
+
+  const fetchCollectionProducts = async (collectionId: string) => {
+    try {
+      const { data: collectionProducts, error } = await supabase
+        .from('collection_products')
+        .select('product_id')
+        .eq('collection_id', collectionId);
+
+      if (error) throw error;
+
+      if (collectionProducts && collectionProducts.length > 0) {
+        const productIds = collectionProducts.map(cp => cp.product_id);
+        const filteredProducts = allProducts.filter(p => productIds.includes(p.id));
+        setProducts(filteredProducts);
+      } else {
+        setProducts([]);
+      }
+    } catch (error) {
+      console.error('Error fetching collection products:', error);
+      setProducts([]);
+    }
+  };
 
   const fetchProducts = async () => {
     try {
@@ -126,7 +163,12 @@ const Shop = () => {
           liveVideoUrl: product.live_video_url,
         })) || [];
 
-      setProducts(transformedProducts);
+      setAllProducts(transformedProducts);
+      
+      // Only set products directly if no collection is selected
+      if (!searchParams.get("collection")) {
+        setProducts(transformedProducts);
+      }
 
       // Generate dynamic filter options
       const uniqueColors = [

@@ -180,25 +180,25 @@ const CustomBraidedWigs = () => {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="email">Email Address *</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={formData.customer_email}
-                      onChange={(e) =>
-                        handleInputChange("customer_email", e.target.value)
-                      }
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="phone">Phone Number</Label>
+                    <Label htmlFor="phone">Phone Number *</Label>
                     <Input
                       id="phone"
                       type="tel"
                       value={formData.customer_phone}
                       onChange={(e) =>
                         handleInputChange("customer_phone", e.target.value)
+                      }
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="email">Email Address</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={formData.customer_email}
+                      onChange={(e) =>
+                        handleInputChange("customer_email", e.target.value)
                       }
                     />
                   </div>
