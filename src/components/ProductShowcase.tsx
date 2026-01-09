@@ -30,14 +30,14 @@ const ProductShowcase = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        
+
         // Fetch featured products
         const { data: productsData } = await supabase
           .from('products')
           .select('*')
           .limit(8)
           .order('updated_at', { ascending: false });
-        
+
         if (productsData) {
           const transformedProducts = productsData.map(product => ({
             id: product.id,
@@ -82,7 +82,7 @@ const ProductShowcase = () => {
         setLoading(false);
       }
     };
-    
+
     fetchData();
   }, []);
 
@@ -111,7 +111,7 @@ const ProductShowcase = () => {
             Shop Our <span className="text-gradient">Premium Collection</span>
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Discover our carefully curated selection of high-quality wigs and hair bundles, 
+            Discover our carefully curated selection of high-quality wigs and hair bundles,
             trusted by thousands of satisfied customers worldwide.
           </p>
         </div>
@@ -185,10 +185,45 @@ const ProductShowcase = () => {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-              {featuredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
+            <div className="space-y-8">
+              {(() => {
+                const rows = [];
+                let i = 0;
+
+                while (i < featuredProducts.length) {
+                  // Pattern: 4 grid items, then 3 horizontal items
+                  if (i % 7 < 4) {
+                    // Grid row
+                    const gridProducts = featuredProducts.slice(i, i + 4);
+                    rows.push(
+                      <div key={`grid-${i}`} className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        {gridProducts.map((product) => (
+                          <ProductCard key={product.id} product={product} />
+                        ))}
+                      </div>
+                    );
+                    i += 4;
+                  } else {
+                    // Horizontal items
+                    const horizontalProducts = featuredProducts.slice(i, i + 4);
+                    rows.push(
+                      <div key={`horizontal-${i}`} className="gap-4 grid grid-cols-1 lg:grid-cols-2">
+                        {horizontalProducts.map((product, idx) => (
+                          <ProductCard
+                            key={product.id}
+                            product={product}
+                            viewMode="horizontal"
+                            index={idx + Math.floor(i / 7) * 4}
+                          />
+                        ))}
+                      </div>
+                    );
+                    i += 4;
+                  }
+                }
+
+                return rows;
+              })()}
             </div>
           )}
 

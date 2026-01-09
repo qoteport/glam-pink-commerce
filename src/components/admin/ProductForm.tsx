@@ -359,14 +359,6 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
               rows={4}
             />
           </div>
-
-          <div className="space-y-2">
-            <Label>Live Video (Upload or URL)</Label>
-            <VideoUpload
-              videoUrl={formData.live_video_url}
-              onVideoChange={(url) => setFormData(prev => ({ ...prev, live_video_url: url }))}
-            />
-          </div>
         </CardContent>
       </Card>
 
@@ -429,6 +421,15 @@ const ProductForm = ({ product, onSave }: ProductFormProps) => {
             }}
             maxImages={10}
           />
+
+
+            <div className="space-y-2 mt-5">
+            <Label>Live Video (Upload or URL)</Label>
+            <VideoUpload
+              videoUrl={formData.live_video_url}
+              onVideoChange={(url) => setFormData(prev => ({ ...prev, live_video_url: url }))}
+            />
+          </div>
         </CardContent>
       </Card>
 
