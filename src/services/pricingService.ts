@@ -1,5 +1,8 @@
 import { locationService, UserLocation } from "./locationService";
 
+// Add this flag to force a particular currency (set to null to use automatic detection)
+const FORCE_CURRENCY: string | null = null; // Can be set to 'USD', 'EUR', 'GHS', or null
+
 interface PricingConfig {
   baseCurrency: 'GHS';
   defaultCurrency: 'USD';
@@ -110,6 +113,20 @@ class PricingService {
 
   // Main method to get display price
   async getDisplayPrice(priceInGHS: number): Promise<PriceDisplay> {
+    // Check if we should use forced currency
+    if (FORCE_CURRENCY && this.currencySymbols.hasOwnProperty(FORCE_CURRENCY)) {
+      const targetCurrency = FORCE_CURRENCY;
+      const convertedAmount = this.convertPrice(priceInGHS, targetCurrency);
+      
+      return {
+        amount: convertedAmount,
+        currency: targetCurrency,
+        symbol: this.currencySymbols[targetCurrency as keyof typeof this.currencySymbols] || targetCurrency,
+        formatted: this.formatPrice(convertedAmount, targetCurrency)
+      };
+    }
+    
+    // Otherwise use automatic detection
     const userLocation = await this.getUserLocation();
     const targetCurrency = this.getCurrencyForLocation(userLocation);
     const convertedAmount = this.convertPrice(priceInGHS, targetCurrency);

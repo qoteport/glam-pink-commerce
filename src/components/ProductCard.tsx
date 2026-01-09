@@ -293,7 +293,7 @@ const ProductCard = ({ product, viewMode = "grid", index = 0 }: ProductCardProps
                     onClick={handleQuickView}
                   >
                     <Eye size={16} className="mr-2" />
-                    Quick View
+                    View Details
                   </Button>
                   <Button
                     className="flex-1 bg-gradient-to-r from-blush-500 to-rosegold-500 hover:from-blush-600 hover:to-rosegold-600 text-white"
@@ -652,7 +652,7 @@ const ProductCard = ({ product, viewMode = "grid", index = 0 }: ProductCardProps
                       onClick={handleQuickView}
                     >
                       <Eye size={16} className="mr-2" />
-                      Quick View
+                      View Details
                     </Button>
                     <Button
                       className="bg-gradient-to-r from-blush-500 to-rosegold-500 hover:from-blush-600 hover:to-rosegold-600 text-white"
@@ -767,7 +767,7 @@ const ProductCard = ({ product, viewMode = "grid", index = 0 }: ProductCardProps
                   onClick={handleQuickView}
                 >
                   <Eye size={16} className="mr-2" />
-                  Quick View
+                  View Details
                 </Button>
                 <Button
                   size="sm"

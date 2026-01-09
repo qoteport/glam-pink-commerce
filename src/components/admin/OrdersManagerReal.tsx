@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Order } from '@/services/orderService';
 import OrderDetails from '@/components/OrderDetails';
 import OrderEditDialog from '@/components/admin/OrderEditDialog';
+import PriceDisplay from '../PriceDisplay';
 
 const OrdersManagerReal = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -52,7 +53,7 @@ const OrdersManagerReal = () => {
       }));
 
       setOrders(typedOrders);
-      
+
       // Calculate stats
       const stats = {
         total: typedOrders.length,
@@ -84,8 +85,8 @@ const OrdersManagerReal = () => {
       if (error) throw error;
 
       // Update local state
-      setOrders(prev => prev.map(order => 
-        order.id === orderId 
+      setOrders(prev => prev.map(order =>
+        order.id === orderId
           ? { ...order, order_status: newStatus as Order['order_status'] }
           : order
       ));
@@ -193,7 +194,7 @@ const OrdersManagerReal = () => {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
@@ -205,7 +206,7 @@ const OrdersManagerReal = () => {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
@@ -217,7 +218,7 @@ const OrdersManagerReal = () => {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
@@ -280,7 +281,12 @@ const OrdersManagerReal = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="font-medium">${order.total_amount.toFixed(2)}</div>
+                        <PriceDisplay
+                          price={order.total_amount}
+                          // originalPrice={product.originalPrice}
+                          className="font-medium"
+                        />
+                        {/* <div className="">${order.total_amount.toFixed(2)}</div> */}
                       </TableCell>
                       <TableCell>
                         <Select
@@ -309,15 +315,15 @@ const OrdersManagerReal = () => {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-2">
-                          <Button 
-                            variant="ghost" 
+                          <Button
+                            variant="ghost"
                             size="sm"
                             onClick={() => handleViewDetails(order)}
                           >
                             <Eye className="w-4 h-4" />
                           </Button>
-                          <Button 
-                            variant="ghost" 
+                          <Button
+                            variant="ghost"
                             size="sm"
                             onClick={() => handleEditOrder(order)}
                           >
@@ -334,7 +340,7 @@ const OrdersManagerReal = () => {
         </CardContent>
       </Card>
 
-      <OrderDetails 
+      <OrderDetails
         order={selectedOrder}
         isOpen={isDetailsOpen}
         onClose={handleCloseDetails}

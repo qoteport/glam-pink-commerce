@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Plus, Edit, Trash2, Search, Percent, DollarSign } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import PriceDisplay from '../PriceDisplay';
 
 interface Discount {
   id: string;
@@ -219,7 +220,7 @@ const DiscountsManager = () => {
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button 
+            <Button
               className="bg-rosegold-500 hover:bg-rosegold-600 text-white"
               onClick={resetForm}
             >
@@ -451,9 +452,18 @@ const DiscountsManager = () => {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <div className="font-medium">
-                      {discount.type === 'percentage' ? `${discount.value}%` : `$${discount.value}`}
-                    </div>
+
+                    {discount.type === 'percentage' &&
+                      <div className="font-medium">
+                        ${discount.value}%
+                      </div>
+                    }
+
+                    {discount.type !== 'percentage' &&
+                      <PriceDisplay
+                        price={discount.value}
+                        className="font-medium"
+                      />}
                     {discount.minimum_order_amount > 0 && (
                       <div className="text-xs text-gray-500">
                         Min. order: ${discount.minimum_order_amount}
@@ -481,9 +491,9 @@ const DiscountsManager = () => {
                       <Button variant="outline" size="sm" onClick={() => editDiscount(discount)}>
                         <Edit className="w-4 h-4" />
                       </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
+                      <Button
+                        variant="outline"
+                        size="sm"
                         onClick={() => handleDelete(discount.id)}
                         className="text-red-600 hover:text-red-700"
                       >
