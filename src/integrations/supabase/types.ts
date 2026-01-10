@@ -358,6 +358,45 @@ export type Database = {
         }
         Relationships: []
       }
+      hero_carousel_products: {
+        Row: {
+          created_at: string
+          display_order: number
+          hero_setting_id: string | null
+          id: string
+          product_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          hero_setting_id?: string | null
+          id?: string
+          product_id: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          hero_setting_id?: string | null
+          id?: string
+          product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hero_carousel_products_hero_setting_id_fkey"
+            columns: ["hero_setting_id"]
+            isOneToOne: false
+            referencedRelation: "hero_settings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hero_carousel_products_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       hero_settings: {
         Row: {
           background_image: string | null
