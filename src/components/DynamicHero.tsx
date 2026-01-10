@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import Hero from './Hero';
@@ -6,6 +5,7 @@ import Hero2 from './Hero2';
 import Hero3 from './Hero3';
 import Hero4 from './Hero4';
 import Hero5 from './Hero5';
+import Hero6 from './Hero6';
 
 const DynamicHero = () => {
   const [heroDesign, setHeroDesign] = useState('hero');
@@ -42,6 +42,8 @@ const DynamicHero = () => {
       return <Hero4 />;
     case 'hero5':
       return <Hero5 />;
+    case 'hero6':
+      return <Hero6 />;
     default:
       return <Hero />;
   }

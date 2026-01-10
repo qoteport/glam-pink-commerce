@@ -8,7 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Save, Upload, Eye } from 'lucide-react';
+import { Save, Upload, Eye, X, Plus, GripVertical } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import ImageUpload from './ImageUpload';
@@ -17,6 +17,7 @@ import Hero2 from '../Hero2';
 import Hero3 from '../Hero3';
 import Hero4 from '../Hero4';
 import Hero5 from '../Hero5';
+import Hero6 from '../Hero6';
 
 interface HeroSetting {
   id: string;
@@ -137,6 +138,8 @@ const HeroManager = () => {
         return <Hero4 />;
       case 'hero5':
         return <Hero5 />;
+      case 'hero6':
+        return <Hero6 />;
       default:
         return <Hero />;
     }
@@ -225,6 +228,7 @@ const EditForm = ({
   onSave: (updates: Partial<HeroSetting>) => void;
   onCancel: () => void;
 }) => {
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     title: setting.title,
     subtitle: setting.subtitle || '',
@@ -234,6 +238,128 @@ const EditForm = ({
     background_image: setting.background_image || '',
     hero_design: setting.hero_design || 'hero1',
   });
+
+  // Carousel products state
+  const [carouselProducts, setCarouselProducts] = useState<{id: string; product_id: string; display_order: number}[]>([]);
+  const [selectedProductId, setSelectedProductId] = useState<string>('');
+
+  useEffect(() => {
+    if (formData.hero_design === 'hero6') {
+      fetchCarouselProducts();
+    }
+  }, [formData.hero_design, setting.id]);
+
+  const fetchCarouselProducts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('hero_carousel_products')
+        .select('id, product_id, display_order')
+        .eq('hero_setting_id', setting.id)
+        .order('display_order', { ascending: true });
+
+      if (error) throw error;
+      setCarouselProducts(data || []);
+    } catch (error) {
+      console.error('Error fetching carousel products:', error);
+    }
+  };
+
+  const addCarouselProduct = async () => {
+    if (!selectedProductId) return;
+    
+    // Check if product already exists
+    if (carouselProducts.some(cp => cp.product_id === selectedProductId)) {
+      toast({
+        title: 'Already Added',
+        description: 'This product is already in the carousel',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    try {
+      const maxOrder = carouselProducts.length > 0 
+        ? Math.max(...carouselProducts.map(cp => cp.display_order)) + 1 
+        : 0;
+
+      const { data, error } = await supabase
+        .from('hero_carousel_products')
+        .insert({
+          hero_setting_id: setting.id,
+          product_id: selectedProductId,
+          display_order: maxOrder,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setCarouselProducts(prev => [...prev, data]);
+      setSelectedProductId('');
+      toast({
+        title: 'Product Added',
+        description: 'Product added to carousel',
+      });
+    } catch (error) {
+      console.error('Error adding carousel product:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to add product to carousel',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const removeCarouselProduct = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('hero_carousel_products')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setCarouselProducts(prev => prev.filter(cp => cp.id !== id));
+      toast({
+        title: 'Product Removed',
+        description: 'Product removed from carousel',
+      });
+    } catch (error) {
+      console.error('Error removing carousel product:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to remove product',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const moveProduct = async (index: number, direction: 'up' | 'down') => {
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    if (newIndex < 0 || newIndex >= carouselProducts.length) return;
+
+    const newProducts = [...carouselProducts];
+    [newProducts[index], newProducts[newIndex]] = [newProducts[newIndex], newProducts[index]];
+
+    // Update display orders
+    const updates = newProducts.map((product, idx) => ({
+      id: product.id,
+      display_order: idx,
+    }));
+
+    try {
+      for (const update of updates) {
+        await supabase
+          .from('hero_carousel_products')
+          .update({ display_order: update.display_order })
+          .eq('id', update.id);
+      }
+
+      setCarouselProducts(newProducts.map((p, idx) => ({ ...p, display_order: idx })));
+    } catch (error) {
+      console.error('Error reordering products:', error);
+    }
+  };
 
   const handleSave = () => {
     const saveData: any = { ...formData };
@@ -259,9 +385,16 @@ const EditForm = ({
         return <Hero4 />;
       case 'hero5':
         return <Hero5 />;
+      case 'hero6':
+        return <Hero6 />;
       default:
         return <Hero />;
     }
+  };
+
+  const getProductName = (productId: string) => {
+    const product = products.find(p => p.id === productId);
+    return product ? product.name : 'Unknown Product';
   };
 
   return (
@@ -287,6 +420,7 @@ const EditForm = ({
               <SelectItem value="hero3">Split Layout Design</SelectItem>
               <SelectItem value="hero4">Image-Only Design</SelectItem>
               <SelectItem value="hero5">Video Background Design</SelectItem>
+              <SelectItem value="hero6">Product Carousel Design</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -306,6 +440,86 @@ const EditForm = ({
             <p className="text-sm text-green-700">
               <strong>Image-Only Design:</strong> This design focuses entirely on your background image with minimal text overlay.
             </p>
+          </div>
+        )}
+
+        {/* Special section for Hero6 - Product Carousel */}
+        {formData.hero_design === 'hero6' && (
+          <div className="p-4 bg-purple-50 rounded-lg border border-purple-200 space-y-4">
+            <p className="text-sm text-purple-700">
+              <strong>Product Carousel Design:</strong> Select products to display in the carousel. Products with videos will show the video instead of image.
+            </p>
+            
+            {/* Add product to carousel */}
+            <div className="flex gap-2">
+              <Select 
+                value={selectedProductId} 
+                onValueChange={setSelectedProductId}
+              >
+                <SelectTrigger className="flex-1">
+                  <SelectValue placeholder="Select a product to add" />
+                </SelectTrigger>
+                <SelectContent>
+                  {products.map((product) => (
+                    <SelectItem key={product.id} value={product.id}>
+                      {product.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button onClick={addCarouselProduct} disabled={!selectedProductId}>
+                <Plus size={16} className="mr-1" /> Add
+              </Button>
+            </div>
+
+            {/* List of carousel products */}
+            <div className="space-y-2">
+              <Label>Carousel Products ({carouselProducts.length})</Label>
+              {carouselProducts.length === 0 ? (
+                <p className="text-sm text-gray-500">No products added yet. Add products above.</p>
+              ) : (
+                <div className="space-y-2">
+                  {carouselProducts.map((cp, index) => (
+                    <div 
+                      key={cp.id} 
+                      className="flex items-center justify-between p-3 bg-white rounded-lg border"
+                    >
+                      <div className="flex items-center gap-2">
+                        <GripVertical size={16} className="text-gray-400" />
+                        <span className="font-medium">{index + 1}.</span>
+                        <span>{getProductName(cp.product_id)}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => moveProduct(index, 'up')}
+                          disabled={index === 0}
+                        >
+                          ↑
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => moveProduct(index, 'down')}
+                          disabled={index === carouselProducts.length - 1}
+                        >
+                          ↓
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => removeCarouselProduct(cp.id)}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          <X size={16} />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         )}
         
@@ -345,34 +559,40 @@ const EditForm = ({
             placeholder="/shop, /products, etc."
           />
         </div>
-        <div>
-          <Label htmlFor="featured_product">Featured Product</Label>
-          <Select 
-            value={formData.featured_product_id} 
-            onValueChange={(value) => setFormData(prev => ({ ...prev, featured_product_id: value }))}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select a product to feature" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">No product</SelectItem>
-              {products.map((product) => (
-                <SelectItem key={product.id} value={product.id}>
-                  {product.name} - ${product.price}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          <Label>Background Image</Label>
-          <ImageUpload
-            onImageUpload={handleImageUpload}
-            currentImage={formData.background_image}
-            bucketName="product-images"
-            folder="hero"
-          />
-        </div>
+
+        {formData.hero_design !== 'hero6' && (
+          <>
+            <div>
+              <Label htmlFor="featured_product">Featured Product</Label>
+              <Select 
+                value={formData.featured_product_id} 
+                onValueChange={(value) => setFormData(prev => ({ ...prev, featured_product_id: value }))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a product to feature" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">No product</SelectItem>
+                  {products.map((product) => (
+                    <SelectItem key={product.id} value={product.id}>
+                      {product.name} - ${product.price}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Background Image</Label>
+              <ImageUpload
+                onImageUpload={handleImageUpload}
+                currentImage={formData.background_image}
+                bucketName="product-images"
+                folder="hero"
+              />
+            </div>
+          </>
+        )}
+
         <div className="flex gap-2">
           <Button onClick={handleSave}>
             <Save size={16} className="mr-2 text-white" />
