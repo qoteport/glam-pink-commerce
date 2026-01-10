@@ -33,6 +33,7 @@ import {
 } from '@tanstack/react-query'
 import Profile from '@/pages/Profile';
 import ScrollToTop from './components/scrollToTop';
+import PWAInstallPrompt from './components/PWAInstallPrompt';
 
 const queryClient = new QueryClient()
 
@@ -82,6 +83,7 @@ function App() {
                   </Routes>
                 </main>
                 <Toaster />
+                <PWAInstallPrompt />
               </div>
             </Router>
           </FavoritesProvider>
