@@ -12,6 +12,7 @@ import { Save, Upload, Eye, X, Plus, GripVertical } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import ImageUpload from './ImageUpload';
+import VideoUpload from './VideoUpload';
 import Hero from '../Hero';
 import Hero2 from '../Hero2';
 import Hero3 from '../Hero3';
@@ -425,12 +426,21 @@ const EditForm = ({
           </Select>
         </div>
         
-        {/* Special note for Hero5 video design */}
+        {/* Special section for Hero5 video design */}
         {formData.hero_design === 'hero5' && (
-          <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+          <div className="p-4 bg-blue-50 rounded-lg border border-blue-200 space-y-4">
             <p className="text-sm text-blue-700">
-              <strong>Video Design:</strong> Upload a video file (.mp4) as the background image, or use a regular image as fallback.
+              <strong>Video Background Design:</strong> Upload a video file (.mp4) for the background, or use a regular image as fallback.
             </p>
+            <div>
+              <Label>Background Video</Label>
+              <VideoUpload
+                videoUrl={formData.background_image || ''}
+                onVideoChange={(url) => setFormData(prev => ({ ...prev, background_image: url }))}
+                bucketName="product-images"
+                folder="hero-videos"
+              />
+            </div>
           </div>
         )}
         
@@ -581,15 +591,18 @@ const EditForm = ({
                 </SelectContent>
               </Select>
             </div>
-            <div>
-              <Label>Background Image</Label>
-              <ImageUpload
-                onImageUpload={handleImageUpload}
-                currentImage={formData.background_image}
-                bucketName="product-images"
-                folder="hero"
-              />
-            </div>
+            {/* Only show image upload for non-video designs */}
+            {formData.hero_design !== 'hero5' && (
+              <div>
+                <Label>Background Image</Label>
+                <ImageUpload
+                  onImageUpload={handleImageUpload}
+                  currentImage={formData.background_image}
+                  bucketName="product-images"
+                  folder="hero"
+                />
+              </div>
+            )}
           </>
         )}
 
