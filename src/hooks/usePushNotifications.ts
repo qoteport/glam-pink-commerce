@@ -14,14 +14,15 @@ interface PushSubscriptionState {
 // For production, generate your own VAPID keys
 const VAPID_PUBLIC_KEY = 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBkr3qBUYIHBQFLXYp5Nksh8U';
 
-function urlBase64ToUint8Array(base64String: string): Uint8Array {
+function urlBase64ToUint8Array(base64String: string): Uint8Array<ArrayBuffer> {
   const padding = '='.repeat((4 - base64String.length % 4) % 4);
   const base64 = (base64String + padding)
     .replace(/-/g, '+')
     .replace(/_/g, '/');
 
   const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
+  const buffer = new ArrayBuffer(rawData.length);
+  const outputArray = new Uint8Array(buffer);
 
   for (let i = 0; i < rawData.length; ++i) {
     outputArray[i] = rawData.charCodeAt(i);
@@ -200,7 +201,7 @@ export function usePushNotifications(userId?: string) {
   const savePushSubscription = async (userId: string, subscription: PushSubscription) => {
     const subscriptionJson = subscription.toJSON();
     
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('push_subscriptions')
       .upsert({
         user_id: userId,
@@ -219,7 +220,7 @@ export function usePushNotifications(userId?: string) {
 
   // Remove subscription from database
   const removePushSubscription = async (userId: string) => {
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('push_subscriptions')
       .delete()
       .eq('user_id', userId);
