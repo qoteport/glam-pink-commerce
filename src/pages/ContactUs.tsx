@@ -114,7 +114,7 @@ const ContactUs = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-cream-50 to-blush-50">
-      <div className="mb-[100px]">
+      <div className="mb-[70px]">
         <Header />
       </div>
 
@@ -216,7 +216,7 @@ const ContactUs = () => {
                   <Mail className="w-5 h-5 text-blush-600 mt-1" />
                   <div>
                     <h3 className="font-semibold">Email</h3>
-                    <p className="text-gray-600">hairytalesbeauty@gmail.com</p>
+                    <p className="text-gray-600">hairytalesbeautyhome@gmail.com</p>
                   </div>
                 </div>
                 <div className="flex items-start space-x-3">

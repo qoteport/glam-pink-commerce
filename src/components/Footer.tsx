@@ -266,7 +266,7 @@ const Footer = () => {
 
                   <div className="flex items-center space-x-3">
                     <Mail size={16} className="text-blush-400" />
-                    <span>hairytalesbeauty@gmail.com</span>
+                    <span>hairytalesbeautyhome@gmail.com</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <MapPin size={16} className="text-blush-400" />

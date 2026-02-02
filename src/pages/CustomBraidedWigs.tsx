@@ -122,7 +122,7 @@ const CustomBraidedWigs = () => {
 
   return (
     <div className="min-h-screen bg-white">
-       <div className="mb-[100px]">
+      <div className="mb-[70px]">
         <Header />
       </div>
 
@@ -428,10 +428,10 @@ const CustomBraidedWigs = () => {
                   <p>
                     📧 Email:{" "}
                     <a
-                      href="mailto:hairytalesbeauty@gmail.com"
+                      href="mailto:hairytalesbeautyhome@gmail.com"
                       className="hover:underline"
                     >
-                      hairytalesbeauty@gmail.com
+                      hairytalesbeautyhome@gmail.com
                     </a>
                   </p>
                   {/* <p>💬 Live Chat: Available 9am-6pm EST</p> */}

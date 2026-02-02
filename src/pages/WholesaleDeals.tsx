@@ -94,9 +94,9 @@ const WholesaleDeals = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
-         <div className="mb-[100px]">
-        <Header />
-      </div>
+        <div className="mb-[70px]">
+          <Header />
+        </div>
         <div className="flex items-center justify-center py-20">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
@@ -107,7 +107,7 @@ const WholesaleDeals = () => {
 
   return (
     <div className="min-h-screen bg-background">
-       <div className="mb-[100px]">
+      <div className="mb-[70px]">
         <Header />
       </div>
 
@@ -315,21 +315,21 @@ const WholesaleDeals = () => {
 
           <div className="fixed bottom-0 left-0 right-0 md:static border-t bg-background p-4 md:p-6">
             <div className="flex justify-end gap-3 pt-4">
-             
-                <Button variant="outline" onClick={() => setSelectedDeal(null)}>
-                  Close
-                </Button>
-                <Button onClick={() => {
-                  setSelectedDeal(null);
-                  setShowQuoteForm(true);
-                  document.getElementById('quote-form')?.scrollIntoView({ behavior: 'smooth' });
-                }}>
-                  Request Quote
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </div>
+
+              <Button variant="outline" onClick={() => setSelectedDeal(null)}>
+                Close
+              </Button>
+              <Button onClick={() => {
+                setSelectedDeal(null);
+                setShowQuoteForm(true);
+                document.getElementById('quote-form')?.scrollIntoView({ behavior: 'smooth' });
+              }}>
+                Request Quote
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
             </div>
-      
+          </div>
+
         </DialogContent>
       </Dialog>
 

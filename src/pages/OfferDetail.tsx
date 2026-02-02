@@ -41,7 +41,7 @@ const OfferDetail = () => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { toast } = useToast();
-  
+
   const [offer, setOffer] = useState<Offer | null>(null);
   const [offerProducts, setOfferProducts] = useState<OfferProduct[]>([]);
   const [quantities, setQuantities] = useState<Map<string, number>>(new Map());
@@ -121,7 +121,7 @@ const OfferDetail = () => {
   const handleAddToCart = (offerProduct: OfferProduct) => {
     const quantity = quantities.get(offerProduct.product_id) || 1;
     const price = offerProduct.offer_price || offerProduct.product.price;
-    
+
     addToCart(
       {
         id: offerProduct.product_id,
@@ -189,10 +189,10 @@ const OfferDetail = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="mb-[100px]">
+      <div className="mb-[70px]">
         <Header />
       </div>
-      
+
       <main className="container mx-auto px-4 py-8">
         <Button
           variant="ghost"
@@ -204,7 +204,7 @@ const OfferDetail = () => {
         </Button>
 
         {/* Offer Header */}
-        <div 
+        <div
           className="relative rounded-2xl overflow-hidden mb-8"
           style={{
             backgroundImage: offer.banner_image ? `url(${offer.banner_image})` : undefined,
@@ -319,11 +319,10 @@ const OfferDetail = () => {
                               newMap.set(op.product_id, color);
                               setSelectedColors(newMap);
                             }}
-                            className={`px-3 py-1 text-sm rounded-full border transition-colors ${
-                              selectedColors.get(op.product_id) === color
+                            className={`px-3 py-1 text-sm rounded-full border transition-colors ${selectedColors.get(op.product_id) === color
                                 ? 'bg-rosegold-500 text-white border-rosegold-500'
                                 : 'border-gray-300 hover:border-rosegold-300'
-                            }`}
+                              }`}
                           >
                             {color}
                           </button>
@@ -345,11 +344,10 @@ const OfferDetail = () => {
                               newMap.set(op.product_id, length);
                               setSelectedLengths(newMap);
                             }}
-                            className={`px-3 py-1 text-sm rounded-full border transition-colors ${
-                              selectedLengths.get(op.product_id) === length
+                            className={`px-3 py-1 text-sm rounded-full border transition-colors ${selectedLengths.get(op.product_id) === length
                                 ? 'bg-rosegold-500 text-white border-rosegold-500'
                                 : 'border-gray-300 hover:border-rosegold-300'
-                            }`}
+                              }`}
                           >
                             {length}
                           </button>

@@ -109,7 +109,7 @@ const AISearchBar = ({ className, onClose }: AISearchBarProps) => {
             placeholder="Describe what you're looking for... (e.g., 'long curly wig for beginners')"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="pl-9 pr-20 border-blush-200 focus:border-blush-400"
+            className="pl-9 pr-10 border-blush-200 focus:border-blush-400"
             onFocus={() => results.length > 0 && setShowResults(true)}
           />
           <div className="absolute right-1 flex items-center gap-1">

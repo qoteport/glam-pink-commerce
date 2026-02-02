@@ -8,10 +8,10 @@ import Footer from '@/components/Footer';
 const Privacy = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-cream-50 to-blush-50">
-       <div className="mb-[100px]">
+      <div className="mb-[70px]">
         <Header />
       </div>
-      
+
       <div className="container mx-auto px-4 py-12">
         <div className="text-center mb-12">
           <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-4">Privacy Policy</h1>
@@ -42,7 +42,7 @@ const Privacy = () => {
                   <li>Account preferences and settings</li>
                 </ul>
               </div>
-              
+
               <div>
                 <h3 className="font-semibold text-lg mb-2">Usage Information</h3>
                 <ul className="list-disc list-inside text-gray-600 space-y-1">
@@ -93,7 +93,7 @@ const Privacy = () => {
                   <li><strong>Business Transfers:</strong> In connection with mergers, acquisitions, or asset sales</li>
                 </ul>
               </div>
-              
+
               <div className="bg-blush-50 p-4 rounded-lg">
                 <p className="text-blush-800 font-medium">
                   We do not sell, rent, or trade your personal information to third parties for marketing purposes.
@@ -140,7 +140,7 @@ const Privacy = () => {
                     <li>Request data portability</li>
                   </ul>
                 </div>
-                
+
                 <div className="bg-cream-50 p-4 rounded-lg">
                   <p className="text-gray-700">
                     To exercise these rights, please contact us using the information provided below.

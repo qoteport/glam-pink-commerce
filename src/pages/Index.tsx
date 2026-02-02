@@ -10,14 +10,14 @@ import OfferBanner from '@/components/OfferBanner';
 const Index = () => {
   return (
     <div className="min-h-screen bg-white">
-       <div className="mb-[100px]">
+      <div className="mb-[100px]">
         <Header />
       </div>
       <main className='lg:mx-[50px]'>
         <DynamicHero />
-       <div className='mt-5'>
-         <OfferBanner />
-       </div>
+        <div className='mt-5'>
+          <OfferBanner />
+        </div>
         <ProductShowcase />
         <Testimonials />
       </main>

@@ -14,7 +14,7 @@ import Footer from "@/components/Footer";
 const ReturnsExchanges = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-cream-50 to-blush-50">
-       <div className="mb-[100px]">
+      <div className="mb-[70px]">
         <Header />
       </div>
 
@@ -139,10 +139,10 @@ const ReturnsExchanges = () => {
                   <p className="text-gray-600">
                     Email us at{" "}
                     <a
-                      href="mailto:hairytalesbeauty@gmail.com"
+                      href="mailto:hairytalesbeautyhome@gmail.com"
                       className="hover:underline"
                     >
-                      hairytalesbeauty@gmail.com
+                      hairytalesbeautyhome@gmail.com
                     </a>{" "}
                     with your order number
                   </p>
@@ -277,10 +277,10 @@ const ReturnsExchanges = () => {
                   <p>
                     Email:{" "}
                     <a
-                      href="mailto:hairytalesbeauty@gmail.com"
+                      href="mailto:hairytalesbeautyhome@gmail.com"
                       className="hover:underline"
                     >
-                      hairytalesbeauty@gmail.com
+                      hairytalesbeautyhome@gmail.com
                     </a>
                   </p>
                   <p>

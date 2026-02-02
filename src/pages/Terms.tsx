@@ -8,10 +8,10 @@ import Footer from '@/components/Footer';
 const Terms = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-cream-50 to-blush-50">
-       <div className="mb-[100px]">
+      <div className="mb-[70px]">
         <Header />
       </div>
-      
+
       <div className="container mx-auto px-4 py-12">
         <div className="text-center mb-12">
           <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-4">Terms of Service</h1>
@@ -53,7 +53,7 @@ const Terms = () => {
                   <li>Access customer support services</li>
                 </ul>
               </div>
-              
+
               <div>
                 <h3 className="font-semibold text-lg mb-2">This license shall not allow you to:</h3>
                 <ul className="list-disc list-inside text-gray-600 space-y-1">
@@ -99,7 +99,7 @@ const Terms = () => {
                   We reserve the right to refuse or cancel any order at any time for any reason, including but not limited to product availability, errors in pricing or product information, or suspected fraudulent activity.
                 </p>
               </div>
-              
+
               <div>
                 <h3 className="font-semibold text-lg mb-2">Payment Terms</h3>
                 <ul className="list-disc list-inside text-gray-600 space-y-1">
@@ -149,7 +149,7 @@ const Terms = () => {
                   <li>Sale items may not be eligible for return</li>
                 </ul>
               </div>
-              
+
               <div>
                 <h3 className="font-semibold text-lg mb-2">Refund Process</h3>
                 <p className="text-gray-600">
@@ -175,7 +175,7 @@ const Terms = () => {
                     <li>You must provide accurate and complete information when creating an account</li>
                   </ul>
                 </div>
-                
+
                 <div>
                   <h3 className="font-semibold text-lg mb-2">Account Termination</h3>
                   <p className="text-gray-600">

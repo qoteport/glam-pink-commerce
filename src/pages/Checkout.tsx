@@ -379,9 +379,9 @@ const Checkout = () => {
   if (items.length === 0 && !retryOrder) {
     return (
       <div className="min-h-screen bg-white">
-         <div className="mb-[100px]">
-        <Header />
-      </div>
+        <div className="mb-[70px]">
+          <Header />
+        </div>
         <div className="container mx-auto px-4 py-16 text-center">
           <h1 className="text-xl md:text-2xl font-bold text-gray-800 mb-4">
             Your cart is empty
@@ -404,7 +404,7 @@ const Checkout = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-       <div className="mb-[100px]">
+      <div className="mb-[70px]">
         <Header />
       </div>
 
@@ -676,18 +676,16 @@ const Checkout = () => {
                               {(retryOrder
                                 ? item.selected_color
                                 : item.selectedColor) &&
-                                ` • Color: ${
-                                  retryOrder
-                                    ? item.selected_color
-                                    : item.selectedColor
+                                ` • Color: ${retryOrder
+                                  ? item.selected_color
+                                  : item.selectedColor
                                 }`}
                               {(retryOrder
                                 ? item.selected_length
                                 : item.selectedLength) &&
-                                ` • Length: ${
-                                  retryOrder
-                                    ? item.selected_length
-                                    : item.selectedLength
+                                ` • Length: ${retryOrder
+                                  ? item.selected_length
+                                  : item.selectedLength
                                 }"`}
                             </p>
                           </div>
@@ -799,21 +797,21 @@ const Checkout = () => {
                         items: retryOrder
                           ? retryOrder.order_items
                           : items.map((item) => ({
-                              id: item.id,
-                              name: item.name,
-                              quantity: item.quantity,
-                              price: item.price,
-                              selectedColor: item.selectedColor,
-                              selectedLength: item.selectedLength,
-                            })),
+                            id: item.id,
+                            name: item.name,
+                            quantity: item.quantity,
+                            price: item.price,
+                            selectedColor: item.selectedColor,
+                            selectedLength: item.selectedLength,
+                          })),
                         retry_order_id: retryOrder?.id,
                       }}
                     >
                       {loading
                         ? "Processing..."
                         : retryOrder
-                        ? "Retry Payment"
-                        : "Complete Order with Paystack"}
+                          ? "Retry Payment"
+                          : "Complete Order with Paystack"}
                     </PaystackPayment>
                     <div className="items-center">OR</div>
                     <PayOnDelevery
@@ -845,21 +843,21 @@ const Checkout = () => {
                         items: retryOrder
                           ? retryOrder.order_items
                           : items.map((item) => ({
-                              id: item.id,
-                              name: item.name,
-                              quantity: item.quantity,
-                              price: item.price,
-                              selectedColor: item.selectedColor,
-                              selectedLength: item.selectedLength,
-                            })),
+                            id: item.id,
+                            name: item.name,
+                            quantity: item.quantity,
+                            price: item.price,
+                            selectedColor: item.selectedColor,
+                            selectedLength: item.selectedLength,
+                          })),
                         retry_order_id: retryOrder?.id,
                       }}
                     >
                       {loading
                         ? "Processing..."
                         : retryOrder
-                        ? "Retry Payment"
-                        : "Pay on Delivery"}
+                          ? "Retry Payment"
+                          : "Pay on Delivery"}
                     </PayOnDelevery>
                   </div>
                 ) : (

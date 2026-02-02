@@ -129,7 +129,7 @@ const Profile = () => {
           <Button
             variant="ghost"
             onClick={() => navigate('/')}
-            className="mb-4"
+            className="mb-4 p-0 pr-1"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Home
@@ -212,6 +212,7 @@ const Profile = () => {
                           <Input
                             {...field}
                             type="email"
+                            disabled
                             className="pl-10"
                             placeholder="Enter your email address"
                           />

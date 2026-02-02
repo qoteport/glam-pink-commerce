@@ -280,7 +280,7 @@ const ProductDetail = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="mb-[100px]">
+      <div className="mb-[70px]">
         <Header />
       </div>
 
@@ -669,19 +669,23 @@ const ProductDetail = () => {
                 variant="ghost"
                 size="sm"
                 className="w-full text-gray-600 hover:bg-gray-50"
-                onClick={() => {
-                  if (navigator.share) {
-                    navigator.share({
-                      title: product.name,
-                      text: `Check out this amazing ${product.name}!`,
-                      url: window.location.href,
-                    });
-                  } else {
-                    navigator.clipboard.writeText(window.location.href);
-                    toast({
-                      title: "Link copied!",
-                      description: "Product link has been copied to clipboard",
-                    });
+                onClick={async () => {
+                  try {
+                    if (navigator.share) {
+                      await navigator.share({
+                        title: product.name,
+                        text: `Check out this amazing ${product.name}!`,
+                        url: window.location.href,
+                      });
+                    } else {
+                      await navigator.clipboard.writeText(window.location.href);
+                      toast({
+                        title: "Link copied!",
+                        description: "Product link has been copied to clipboard",
+                      });
+                    }
+                  } catch (error) {
+                    console.error("Error sharing:", error);
                   }
                 }}
               >

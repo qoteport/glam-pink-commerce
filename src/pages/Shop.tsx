@@ -164,7 +164,7 @@ const Shop = () => {
         })) || [];
 
       setAllProducts(transformedProducts);
-      
+
       // Only set products directly if no collection is selected
       if (!searchParams.get("collection")) {
         setProducts(transformedProducts);
@@ -375,9 +375,9 @@ const Shop = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-white">
-         <div className="mb-[100px]">
-        <Header />
-      </div>
+        <div className="mb-[70px]">
+          <Header />
+        </div>
         <div className="flex items-center justify-center py-20">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
@@ -388,7 +388,7 @@ const Shop = () => {
 
   return (
     <div className="min-h-screen bg-white">
-       <div className="mb-[100px]">
+      <div className="mb-[70px]">
         <Header />
       </div>
       <main className="container mx-auto px-4 py-8">

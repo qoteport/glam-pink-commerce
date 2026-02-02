@@ -148,7 +148,7 @@ const FAQ = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-cream-50 to-blush-50">
-       <div className="mb-[100px]">
+      <div className="mb-[70px]">
         <Header />
       </div>
 
@@ -238,14 +238,14 @@ const FAQ = () => {
                 </p>
                 <div className="text-sm text-gray-500">
                   <p>
-                
+
                     <p>
                       Email:{" "}
                       <a
-                        href="mailto:hairytalesbeauty@gmail.com"
+                        href="mailto:hairytalesbeautyhome@gmail.com"
                         className="hover:underline"
                       >
-                        hairytalesbeauty@gmail.com
+                        hairytalesbeautyhome@gmail.com
                       </a>
                     </p>
                   </p>

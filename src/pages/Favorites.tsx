@@ -61,9 +61,9 @@ const Favorites = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-white">
-         <div className="mb-[100px]">
-        <Header />
-      </div>
+        <div className="mb-[70px]">
+          <Header />
+        </div>
         <div className="flex items-center justify-center py-20">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
@@ -75,9 +75,9 @@ const Favorites = () => {
   if (favoriteProducts.length === 0) {
     return (
       <div className="min-h-screen bg-white">
-         <div className="mb-[100px]">
-        <Header />
-      </div>
+        <div className="mb-[70px]">
+          <Header />
+        </div>
         <div className="container mx-auto px-4 py-16">
           <div className="text-center max-w-md mx-auto">
             <Heart size={64} className="mx-auto text-blush-300 mb-6" />
@@ -102,7 +102,7 @@ const Favorites = () => {
 
   return (
     <div className="min-h-screen bg-white">
-       <div className="mb-[100px]">
+      <div className="mb-[70px]">
         <Header />
       </div>
 
@@ -113,7 +113,7 @@ const Favorites = () => {
             <Button
               variant="ghost"
               onClick={() => navigate(-1)}
-              className="mb-4 text-blush-600 hover:text-blush-700 hover:bg-blush-50"
+              className="mb-4 px-0 pr-1 text-blush-600 hover:text-blush-700 hover:bg-blush-50"
             >
               <ArrowLeft size={16} className="mr-2" />
               Back
@@ -171,26 +171,26 @@ const Favorites = () => {
 
                   {/* Rating */}
                   {product.rating > 0 && (
-                  <div className="flex items-center space-x-2">
-                    <div className="flex items-center">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          size={14}
-                          className={
-                            i < Math.floor(product.rating)
-                              ? "text-yellow-400 fill-current"
-                              : "text-gray-300"
-                          }
-                        />
-                      ))}
-                    </div>
-                    
+                    <div className="flex items-center space-x-2">
+                      <div className="flex items-center">
+                        {[...Array(5)].map((_, i) => (
+                          <Star
+                            key={i}
+                            size={14}
+                            className={
+                              i < Math.floor(product.rating)
+                                ? "text-yellow-400 fill-current"
+                                : "text-gray-300"
+                            }
+                          />
+                        ))}
+                      </div>
+
                       <span className="text-sm text-gray-600">
                         {product.rating} ({product.reviewCount})
                       </span>
-                 
-                  </div>   )}
+
+                    </div>)}
 
                   {/* Price */}
                   <div className="flex items-center space-x-2">
@@ -207,7 +207,7 @@ const Favorites = () => {
                   </div>
 
                   {/* Colors */}
-                   {product.colors.length > 0 && (<div className="flex items-center space-x-2">
+                  {product.colors.length > 0 && (<div className="flex items-center space-x-2">
                     <span className="text-sm text-gray-600">Colors:</span>
                     <div className="flex space-x-1">
                       {product.colors.slice(0, 3).map((color, index) => (

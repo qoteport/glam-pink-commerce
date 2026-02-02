@@ -14,7 +14,7 @@ const QuoteRequestForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { toast } = useToast();
-  
+
   const [formData, setFormData] = useState({
     customer_name: '',
     customer_email: '',
@@ -98,7 +98,7 @@ const QuoteRequestForm = () => {
             <div>
               <h4 className="font-medium">Phone</h4>
               <a href="tel:+233558384512" className="text-muted-foreground hover:text-primary transition-colors">
-               +233 558 384 512
+                +233 558 384 512
               </a>
             </div>
           </div>
@@ -109,7 +109,7 @@ const QuoteRequestForm = () => {
             </div>
             <div>
               <h4 className="font-medium">WhatsApp</h4>
-              <a 
+              <a
                 href="https://wa.me/+233542511844?text=Hello! I'm interested in wholesale pricing for your products."
                 target="_blank"
                 rel="noopener noreferrer"
@@ -127,8 +127,8 @@ const QuoteRequestForm = () => {
             </div>
             <div>
               <h4 className="font-medium">Email</h4>
-              <a href="mailto:hairytalesbeauty@gmail.com" className="text-muted-foreground hover:text-primary transition-colors">
-                hairytalesbeauty@gmail.com
+              <a href="mailto:hairytalesbeautyhome@gmail.com" className="text-muted-foreground hover:text-primary transition-colors">
+                hairytalesbeautyhome@gmail.com
               </a>
             </div>
           </div>

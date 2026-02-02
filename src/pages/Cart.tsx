@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { Minus, Plus, Trash2, ShoppingBag, Truck, ArrowLeft } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingBag, Truck, ArrowLeft, Package } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { shippingService } from "@/services/shippingService";
 import { useAuth } from "@/contexts/AuthContext";
@@ -98,8 +98,8 @@ const Cart = () => {
               Looks like you haven't added any items to your cart yet.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 w-full">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => navigate(-1)}
                 className="flex items-center gap-2"
               >
@@ -129,6 +129,14 @@ const Cart = () => {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <h1 className="text-xl md:text-2xl sm:text-xl md:text-3xl font-bold">Shopping Cart</h1>
+          <Button
+            variant="outline"
+            className="ml-auto"
+            onClick={() => navigate("/my-orders")}
+          >
+            <Package className="mr-2 h-4 w-4" />
+            My Orders
+          </Button>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-4">
