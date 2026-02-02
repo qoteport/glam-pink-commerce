@@ -30,6 +30,7 @@ import { debounce } from "lodash";
 import PriceDisplay from "./PriceDisplay";
 import AISearchBar from "./AISearchBar";
 import { motion, AnimatePresence } from "framer-motion";
+import UserNotifications from "./UserNotifications";
 
 interface HeaderProps {
   onSearch?: (query: string) => void;
@@ -365,6 +366,9 @@ const Header = memo(({ onSearch }: HeaderProps) => {
                 <User size={20} className="text-blush-600" />
               </button>
             )}
+
+            {/* User Notifications */}
+            {user && <UserNotifications />}
 
             <button
               className="relative hover:bg-blush-50 hidden md:flex group p-1 sm:p-2 rounded-full transition-colors duration-200"

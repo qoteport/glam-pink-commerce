@@ -27,6 +27,11 @@ const AdminNotifications = () => {
   useEffect(() => {
     fetchNotifications();
     
+    // Request notification permission
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+    
     // Subscribe to realtime notifications
     const channel = supabase
       .channel('admin-notifications')
@@ -46,6 +51,16 @@ const AdminNotifications = () => {
             title: newNotification.title,
             description: newNotification.message,
           });
+
+          // Show browser notification if permission granted
+          if ('Notification' in window && Notification.permission === 'granted') {
+            new Notification(newNotification.title, {
+              body: newNotification.message,
+              icon: '/android-chrome-192x192.png',
+              badge: '/favicon-32x32.png',
+              tag: newNotification.id,
+            });
+          }
         }
       )
       .subscribe();
