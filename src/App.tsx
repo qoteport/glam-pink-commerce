@@ -19,6 +19,7 @@ import Privacy from '@/pages/Privacy';
 import Terms from '@/pages/Terms';
 import NotFound from '@/pages/NotFound';
 import Header from '@/components/Header';
+import BottomNav from '@/components/BottomNav';
 import Footer from '@/components/Footer';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { CartProvider } from '@/contexts/CartContext';
@@ -49,7 +50,7 @@ function App() {
           <FavoritesProvider>
             <Router>
               <ScrollToTop />
-              <div className="min-h-screen bg-white">
+              <div className="min-h-screen bg-white pb-16 md:pb-0">
                 <main id="app-scroll" className="flex-1">
                   <Routes>
                     <Route path="/" element={<Index />} />
@@ -83,6 +84,7 @@ function App() {
                   </Routes>
                 </main>
                 <Toaster />
+                <BottomNav />
                 <PWAInstallPrompt />
               </div>
             </Router>

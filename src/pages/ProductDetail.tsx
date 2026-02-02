@@ -24,6 +24,7 @@ import ProductCard from "@/components/ProductCard";
 import PriceDisplay from "@/components/PriceDisplay";
 import PaystackPayment from "@/components/PaystackPayment";
 import WriteReviewDialog from "@/components/WriteReviewDialog";
+import ImageZoomDialog from "@/components/ImageZoomDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/contexts/CartContext";
 import { useFavorites } from "@/contexts/FavoritesContext";
@@ -228,9 +229,9 @@ const ProductDetail = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-white">
-         <div className="mb-[100px]">
-        <Header />
-      </div>
+        <div className="mb-[100px]">
+          <Header />
+        </div>
         <div className="flex items-center justify-center py-20">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
@@ -242,9 +243,9 @@ const ProductDetail = () => {
   if (!product) {
     return (
       <div className="min-h-screen bg-white">
-         <div className="mb-[100px]">
-        <Header />
-      </div>
+        <div className="mb-[100px]">
+          <Header />
+        </div>
         <div className="container mx-auto px-4 py-16 text-center">
           <h1 className="text-xl md:text-2xl font-bold text-gray-800 mb-4">
             Product Not Found
@@ -279,7 +280,7 @@ const ProductDetail = () => {
 
   return (
     <div className="min-h-screen bg-white">
-       <div className="mb-[100px]">
+      <div className="mb-[100px]">
         <Header />
       </div>
 
@@ -336,8 +337,11 @@ const ProductDetail = () => {
                 </div>
               ) : (
                 // Image with dialog for zoom
-                <Dialog>
-                  <DialogTrigger asChild>
+                // Image with Advanced Zoom Dialog
+                <ImageZoomDialog
+                  imageSrc={mediaItems[selectedMediaIndex]?.url || product.image}
+                  altText={mediaItems[selectedMediaIndex]?.alt || product.name}
+                  trigger={
                     <div className="w-full h-[400px] cursor-pointer relative group">
                       <img
                         src={
@@ -355,25 +359,8 @@ const ProductDetail = () => {
                         />
                       </div>
                     </div>
-                  </DialogTrigger>
-                  <DialogContent
-                    className="max-w-[95vw] sm:max-w-6xl p-0 w-full h-[60vh] sm:h-[80vh] flex items-center justify-center"
-                    ref={dialogRef}
-                  >
-                    <div className="w-full h-full flex items-center justify-center">
-                      <img
-                        src={
-                          mediaItems[selectedMediaIndex]?.url || product.image
-                        }
-                        alt={
-                          mediaItems[selectedMediaIndex]?.alt || product.name
-                        }
-                        className="max-w-full max-h-full object-contain"
-                        loading="eager"
-                      />
-                    </div>
-                  </DialogContent>
-                </Dialog>
+                  }
+                />
               )}
             </div>
 
@@ -382,11 +369,10 @@ const ProductDetail = () => {
                 <button
                   key={index}
                   onClick={() => handleMediaSelect(index)}
-                  className={`aspect-square rounded-lg overflow-hidden border-2 transition-all relative ${
-                    selectedMediaIndex === index
-                      ? "border-primary scale-105 shadow-md"
-                      : "border-transparent hover:border-gray-200"
-                  }`}
+                  className={`aspect-square rounded-lg overflow-hidden border-2 transition-all relative ${selectedMediaIndex === index
+                    ? "border-primary scale-105 shadow-md"
+                    : "border-transparent hover:border-gray-200"
+                    }`}
                 >
                   {media.type === "video" ? (
                     <>
@@ -532,11 +518,10 @@ const ProductDetail = () => {
                     {product.colors.map((color, index) => (
                       <button
                         key={index}
-                        className={`w-10 h-10 rounded-full border-2 transition-all flex items-center justify-center ${
-                          selectedColor === color
-                            ? "border-primary scale-110 shadow-md"
-                            : "border-gray-200 hover:border-gray-300"
-                        }`}
+                        className={`w-10 h-10 rounded-full border-2 transition-all flex items-center justify-center ${selectedColor === color
+                          ? "border-primary scale-110 shadow-md"
+                          : "border-gray-200 hover:border-gray-300"
+                          }`}
                         style={{ backgroundColor: color }}
                         onClick={() => setSelectedColor(color)}
                         aria-label={`Select color ${color}`}
@@ -558,11 +543,10 @@ const ProductDetail = () => {
                         <button
                           key={index}
                           onClick={() => setSelectedLength(length)}
-                          className={`px-4 py-2 rounded-md border transition-all ${
-                            selectedLength === length
-                              ? "bg-primary text-white border-primary"
-                              : "bg-white text-gray-700 border-gray-200 hover:border-gray-300"
-                          }`}
+                          className={`px-4 py-2 rounded-md border transition-all ${selectedLength === length
+                            ? "bg-primary text-white border-primary"
+                            : "bg-white text-gray-700 border-gray-200 hover:border-gray-300"
+                            }`}
                         >
                           {length}"
                         </button>
@@ -581,11 +565,10 @@ const ProductDetail = () => {
                         <button
                           key={index}
                           onClick={() => setSelectedSize(size)}
-                          className={`px-4 py-2 rounded-md border transition-all ${
-                            selectedSize === size
-                              ? "bg-primary text-white border-primary"
-                              : "bg-white text-gray-700 border-gray-200 hover:border-gray-300"
-                          }`}
+                          className={`px-4 py-2 rounded-md border transition-all ${selectedSize === size
+                            ? "bg-primary text-white border-primary"
+                            : "bg-white text-gray-700 border-gray-200 hover:border-gray-300"
+                            }`}
                         >
                           {size}"
                         </button>
@@ -798,8 +781,8 @@ const ProductDetail = () => {
                         Be the first to review this product and help others make
                         their decision!
                       </p>
-                      <WriteReviewDialog 
-                        productId={product.id} 
+                      <WriteReviewDialog
+                        productId={product.id}
                         productName={product.name}
                         onReviewSubmitted={() => fetchReviews(product.id)}
                       >
@@ -812,8 +795,8 @@ const ProductDetail = () => {
                         <h3 className="text-xl font-semibold text-gray-900">
                           Customer Reviews ({reviews.length})
                         </h3>
-                        <WriteReviewDialog 
-                          productId={product.id} 
+                        <WriteReviewDialog
+                          productId={product.id}
                           productName={product.name}
                           onReviewSubmitted={() => fetchReviews(product.id)}
                         >
@@ -879,7 +862,7 @@ const ProductDetail = () => {
             <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-6">
               You May Also Like
             </h2>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4">
               {similarProducts.map((similarProduct) => (
                 <ProductCard key={similarProduct.id} product={similarProduct} />
               ))}

@@ -219,11 +219,18 @@ const Header = memo(({ onSearch }: HeaderProps) => {
                 loading="lazy"
               />
               <h1
-                className={`font-bold text-gradient transition-all duration-200 ${isScrolled ? "text-xl" : "text-xl md:text-xl md:text-2xl"
+                className={`font-bold text-gradient transition-all duration-200  ${isScrolled ? "text-xl" : "text-xl md:text-xl md:text-2xl"
                   }`}
               >
                 HairyTalesBeauty
               </h1>
+
+                {/* <h1
+                className={`font-bold text-gradient transition-all duration-200 md:hidden ${isScrolled ? "text-xl" : "text-xl md:text-xl md:text-2xl"
+                  }`}
+              >
+                HTBeauty
+              </h1> */}
             </div>
           </motion.div>
 
@@ -387,7 +394,7 @@ const Header = memo(({ onSearch }: HeaderProps) => {
             </button>
 
             <button
-              className="relative hover:bg-blush-50 group p-1 sm:p-2 rounded-full transition-colors duration-200"
+              className="relative hover:bg-blush-50 group p-1 sm:p-2 rounded-full transition-colors duration-200 hidden md:flex"
               onClick={() => navigate("/cart")}
               aria-label="Cart"
             >
