@@ -207,16 +207,21 @@ const ProductShowcase = () => {
                     // Horizontal items
                     const horizontalProducts = featuredProducts.slice(i, i + 4);
                     rows.push(
-                      <div key={`horizontal-${i}`} className="gap-4 grid grid-cols-1 lg:grid-cols-2">
-                        {horizontalProducts.map((product, idx) => (
-                          <ProductCard
-                            key={product.id}
-                            product={product}
-                            viewMode="horizontal"
-                            index={idx + Math.floor(i / 7) * 4}
-                          />
+                        <div key={`grid-${i}`} className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        {horizontalProducts.map((product) => (
+                          <ProductCard key={product.id} product={product} />
                         ))}
                       </div>
+                      // <div key={`horizontal-${i}`} className="gap-4 grid grid-cols-1 lg:grid-cols-2">
+                      //   {horizontalProducts.map((product, idx) => (
+                      //     <ProductCard
+                      //       key={product.id}
+                      //       product={product}
+                      //       // viewMode="horizontal"
+                      //       index={idx + Math.floor(i / 7) * 4}
+                      //     />
+                      //   ))}
+                      // </div>
                     );
                     i += 4;
                   }
