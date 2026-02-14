@@ -105,9 +105,9 @@ const Hero3 = () => {
             {/* Features List */}
             <div className="space-y-2 md:space-y-3">
               {[
-                "100% Human Hair Quality",
+                // "100% Human Hair Quality",
                 "Free Styling Consultation",
-                "Lifetime Color Guarantee",
+                // "Lifetime Color Guarantee",
                 "30-Day Return Policy",
               ].map((feature, index) => (
                 <div key={index} className="flex items-center gap-2 md:gap-3">

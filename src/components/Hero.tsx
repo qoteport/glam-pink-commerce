@@ -26,7 +26,7 @@ const Hero = () => {
     title: "Unleash Your Inner Glam",
     subtitle:
       "Premium wigs and hair bundles that transform your look and boost your confidence. Join thousands of beautiful women who trust GlamCrown Beauty.",
-    cta_text: "Shop Premium Wigs",
+    cta_text: "Shop Premium Handmade Braided Wigs",
     cta_url: "/shop",
   });
 
@@ -156,7 +156,7 @@ const Hero = () => {
                 className="bg-gradient-to-r from-blush-500 to-rosegold-500 hover:from-blush-600 hover:to-rosegold-600 text-white px-8 py-6 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
                 onClick={() => navigate(heroData.cta_url || "/shop")}
               >
-                {heroData.cta_text || "Shop Premium Wigs"}
+                {heroData.cta_text || "Shop Premium Handmade Braided Wigs"}
                 <ChevronRight className="ml-2" size={20} />
               </Button>
               <Button

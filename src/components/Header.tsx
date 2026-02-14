@@ -178,22 +178,7 @@ const Header = memo(({ onSearch }: HeaderProps) => {
             <div className="container mx-auto px-4">
               <div className="flex items-center justify-center py-2 text-sm text-blush-600 flex-nowrap whitespace-nowrap">
 
-                <div className="flex items-center flex-nowrap whitespace-nowrap ml-1">
-                  Free shipping on orders
-                  <PriceDisplay
-                    price={5000}
-                    designCSS="mx-1"
-                    className="py-0"
-                  />
-                  +
-                </div>
-
-                <span className="mx-1">|</span>
-
-                <span className="whitespace-nowrap">
-                  100% Virgin Hair Guarantee
-                </span>
-
+               Get an instant elevating look with our custome handmade wigs
               </div>
             </div>
 
