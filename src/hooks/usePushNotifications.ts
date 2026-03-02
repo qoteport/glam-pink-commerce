@@ -71,7 +71,7 @@ export function usePushNotifications(userId?: string) {
       console.log('Push SW registered:', registration);
 
       // Check existing subscription
-      const existingSubscription = await registration.pushManager.getSubscription();
+      const existingSubscription = await (registration as any).pushManager.getSubscription();
       
       setState(prev => ({
         ...prev,
@@ -121,7 +121,7 @@ export function usePushNotifications(userId?: string) {
       const registration = await navigator.serviceWorker.ready;
       
       // Subscribe to push manager
-      const subscription = await registration.pushManager.subscribe({
+      const subscription = await (registration as any).pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
       });
