@@ -106,7 +106,6 @@ const PaymentCallback: React.FC = () => {
             clearCart();
             localStorage.removeItem("paystack_payment_reference");
             localStorage.removeItem("paystack_payment_data");
-            navigate("/my-orders");
           } catch (error) {
             console.error("Error Occured Storing Errro data:", error)
           }
@@ -135,48 +134,40 @@ const PaymentCallback: React.FC = () => {
     verifyPayment();
   }, [searchParams, toast]);
 
-  const handleContinue = () => {
-    if (status === "success") {
-      navigate("/my-orders");
-    } else {
-      navigate("/checkout");
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="max-w-md w-full">
         <CardHeader className="text-center">
-          <CardTitle className="flex items-center justify-center space-x-2">
+          <CardTitle className="flex flex-col items-center gap-3">
             {status === "verifying" && (
-              <Loader2 className="animate-spin" size={24} />
+              <Loader2 className="animate-spin text-muted-foreground" size={40} />
             )}
             {status === "success" && (
-              <CheckCircle className="text-green-500" size={24} />
+              <CheckCircle className="text-green-500" size={48} />
             )}
             {status === "failed" && (
-              <XCircle className="text-red-500" size={24} />
+              <XCircle className="text-destructive" size={48} />
             )}
-            <span>
+            <span className="text-xl">
               {status === "verifying" && "Verifying Payment..."}
-              {status === "success" && "Payment Successful!"}
+              {status === "success" && "Thank You for Your Order!"}
               {status === "failed" && "Payment Failed"}
             </span>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {status === "verifying" && (
-            <p className="text-center text-gray-600">
+            <p className="text-center text-muted-foreground">
               Please wait while we verify your payment...
             </p>
           )}
 
           {status === "success" && paymentData && (
-            <div className="space-y-2">
-              <p className="text-center text-gray-600">
-                Thank you for your purchase! Your order is being processed.
+            <div className="space-y-4">
+              <p className="text-center text-muted-foreground">
+                Your payment was successful and your order is being processed. We'll notify you with updates!
               </p>
-              <div className="bg-green-50 p-3 rounded-lg">
+              <div className="bg-green-50 p-4 rounded-lg space-y-1">
                 <p className="text-sm">
                   <strong>Reference:</strong> {paymentData.reference}
                 </p>
@@ -185,23 +176,27 @@ const PaymentCallback: React.FC = () => {
                   {(paymentData.amount / 100).toFixed(2)}
                 </p>
               </div>
+              <div className="flex flex-col gap-2">
+                <Button onClick={() => navigate("/my-orders")} className="w-full">
+                  View My Orders
+                </Button>
+                <Button onClick={() => navigate("/shop")} variant="outline" className="w-full">
+                  Continue Shopping
+                </Button>
+              </div>
             </div>
           )}
 
           {status === "failed" && (
-            <p className="text-center text-gray-600">
-              Your payment could not be processed. Please try again or contact
-              support.
-            </p>
+            <div className="space-y-4">
+              <p className="text-center text-muted-foreground">
+                Your payment could not be processed. Please try again or contact support.
+              </p>
+              <Button onClick={() => navigate("/checkout")} className="w-full">
+                Try Again
+              </Button>
+            </div>
           )}
-
-          <Button
-            onClick={handleContinue}
-            className="w-full"
-            disabled={status === "verifying"}
-          >
-            {status === "success" ? "Continue Shopping" : "Try Again"}
-          </Button>
         </CardContent>
       </Card>
     </div>
