@@ -153,7 +153,7 @@ const Hero6 = () => {
               align: 'start',
               loop: true,
             }}
-            plugins={[autoplayPlugin]}
+            plugins={[autoplayPlugin as any]}
             className="w-full"
           >
             <CarouselContent className="-ml-4">
