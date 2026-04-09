@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { extractIdFromSlug } from "@/lib/slugify";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -43,7 +44,7 @@ interface Review {
 }
 
 const ProductDetail = () => {
-  const { id } = useParams<{ id: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
@@ -65,15 +66,18 @@ const ProductDetail = () => {
   const dialogRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (id) {
-      fetchProduct(id);
-      fetchReviews(id);
+    if (slug) {
+      // Support both raw UUID and slug formats
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
+      const productId = isUUID ? slug : extractIdFromSlug(slug);
+      fetchProduct(productId);
+      fetchReviews(productId);
     }
-  }, [id]);
+  }, [slug]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [id]);
+  }, [slug]);
 
   const fetchProduct = async (productId: string) => {
     try {
