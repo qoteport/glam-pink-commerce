@@ -66,15 +66,19 @@ const ProductShowcase = () => {
           setFeaturedProducts(transformedProducts);
         }
 
-        // Fetch collections
+        // Fetch collections with product counts
         const { data: collectionsData } = await supabase
           .from('product_collections')
-          .select('*')
+          .select('*, collection_products(product_id)')
           .eq('is_active', true)
           .order('display_order');
 
         if (collectionsData) {
-          setCollections(collectionsData);
+          // Only show collections that have at least one product
+          const nonEmpty = collectionsData.filter(
+            (c: any) => c.collection_products && c.collection_products.length > 0
+          );
+          setCollections(nonEmpty);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
