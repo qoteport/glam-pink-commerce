@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
+import { productSlug } from '@/lib/slugify';
 import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -164,7 +165,7 @@ const Hero6 = () => {
                 >
                   <div
                     className="group relative cursor-pointer"
-                    onClick={() => handleProductClick(product.id)}
+                    onClick={() => handleProductClick(product.id, product.name)}
                   >
                     <div className="relative overflow-hidden rounded-2xl shadow-lg bg-white transition-all duration-300 group-hover:shadow-2xl group-hover:-translate-y-2">
                       {/* Media Container */}
