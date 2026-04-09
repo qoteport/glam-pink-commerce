@@ -23,7 +23,7 @@ interface HeroData {
 const Hero3 = () => {
   const navigate = useNavigate();
   let handleCardClick = () => {
-    navigate(`/product/${heroData.featured_product?.id}`);
+    navigate(`/product/${heroData.featured_product?.id}`); // fallback, hero product
   };
   const [heroData, setHeroData] = useState<HeroData>({
     title: "Beauty That Inspires",

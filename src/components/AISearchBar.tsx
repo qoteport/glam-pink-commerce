@@ -90,7 +90,7 @@ const AISearchBar = ({ className, onClose }: AISearchBarProps) => {
     setShowResults(false);
     setQuery('');
     onClose?.();
-    navigate(`/product/${productId}`);
+    navigate(`/product/${productId}`); // AI search uses raw ID, ProductDetail handles both
   };
 
   const handleViewAll = () => {

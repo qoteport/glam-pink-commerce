@@ -85,11 +85,11 @@ const ProductCard = ({ product, viewMode = "grid", index = 0 }: ProductCardProps
 
   const handleQuickView = (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate(`/product/${product.id}`);
+    navigate(`/product/${productSlug(product.name, product.id)}`);
   };
 
   const handleCardClick = () => {
-    navigate(`/product/${product.id}`);
+    navigate(`/product/${productSlug(product.name, product.id)}`);
   };
 
   const handleVideoPlay = () => {

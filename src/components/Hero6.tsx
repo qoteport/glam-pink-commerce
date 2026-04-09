@@ -106,8 +106,8 @@ const Hero6 = () => {
     }
   };
 
-  const handleProductClick = (productId: string) => {
-    navigate(`/product/${productId}`);
+  const handleProductClick = (productId: string, productName: string) => {
+    navigate(`/product/${productSlug(productName, productId)}`);
   };
 
   const autoplayPlugin = Autoplay({ delay: 5000, stopOnInteraction: true });
