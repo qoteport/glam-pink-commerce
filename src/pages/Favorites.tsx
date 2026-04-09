@@ -239,7 +239,10 @@ const Favorites = () => {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => navigate(`/product/${product.id}`)}
+                      onClick={() => {
+                        const slug = product.name ? `${product.name.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_]+/g, '-').replace(/-+/g, '-')}-${product.id.split('-')[0]}` : product.id;
+                        navigate(`/product/${slug}`);
+                      }}
                       className="border-blush-300 text-blush-600 hover:bg-blush-50"
                     >
                       View

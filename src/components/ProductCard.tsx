@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { productSlug } from "@/lib/slugify";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -84,11 +85,11 @@ const ProductCard = ({ product, viewMode = "grid", index = 0 }: ProductCardProps
 
   const handleQuickView = (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate(`/product/${product.id}`);
+    navigate(`/product/${productSlug(product.name, product.id)}`);
   };
 
   const handleCardClick = () => {
-    navigate(`/product/${product.id}`);
+    navigate(`/product/${productSlug(product.name, product.id)}`);
   };
 
   const handleVideoPlay = () => {

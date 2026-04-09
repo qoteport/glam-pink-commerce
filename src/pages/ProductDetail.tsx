@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { extractIdFromSlug } from "@/lib/slugify";
+import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -43,7 +45,7 @@ interface Review {
 }
 
 const ProductDetail = () => {
-  const { id } = useParams<{ id: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
@@ -65,20 +67,25 @@ const ProductDetail = () => {
   const dialogRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (id) {
-      fetchProduct(id);
-      fetchReviews(id);
+    if (slug) {
+      // Support both raw UUID and slug formats
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
+      const productId = isUUID ? slug : extractIdFromSlug(slug);
+      fetchProduct(productId);
+      fetchReviews(productId);
     }
-  }, [id]);
+  }, [slug]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [id]);
+  }, [slug]);
 
   const fetchProduct = async (productId: string) => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      const isFullUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId);
+      
+      let query = supabase
         .from("products")
         .select(
           `
@@ -87,9 +94,16 @@ const ProductDetail = () => {
           subcategories!subcategory_id (name, slug),
           discounts!discount_id (name, type, value)
         `
-        )
-        .eq("id", productId)
-        .single();
+        );
+      
+      if (isFullUUID) {
+        query = query.eq("id", productId);
+      } else {
+        // Short ID prefix match
+        query = query.like("id", `${productId}%`);
+      }
+      
+      const { data, error } = await query.single();
 
       if (error) throw error;
 
@@ -123,7 +137,7 @@ const ProductDetail = () => {
       setSelectedLength(transformedProduct.lengths?.[0] || "");
       setSelectedSize(transformedProduct.size?.[0] || "");
 
-      fetchSimilarProducts(data.category);
+      fetchSimilarProducts(data.category, data.id);
     } catch (error) {
       console.error("Error fetching product:", error);
       toast({
@@ -136,13 +150,13 @@ const ProductDetail = () => {
     }
   };
 
-  const fetchSimilarProducts = async (category: string) => {
+  const fetchSimilarProducts = async (category: string, currentProductId: string) => {
     try {
       const { data, error } = await supabase
         .from("products")
         .select("*")
         .eq("category", category)
-        .neq("id", id)
+        .neq("id", currentProductId)
         .limit(4);
 
       if (error) throw error;
@@ -280,6 +294,13 @@ const ProductDetail = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <SEOHead
+        title={`${product.name} - Hairy Tales Beauty Home`}
+        description={product.description?.slice(0, 155) || `Buy ${product.name} at Hairy Tales Beauty Home. Premium quality hair products.`}
+        canonicalPath={`/product/${slug}`}
+        type="product"
+        image={product.image}
+      />
       <div className="mb-[70px]">
         <Header />
       </div>
@@ -302,7 +323,7 @@ const ProductDetail = () => {
             </button>
             <span>/</span>
             <button
-              onClick={() => navigate(`/shop?category=${product.category}`)}
+              onClick={() => navigate(`/shop/${product.category.trim().toLowerCase().replace(/\s+/g, '-')}`)}
               className="hover:text-blush-500 capitalize"
             >
               {product.category}

@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useParams } from "react-router-dom";
+import SEOHead from "@/components/SEOHead";
+import { slugify } from "@/lib/slugify";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -36,6 +38,7 @@ import { Dialog, DialogContent, DialogTitle } from "@radix-ui/react-dialog";
 import { DialogHeader } from "@/components/ui/dialog";
 
 const Shop = () => {
+  const { category: categorySlug } = useParams<{ category?: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
@@ -47,7 +50,7 @@ const Shop = () => {
     searchParams.get("status") || null
   );
   const [selectedCategory, setSelectedCategory] = useState(
-    searchParams.get("category") || "all"
+    categorySlug || searchParams.get("category") || "all"
   );
   const [selectedCollection, setSelectedCollection] = useState(
     searchParams.get("collection") || null
@@ -75,6 +78,13 @@ const Shop = () => {
   ]);
   const [priceRanges, setPriceRanges] = useState([]);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+
+  // Sync category from URL param
+  useEffect(() => {
+    if (categorySlug) {
+      setSelectedCategory(categorySlug);
+    }
+  }, [categorySlug]);
 
   useEffect(() => {
     fetchProducts();
@@ -233,19 +243,24 @@ const Shop = () => {
 
   const fetchCategories = async () => {
     try {
-      const { data, error } = await supabase
-        .from("categories")
-        .select("*")
-        .eq("is_active", true)
-        .order("sort_order");
+      const [{ data: catData, error: catError }, { data: productData }] = await Promise.all([
+        supabase.from("categories").select("*").eq("is_active", true).order("sort_order"),
+        supabase.from("products").select("category"),
+      ]);
 
-      if (error) throw error;
+      if (catError) throw catError;
+
+      // Get unique category names that have at least one product
+      const usedCategories = new Set(
+        (productData || []).map((p: any) => p.category?.trim().toLowerCase())
+      );
 
       const dbCategories =
-        data?.map((cat) => ({
-          value: cat.name,
-          label: cat.name,
-        })) || [];
+        catData?.filter((cat) => usedCategories.has(cat.name.trim().toLowerCase()))
+          .map((cat) => ({
+            value: cat.name,
+            label: cat.name,
+          })) || [];
 
       setCategories([
         { value: "all", label: "All Categories" },
@@ -386,8 +401,17 @@ const Shop = () => {
     );
   }
 
+  const categoryTitle = selectedCategory !== "all"
+    ? selectedCategory.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+    : "All Products";
+
   return (
     <div className="min-h-screen bg-white">
+      <SEOHead
+        title={`${categoryTitle} - Hairy Tales Beauty Home`}
+        description={`Shop premium ${categoryTitle.toLowerCase()} at Hairy Tales Beauty Home. High-quality wigs, bundles, and hair extensions.`}
+        canonicalPath={categorySlug ? `/shop/${categorySlug}` : '/shop'}
+      />
       <div className="mb-[70px]">
         <Header />
       </div>

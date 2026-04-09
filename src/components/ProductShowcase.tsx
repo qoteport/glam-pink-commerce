@@ -66,15 +66,19 @@ const ProductShowcase = () => {
           setFeaturedProducts(transformedProducts);
         }
 
-        // Fetch collections
+        // Fetch collections with product counts
         const { data: collectionsData } = await supabase
           .from('product_collections')
-          .select('*')
+          .select('*, collection_products(product_id)')
           .eq('is_active', true)
           .order('display_order');
 
         if (collectionsData) {
-          setCollections(collectionsData);
+          // Only show collections that have at least one product
+          const nonEmpty = collectionsData.filter(
+            (c: any) => c.collection_products && c.collection_products.length > 0
+          );
+          setCollections(nonEmpty);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -124,7 +128,7 @@ const ProductShowcase = () => {
               <div
                 key={collection.id}
                 className="group relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br text-white cursor-pointer hover-lift"
-                onClick={() => navigate(`/shop?collection=${collection.id}`)}
+                onClick={() => navigate(`/shop/${collection.category.trim().toLowerCase().replace(/\s+/g, '-')}`)}
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${collection.gradient} opacity-90`}></div>
                 <div className="relative z-10 space-y-4">
