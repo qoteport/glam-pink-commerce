@@ -79,6 +79,13 @@ const Shop = () => {
   const [priceRanges, setPriceRanges] = useState([]);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
+  // Sync category from URL param
+  useEffect(() => {
+    if (categorySlug) {
+      setSelectedCategory(categorySlug);
+    }
+  }, [categorySlug]);
+
   useEffect(() => {
     fetchProducts();
     fetchCategories();
@@ -389,8 +396,17 @@ const Shop = () => {
     );
   }
 
+  const categoryTitle = selectedCategory !== "all"
+    ? selectedCategory.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+    : "All Products";
+
   return (
     <div className="min-h-screen bg-white">
+      <SEOHead
+        title={`${categoryTitle} - Hairy Tales Beauty Home`}
+        description={`Shop premium ${categoryTitle.toLowerCase()} at Hairy Tales Beauty Home. High-quality wigs, bundles, and hair extensions.`}
+        canonicalPath={categorySlug ? `/shop/${categorySlug}` : '/shop'}
+      />
       <div className="mb-[70px]">
         <Header />
       </div>

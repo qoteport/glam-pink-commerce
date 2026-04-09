@@ -293,6 +293,13 @@ const ProductDetail = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <SEOHead
+        title={`${product.name} - Hairy Tales Beauty Home`}
+        description={product.description?.slice(0, 155) || `Buy ${product.name} at Hairy Tales Beauty Home. Premium quality hair products.`}
+        canonicalPath={`/product/${slug}`}
+        type="product"
+        image={product.image}
+      />
       <div className="mb-[70px]">
         <Header />
       </div>
