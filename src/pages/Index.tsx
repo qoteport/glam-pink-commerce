@@ -6,10 +6,16 @@ import ProductShowcase from '@/components/ProductShowcase';
 import Testimonials from '@/components/Testimonials';
 import Footer from '@/components/Footer';
 import OfferBanner from '@/components/OfferBanner';
+import SEOHead from '@/components/SEOHead';
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-white">
+      <SEOHead
+        title="Hairy Tales Beauty Home - Premium Wigs & Hair Extensions"
+        description="Shop premium quality wigs, bundles, closures, and frontals. Trusted by thousands worldwide. Free shipping on select orders."
+        canonicalPath="/"
+      />
       <div className="mb-[100px]">
         <Header />
       </div>
