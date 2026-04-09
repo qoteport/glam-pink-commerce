@@ -140,13 +140,13 @@ const ProductDetail = () => {
     }
   };
 
-  const fetchSimilarProducts = async (category: string) => {
+  const fetchSimilarProducts = async (category: string, currentProductId: string) => {
     try {
       const { data, error } = await supabase
         .from("products")
         .select("*")
         .eq("category", category)
-        .neq("id", id)
+        .neq("id", currentProductId)
         .limit(4);
 
       if (error) throw error;
