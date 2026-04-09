@@ -18,6 +18,7 @@ import ReturnsExchanges from '@/pages/ReturnsExchanges';
 import Privacy from '@/pages/Privacy';
 import Terms from '@/pages/Terms';
 import NotFound from '@/pages/NotFound';
+import Sitemap from '@/pages/Sitemap';
 import Header from '@/components/Header';
 import BottomNav from '@/components/BottomNav';
 import Footer from '@/components/Footer';
@@ -81,6 +82,7 @@ function App() {
                         </ProtectedRoute>
                       }
                     />
+                    <Route path="/sitemap.xml" element={<Sitemap />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </main>
