@@ -127,7 +127,7 @@ const ProductDetail = () => {
       setSelectedLength(transformedProduct.lengths?.[0] || "");
       setSelectedSize(transformedProduct.size?.[0] || "");
 
-      fetchSimilarProducts(data.category);
+      fetchSimilarProducts(data.category, data.id);
     } catch (error) {
       console.error("Error fetching product:", error);
       toast({
