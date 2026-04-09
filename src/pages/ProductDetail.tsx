@@ -315,7 +315,7 @@ const ProductDetail = () => {
             </button>
             <span>/</span>
             <button
-              onClick={() => navigate(`/shop?category=${product.category}`)}
+              onClick={() => navigate(`/shop/${product.category.trim().toLowerCase().replace(/\s+/g, '-')}`)}
               className="hover:text-blush-500 capitalize"
             >
               {product.category}

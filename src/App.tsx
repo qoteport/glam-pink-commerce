@@ -55,13 +55,14 @@ function App() {
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/shop" element={<Shop />} />
+                    <Route path="/shop/:category" element={<Shop />} />
                     <Route path="/cart" element={<Cart />} />
                     <Route path="/checkout" element={<Checkout />} />
                     <Route path="/auth" element={<Auth />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/my-orders" element={<MyOrders />} />
                     <Route path="/favorites" element={<Favorites />} />
-                    <Route path="/product/:id" element={<ProductDetail />} />
+                    <Route path="/product/:slug" element={<ProductDetail />} />
                     <Route path="/custom-braided-wigs" element={<CustomBraidedWigs />} />
                     <Route path="/wholesale-deals" element={<WholesaleDeals />} />
                     <Route path="/contact" element={<ContactUs />} />

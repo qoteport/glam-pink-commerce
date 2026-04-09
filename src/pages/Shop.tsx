@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useParams } from "react-router-dom";
+import SEOHead from "@/components/SEOHead";
+import { slugify } from "@/lib/slugify";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -36,6 +38,7 @@ import { Dialog, DialogContent, DialogTitle } from "@radix-ui/react-dialog";
 import { DialogHeader } from "@/components/ui/dialog";
 
 const Shop = () => {
+  const { category: categorySlug } = useParams<{ category?: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
@@ -47,7 +50,7 @@ const Shop = () => {
     searchParams.get("status") || null
   );
   const [selectedCategory, setSelectedCategory] = useState(
-    searchParams.get("category") || "all"
+    categorySlug || searchParams.get("category") || "all"
   );
   const [selectedCollection, setSelectedCollection] = useState(
     searchParams.get("collection") || null
