@@ -82,7 +82,9 @@ const ProductDetail = () => {
   const fetchProduct = async (productId: string) => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      const isFullUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId);
+      
+      let query = supabase
         .from("products")
         .select(
           `
@@ -91,9 +93,16 @@ const ProductDetail = () => {
           subcategories!subcategory_id (name, slug),
           discounts!discount_id (name, type, value)
         `
-        )
-        .eq("id", productId)
-        .single();
+        );
+      
+      if (isFullUUID) {
+        query = query.eq("id", productId);
+      } else {
+        // Short ID prefix match
+        query = query.like("id", `${productId}%`);
+      }
+      
+      const { data, error } = await query.single();
 
       if (error) throw error;
 
