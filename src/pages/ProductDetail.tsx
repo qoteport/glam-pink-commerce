@@ -107,6 +107,10 @@ const ProductDetail = () => {
       const { data, error } = await query.maybeSingle();
 
       if (error) throw error;
+      if (!data) {
+        setLoading(false);
+        return null;
+      }
 
       const transformedProduct = {
         id: data.id,
@@ -139,6 +143,7 @@ const ProductDetail = () => {
       setSelectedSize(transformedProduct.size?.[0] || "");
 
       fetchSimilarProducts(data.category, data.id);
+      return data.id;
     } catch (error) {
       console.error("Error fetching product:", error);
       toast({
@@ -146,6 +151,7 @@ const ProductDetail = () => {
         description: "Failed to load product",
         variant: "destructive",
       });
+      return null;
     } finally {
       setLoading(false);
     }
