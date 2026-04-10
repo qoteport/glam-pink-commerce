@@ -62,7 +62,7 @@ const Header = memo(({ onSearch }: HeaderProps) => {
   const { favorites, getTotalFavorites } = useFavorites();
   const { user, profile, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
-  const scrollTimeoutRef = useRef<NodeJS.Timeout>();
+  const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
     let ticking = false;

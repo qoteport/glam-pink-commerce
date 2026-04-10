@@ -40,7 +40,7 @@ const ProductCard = ({ product, viewMode = "grid", index = 0 }: ProductCardProps
   const [showVideo, setShowVideo] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
-  const hoverTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // Handle hover timer for video display

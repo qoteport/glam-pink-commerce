@@ -71,8 +71,9 @@ const ProductDetail = () => {
       // Support both raw UUID and slug formats
       const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
       const productId = isUUID ? slug : extractIdFromSlug(slug);
-      fetchProduct(productId);
-      fetchReviews(productId);
+      fetchProduct(productId).then((fullId) => {
+        if (fullId) fetchReviews(fullId);
+      });
     }
   }, [slug]);
 
@@ -80,7 +81,7 @@ const ProductDetail = () => {
     window.scrollTo(0, 0);
   }, [slug]);
 
-  const fetchProduct = async (productId: string) => {
+  const fetchProduct = async (productId: string): Promise<string | null> => {
     try {
       setLoading(true);
       const isFullUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId);
@@ -99,13 +100,20 @@ const ProductDetail = () => {
       if (isFullUUID) {
         query = query.eq("id", productId);
       } else {
-        // Short ID prefix match
-        query = query.like("id", `${productId}%`);
+        // Short ID is the first segment of UUID (8 hex chars)
+        // Build UUID range: from shortId-0000-... to shortId-ffff-...
+        const low = `${productId}-0000-0000-0000-000000000000`;
+        const high = `${productId}-ffff-ffff-ffff-ffffffffffff`;
+        query = query.gte("id", low).lte("id", high);
       }
       
-      const { data, error } = await query.single();
+      const { data, error } = await query.maybeSingle();
 
       if (error) throw error;
+      if (!data) {
+        setLoading(false);
+        return null;
+      }
 
       const transformedProduct = {
         id: data.id,
@@ -138,6 +146,7 @@ const ProductDetail = () => {
       setSelectedSize(transformedProduct.size?.[0] || "");
 
       fetchSimilarProducts(data.category, data.id);
+      return data.id;
     } catch (error) {
       console.error("Error fetching product:", error);
       toast({
@@ -145,6 +154,7 @@ const ProductDetail = () => {
         description: "Failed to load product",
         variant: "destructive",
       });
+      return null;
     } finally {
       setLoading(false);
     }
