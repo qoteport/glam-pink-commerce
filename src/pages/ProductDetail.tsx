@@ -100,8 +100,8 @@ const ProductDetail = () => {
       if (isFullUUID) {
         query = query.eq("id", productId);
       } else {
-        // Short ID prefix match — cast uuid to text for LIKE
-        query = query.filter("id::text", "like", `${productId}%`);
+        // Short ID prefix match — use or filter with text pattern
+        query = query.or(`id.like.${productId}%`);
       }
       
       const { data, error } = await query.maybeSingle();
