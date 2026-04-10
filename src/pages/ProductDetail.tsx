@@ -100,8 +100,11 @@ const ProductDetail = () => {
       if (isFullUUID) {
         query = query.eq("id", productId);
       } else {
-        // Short ID prefix match — use or filter with text pattern
-        query = query.or(`id.like.${productId}%`);
+        // Short ID is the first segment of UUID (8 hex chars)
+        // Build UUID range: from shortId-0000-... to shortId-ffff-...
+        const low = `${productId}-0000-0000-0000-000000000000`;
+        const high = `${productId}-ffff-ffff-ffff-ffffffffffff`;
+        query = query.gte("id", low).lte("id", high);
       }
       
       const { data, error } = await query.maybeSingle();
