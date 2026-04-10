@@ -71,8 +71,9 @@ const ProductDetail = () => {
       // Support both raw UUID and slug formats
       const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
       const productId = isUUID ? slug : extractIdFromSlug(slug);
-      fetchProduct(productId);
-      fetchReviews(productId);
+      fetchProduct(productId).then((fullId) => {
+        if (fullId) fetchReviews(fullId);
+      });
     }
   }, [slug]);
 
@@ -80,7 +81,7 @@ const ProductDetail = () => {
     window.scrollTo(0, 0);
   }, [slug]);
 
-  const fetchProduct = async (productId: string) => {
+  const fetchProduct = async (productId: string): Promise<string | null> => {
     try {
       setLoading(true);
       const isFullUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId);
@@ -99,11 +100,11 @@ const ProductDetail = () => {
       if (isFullUUID) {
         query = query.eq("id", productId);
       } else {
-        // Short ID prefix match
-        query = query.like("id", `${productId}%`);
+        // Short ID prefix match — cast uuid to text for LIKE
+        query = query.filter("id::text", "like", `${productId}%`);
       }
       
-      const { data, error } = await query.single();
+      const { data, error } = await query.maybeSingle();
 
       if (error) throw error;
 
