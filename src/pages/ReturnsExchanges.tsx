@@ -10,11 +10,13 @@ import { Button } from "@/components/ui/button";
 import { RefreshCw, Package, Calendar, AlertCircle } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import SEOHead from '@/components/SEOHead';
 
 const ReturnsExchanges = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-cream-50 to-blush-50">
       <div className="mb-[70px]">
+        <SEOHead title="Returns & Exchanges — HairyTalesBeauty" description="Return and exchange policy for HairyTalesBeauty wig orders. Learn how to request a return or replacement." canonicalPath="/returns" />
         <Header />
       </div>
 

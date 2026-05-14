@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import SEOHead from '@/components/SEOHead';
 
 const FAQ = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -149,6 +150,7 @@ const FAQ = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-cream-50 to-blush-50">
       <div className="mb-[70px]">
+        <SEOHead title="FAQ — HairyTalesBeauty" description="Answers to common questions about wigs, custom orders, sizing, shipping, payment, and care from HairyTalesBeauty." canonicalPath="/faq" />
         <Header />
       </div>
 

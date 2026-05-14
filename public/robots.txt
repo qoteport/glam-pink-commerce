@@ -12,5 +12,13 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /cart
+Disallow: /checkout
+Disallow: /auth
+Disallow: /profile
+Disallow: /my-orders
+Disallow: /favorites
+Disallow: /payment-callback
 
 Sitemap: https://hairytalesbeautyhome.com/sitemap.xml

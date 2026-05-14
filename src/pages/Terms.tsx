@@ -4,11 +4,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { FileText, ShoppingCart, CreditCard, Truck, RotateCcw, AlertTriangle } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import SEOHead from '@/components/SEOHead';
 
 const Terms = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-cream-50 to-blush-50">
       <div className="mb-[70px]">
+        <SEOHead title="Terms of Service — HairyTalesBeauty" description="Read the terms and conditions that govern your use of the HairyTalesBeauty website and services." canonicalPath="/terms" />
         <Header />
       </div>
 
