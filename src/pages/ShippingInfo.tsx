@@ -5,11 +5,13 @@ import { Truck, Clock, MapPin, Package } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import PriceDisplay from '@/components/PriceDisplay';
+import SEOHead from '@/components/SEOHead';
 
 const ShippingInfo = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-cream-50 to-blush-50">
       <div className="mb-[70px]">
+        <SEOHead title="Shipping Information — HairyTalesBeauty" description="Delivery times, shipping rates, and supported countries for HairyTalesBeauty wig orders worldwide." canonicalPath="/shipping" />
         <Header />
       </div>
 

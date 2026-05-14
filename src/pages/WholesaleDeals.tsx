@@ -10,6 +10,7 @@ import Footer from '@/components/Footer';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import QuoteRequestForm from '@/components/QuoteRequestForm';
+import SEOHead from '@/components/SEOHead';
 
 interface WholesaleDeal {
   id: string;
@@ -95,7 +96,8 @@ const WholesaleDeals = () => {
     return (
       <div className="min-h-screen bg-background">
         <div className="mb-[70px]">
-          <Header />
+          <SEOHead title="Wholesale Deals — HairyTalesBeauty" description="Bulk pricing on premium wigs and braided units for resellers, salons, and businesses. Request a wholesale quote." canonicalPath="/wholesale-deals" />
+        <Header />
         </div>
         <div className="flex items-center justify-center py-20">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>

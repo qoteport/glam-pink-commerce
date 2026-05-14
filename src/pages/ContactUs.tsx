@@ -31,6 +31,7 @@ import {
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
+import SEOHead from '@/components/SEOHead';
 
 interface SocialLink {
   id: string;
@@ -115,6 +116,7 @@ const ContactUs = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-cream-50 to-blush-50">
       <div className="mb-[70px]">
+        <SEOHead title="Contact Us — HairyTalesBeauty" description="Get in touch with HairyTalesBeauty. Reach our customer support team by email, phone, or social media." canonicalPath="/contact" />
         <Header />
       </div>
 

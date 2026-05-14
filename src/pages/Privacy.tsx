@@ -4,11 +4,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Shield, Eye, Database, Lock, Mail, Phone } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import SEOHead from '@/components/SEOHead';
 
 const Privacy = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-cream-50 to-blush-50">
       <div className="mb-[70px]">
+        <SEOHead title="Privacy Policy — HairyTalesBeauty" description="How HairyTalesBeauty collects, uses, and protects your personal information when you shop with us." canonicalPath="/privacy" />
         <Header />
       </div>
 

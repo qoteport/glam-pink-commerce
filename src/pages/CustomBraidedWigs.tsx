@@ -19,6 +19,7 @@ import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import PriceDisplay from "@/components/PriceDisplay";
+import SEOHead from '@/components/SEOHead';
 
 const CustomBraidedWigs = () => {
   const [formData, setFormData] = useState({
@@ -123,6 +124,7 @@ const CustomBraidedWigs = () => {
   return (
     <div className="min-h-screen bg-white">
       <div className="mb-[70px]">
+        <SEOHead title="Custom Braided Wigs — HairyTalesBeauty" description="Order a handcrafted custom braided wig made to your specifications. Choose your style, length, color, and texture." canonicalPath="/custom-braided-wigs" />
         <Header />
       </div>
 
