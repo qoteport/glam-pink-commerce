@@ -1,0 +1,21 @@
+# HairyTalesBeauty
+
+> Premium custom wigs, braided wigs, and wholesale hair deals based in Ghana, shipping worldwide.
+
+HairyTalesBeauty offers handcrafted lace wigs, braided wigs, frontal units, closures, locs, twists, and bundles. Custom orders and wholesale pricing available.
+
+## Pages
+
+- [Home](/): Featured products, collections, and offers.
+- [Shop](/shop): Full product catalog with filters by category, hair type, length, and color.
+- [Custom Braided Wigs](/custom-braided-wigs): Request a made-to-order braided wig.
+- [Wholesale Deals](/wholesale-deals): Bulk pricing and quote requests for resellers.
+- [Contact](/contact): Reach customer support.
+- [FAQ](/faq): Common questions about products, sizing, shipping, and care.
+- [Shipping Info](/shipping): Delivery times, rates, and supported countries.
+- [Returns & Exchanges](/returns): Return policy and process.
+
+## Optional
+
+- [Privacy Policy](/privacy)
+- [Terms of Service](/terms)
