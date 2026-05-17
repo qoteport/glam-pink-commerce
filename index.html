@@ -54,6 +54,41 @@
       gtag('config', 'G-C0S25FK4Z3');
     </script>
 
+    <!-- Sitewide structured data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://hairytalesbeautyhome.com/#organization",
+            "name": "HairyTalesBeauty",
+            "url": "https://hairytalesbeautyhome.com/",
+            "logo": "https://hairytalesbeautyhome.com/apple-touch-icon.png",
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "telephone": "+233558384512",
+              "contactType": "customer service",
+              "email": "hairytalesbeautyhome@gmail.com"
+            }
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://hairytalesbeautyhome.com/#website",
+            "url": "https://hairytalesbeautyhome.com/",
+            "name": "HairyTalesBeauty",
+            "description": "Premium custom wigs and wholesale deals.",
+            "publisher": { "@id": "https://hairytalesbeautyhome.com/#organization" },
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "https://hairytalesbeautyhome.com/shop?search={search_term_string}",
+              "query-input": "required name=search_term_string"
+            }
+          }
+        ]
+      }
+    </script>
+
   </head>
   <body>
     <div id="root"></div>

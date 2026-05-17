@@ -310,6 +310,26 @@ const ProductDetail = () => {
         canonicalPath={`/product/${slug}`}
         type="product"
         image={product.image}
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: product.name,
+          description: product.description || `${product.name} from HairyTalesBeauty.`,
+          image: product.imageGallery?.length ? product.imageGallery : [product.image],
+          sku: product.id,
+          category: product.category,
+          brand: { "@type": "Brand", name: "HairyTalesBeauty" },
+          aggregateRating: product.rating && product.review_count
+            ? { "@type": "AggregateRating", ratingValue: product.rating, reviewCount: product.review_count }
+            : undefined,
+          offers: {
+            "@type": "Offer",
+            url: `https://hairytalesbeautyhome.com/product/${slug}`,
+            priceCurrency: "GHS",
+            price: product.price,
+            availability: "https://schema.org/InStock",
+          },
+        }}
       />
       <div className="mb-[70px]">
         <Header />
