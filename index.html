@@ -27,14 +27,14 @@
     <meta property="og:url" content="https://hairytalesbeautyhome.com/" />
     <meta property="og:title" content="HairyTalesBeauty - Custom Wigs & Wholesale Deals" />
     <meta property="og:description" content="Shop top-quality wigs and custom units. Wholesale offers available. HairyTalesBeauty brings you the best in beauty and confidence." />
-    <meta property="og:image" content="/og-image.jpg" />
+    
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content="https://hairytalesbeautyhome.com/" />
     <meta property="twitter:title" content="HairyTalesBeauty - Custom Wigs & Wholesale Deals" />
     <meta property="twitter:description" content="Explore luxurious wigs, custom units, and wholesale offers from HairyTalesBeauty. Style your story with confidence." />
-    <meta property="twitter:image" content="/og-image.jpg" />
+    
 
     <!-- Favicons -->
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
@@ -52,6 +52,41 @@
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'G-C0S25FK4Z3');
+    </script>
+
+    <!-- Sitewide structured data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://hairytalesbeautyhome.com/#organization",
+            "name": "HairyTalesBeauty",
+            "url": "https://hairytalesbeautyhome.com/",
+            "logo": "https://hairytalesbeautyhome.com/apple-touch-icon.png",
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "telephone": "+233558384512",
+              "contactType": "customer service",
+              "email": "hairytalesbeautyhome@gmail.com"
+            }
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://hairytalesbeautyhome.com/#website",
+            "url": "https://hairytalesbeautyhome.com/",
+            "name": "HairyTalesBeauty",
+            "description": "Premium custom wigs and wholesale deals.",
+            "publisher": { "@id": "https://hairytalesbeautyhome.com/#organization" },
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "https://hairytalesbeautyhome.com/shop?search={search_term_string}",
+              "query-input": "required name=search_term_string"
+            }
+          }
+        ]
+      }
     </script>
 
   </head>

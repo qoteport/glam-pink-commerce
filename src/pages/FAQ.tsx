@@ -150,7 +150,22 @@ const FAQ = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-cream-50 to-blush-50">
       <div className="mb-[70px]">
-        <SEOHead title="FAQ — HairyTalesBeauty" description="Answers to common questions about wigs, custom orders, sizing, shipping, payment, and care from HairyTalesBeauty." canonicalPath="/faq" />
+        <SEOHead
+          title="FAQ — HairyTalesBeauty"
+          description="Answers to common questions about wigs, custom orders, sizing, shipping, payment, and care from HairyTalesBeauty."
+          canonicalPath="/faq"
+          structuredData={{
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: faqCategories.flatMap((cat) =>
+              cat.faqs.map((f) => ({
+                "@type": "Question",
+                name: f.question,
+                acceptedAnswer: { "@type": "Answer", text: f.answer },
+              }))
+            ),
+          }}
+        />
         <Header />
       </div>
 
