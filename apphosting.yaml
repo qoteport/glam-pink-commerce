@@ -1,0 +1,37 @@
+# Settings for Firebase App Hosting
+# Learn more: https://firebase.google.com/docs/app-hosting/configure
+
+runConfig:
+  minInstances: 0
+  maxInstances: 10
+  concurrency: 80
+  cpu: 1
+  memoryMiB: 512
+
+env:
+  - variable: VITE_FIREBASE_API_KEY
+    value: "AIzaSyAhvH2-yfcJxufy8OHW9XqT8dvkEWXLd3c"
+  - variable: VITE_FIREBASE_AUTH_DOMAIN
+    value: "shophairytalesbeautyhome.firebaseapp.com"
+  - variable: VITE_FIREBASE_PROJECT_ID
+    value: "shophairytalesbeautyhome"
+  - variable: VITE_FIREBASE_STORAGE_BUCKET
+    value: "shophairytalesbeautyhome.firebasestorage.app"
+  - variable: VITE_FIREBASE_MESSAGING_SENDER_ID
+    value: "727314616784"
+  - variable: VITE_FIREBASE_APP_ID
+    value: "1:727314616784:web:b834bb6c137a56eba6a9d5"
+  - variable: VITE_FIREBASE_MEASUREMENT_ID
+    value: "G-GCBR554BHY"
+  - variable: VITE_SUPABASE_URL
+    value: "https://pvzntxpryhtlatpokytk.supabase.co"
+  - variable: VITE_SUPABASE_PUBLISHABLE_KEY
+    value: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB2em50eHByeWh0bGF0cG9reXRrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5MzMwMjEsImV4cCI6MjA2NjUwOTAyMX0.ZTkWwS3FY81nmqVp0zscmBpi0vKlNfR3kbh3zDpU5t4"
+  - variable: VITE_SUPABASE_PROJECT_ID
+    value: "pvzntxpryhtlatpokytk"
+  - variable: VITE_PAYSTACK_LIVE_PUBLIC_KEY
+    value: "pk_live_31e06a62182c2e8f413d8109e18c33b08a8815f9"
+  - variable: VITE_EXCHANGE_RATE_API_KEY
+    value: "6edfe31fad98d12562497027"
+  - variable: VITE_IP_GEOLOCATION_API_KEY
+    value: "8692e39ba4a14121b7af2d757f93801e"
